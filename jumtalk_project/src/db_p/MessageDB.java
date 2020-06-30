@@ -62,7 +62,7 @@ public class MessageDB {
          
          stmt = con.createStatement();
          
-         rs = stmt.executeQuery("select * from MESSAGE where to_id = '"+userID+"' ORDER BY MAKETIME ASC");
+         rs = stmt.executeQuery("select * from from_MESSAGE where to_id = '"+userID+"' ORDER BY MAKETIME DESC");
          
          while (rs.next()) {
             String to_id = rs.getString("to_id");
@@ -114,7 +114,7 @@ static String[][] getFROM_MESSAGE(String userID){
          
          stmt = con.createStatement();
          
-         rs = stmt.executeQuery("select * from MESSAGE where from_id = '"+userID+"' ORDER BY MAKETIME ASC");
+         rs = stmt.executeQuery("select * from to_MESSAGE where from_id = '"+userID+"' ORDER BY MAKETIME DESC");
          
          while (rs.next()) {
             String to_id = rs.getString("to_id");
@@ -163,7 +163,8 @@ static String[][] getFROM_MESSAGE(String userID){
          
          stmt = con.createStatement();
          
-         stmt.executeUpdate("INSERT INTO MESSAGE (TO_ID, FROM_ID, CONTENT, MAKETIME) VALUES ('"+to_id+"', '"+from_id+"', '"+contant+"', TO_DATE(sysdate, 'YYYY-MM-DD HH24:MI:SS'))");
+         stmt.executeUpdate("INSERT INTO TO_MESSAGE (TO_ID, FROM_ID, CONTENT, MAKETIME) VALUES ('"+to_id+"', '"+from_id+"', '"+contant+"', systimestamp)");
+         stmt.executeUpdate("INSERT INTO FROM_MESSAGE (TO_ID, FROM_ID, CONTENT, MAKETIME) VALUES ('"+to_id+"', '"+from_id+"', '"+contant+"', systimestamp)");
          System.out.println("성공");
          res = true;
       } catch (Exception e) {
@@ -197,7 +198,7 @@ static String[][] getFROM_MESSAGE(String userID){
 	         
 	         stmt = con.createStatement();
 	         
-	         stmt.executeUpdate("delete from message where from_id = '"+userID+"'");
+	         stmt.executeUpdate("delete from from_message where from_id = '"+userID+"'");
 	         System.out.println("성공");
 	         res = true;
 	      } catch (Exception e) {
@@ -231,7 +232,7 @@ static String[][] getFROM_MESSAGE(String userID){
 	         
 	         stmt = con.createStatement();
 	         
-	         stmt.executeUpdate("delete from message where to_id = '"+userID+"'");
+	         stmt.executeUpdate("delete from to_message where to_id = '"+userID+"'");
 	         System.out.println("성공");
 	         res = true;
 	      } catch (Exception e) {
@@ -254,7 +255,7 @@ static String[][] getFROM_MESSAGE(String userID){
    
 
    public static void main(String[] args) {
-	   
+	   saveMESSAGE("pray", "admin", "히히히");
    }
 
 }

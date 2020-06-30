@@ -72,9 +72,11 @@ public class ScheduleDB {
 			
 			stmt = con.createStatement();
 			
-			stmt.executeUpdate("update schedule set "+time+" = '"+set+"' where id = '"+userID+"' and to_char(sch_date,'yyyy-mm-dd') = '"+date+"'");
+			int upNum = stmt.executeUpdate("update schedule set "+time+" = '"+set+"' where id = '"+userID+"' and to_char(sch_date,'yyyy-mm-dd') = '"+date+"' and "+time+"= 'true'");
+			if(upNum>0) {
 			System.out.println("¼º°ø");
 			res = true;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

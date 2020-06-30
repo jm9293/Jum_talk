@@ -154,17 +154,44 @@ public class NoticeDB {
 		
 	}
 	
+	static boolean deleteNOTICE(String title,String content) {
+		boolean res = false;
+		
+		Connection con = null;
+		Statement stmt=null;
+		
+		
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			con = DriverManager.getConnection("jdbc:oracle:thin:@"+host+":1521:xe", "HR", "HR");
+			
+			stmt = con.createStatement();
+			
+			stmt.executeUpdate("delete from  NOTICE where title = '"+title+"' and content = '"+content+"'");
+			System.out.println("성공");
+			res = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				con.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		
+		return res;
+		
+		
+	}
+	
 	
 
 	public static void main(String[] args) {
 		
-		System.out.println(getNOTICE());
-		System.out.println("UPDATE  NOTICE "
-					+ "SET TITLE = '"+"안녕하세요"+"'"
-					+ "CONTENT = '"+"수정내용"+"'"
-					+ "MODIFI_TIME = SYSDATE WHERE TITTLE = '"+"asd"+"'");
 		
-		updateNOTICE("가가가", "나나나", "나나나나");
 	}
 
 }
