@@ -1,6 +1,7 @@
 package db_p;
 
 import java.awt.Font;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -16,6 +17,13 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.intellijthemes.*;
+
+
 
 /*--------------------필수사항-----------------------------
  
@@ -83,6 +91,16 @@ class Login extends JFrame implements ActionListener {
    MemberChoice memberChoiceFrame; // 일반,점술 회원 구분 프레임 클래스
 
    public Login() {
+	   
+	   
+	   
+	 
+	   try {
+		    UIManager.setLookAndFeel( new FlatLightLaf() );
+		} catch( Exception ex ) {
+		    System.err.println( "Failed to initialize LaF" );
+		}
+	   
       setTitle("Login");
       setBounds(600, 100, 515, 800);
       setResizable(false);

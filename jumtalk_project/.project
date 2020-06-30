@@ -3,6 +3,7 @@
 	<name>jumtalk_project</name>
 	<comment></comment>
 	<projects>
+		<project>study0405</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

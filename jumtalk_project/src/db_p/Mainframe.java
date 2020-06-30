@@ -36,6 +36,7 @@ public class Mainframe extends JFrame implements ActionListener{
    public Mainframe(String userID) {
       
       super("  ¡°≈Â");
+      
 //      try {
 //         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 //         JFrame.setDefaultLookAndFeelDecorated(true);
