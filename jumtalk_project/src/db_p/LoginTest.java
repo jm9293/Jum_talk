@@ -3,6 +3,7 @@ package db_p;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -49,7 +50,7 @@ import com.formdev.flatlaf.intellijthemes.FlatArcIJTheme;
 */
 
 //로그인 창
-class Login extends JFrame implements ActionListener, WindowListener {
+class Login extends JFrame implements ActionListener {
 
 	Login me = this;  
 //	Signup signUp;
@@ -141,7 +142,7 @@ class Login extends JFrame implements ActionListener, WindowListener {
 		add(signUp_Bt);
 		signUp_Bt.addActionListener(this);
 
-		addWindowListener(this);
+	
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -152,18 +153,21 @@ class Login extends JFrame implements ActionListener, WindowListener {
 
 		// 아이디찾기 버튼 눌렀을때
 		if (e.getSource().equals(idSearch_bt)) {
-			if(idSearchFrame == null)
+			if(idSearchFrame == null) {
 				idSearchFrame = new IDsearch(this);
-
+			}
 			// 비밀번호 찾기 버튼 눌렀을때
 		} else if (e.getSource().equals(pwSearch_bt)) {
-			pwSearchFrame = new PWsearch();
+			if(pwSearchFrame==null) {
+				pwSearchFrame = new PWsearch(this);	
+			}
 
 			// 회원가입 버튼 눌렀을때 -> 일반,점술회원 구분프레임 띄우기
 		} else if (e.getSource().equals(signUp_Bt)) {
 //			memberChoiceFrame = new MemberChoice();
-			
-			SignUp SignUp = new SignUp();
+			if(SignUp==null) {
+				SignUp = new SignUp(this);
+			}
 
 			// 로그인 버튼 눌렀을때
 		} else if (e.getSource().equals(login_bt)) {
@@ -177,7 +181,7 @@ class Login extends JFrame implements ActionListener, WindowListener {
 				// 다 아니면 로그인 성공!
 			} else {
 				JOptionPane.showMessageDialog(null, "            로그인 성공! \n점톡에 오신 것을 환영합니다 ♥");
-				setVisible(false);
+				dispose();
 				new Mainframe(idtxt.getText());
 
 			}
@@ -185,48 +189,8 @@ class Login extends JFrame implements ActionListener, WindowListener {
 
 	}
 	
-	@Override
-	public void windowOpened(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void windowClosing(WindowEvent e) {
-		// TODO Auto-generated method stub
-		System.out.println("login프레임 wc진입");
-		idSearchFrame = null;
-	}
 
-	@Override
-	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void windowIconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	// 아이디찾기
 	class IDsearch extends JFrame implements ActionListener, WindowListener{
@@ -321,14 +285,17 @@ class Login extends JFrame implements ActionListener, WindowListener {
 		public void actionPerformed(ActionEvent e) {
 
 			if (e.getSource().equals(idChk_s)) { // 아이디찾기 버튼 눌렀을때
+				if(resIDFrame==null) {
+					resIDFrame = new ResID();
+				}
 
-				resIDFrame = new ResID();
-
-				setVisible(false);
+				lg.idSearchFrame = null;
+				dispose();
 
 			} else if (e.getSource().equals(idCancellation)) { // 취소 버튼 눌렀을때
 
-				setVisible(false);
+				lg.idSearchFrame = null;
+				dispose();
 
 			}
 
@@ -400,13 +367,16 @@ class Login extends JFrame implements ActionListener, WindowListener {
 
 				if (e.getSource().equals(newIDChk)) { // 로그인 버튼 눌렀을때
 
-					setVisible(false);
+					lg.idSearchFrame = null;
+					dispose();
 
 				} else if (e.getSource().equals(newpwChk)) {
-
-					pwsearch = new PWsearch();
-
-					setVisible(false);
+					if(lg.pwSearchFrame==null) {
+						lg.pwSearchFrame = new PWsearch(lg);
+					}
+					////
+					lg.idSearchFrame = null;
+					dispose();
 
 				}
 
@@ -428,7 +398,6 @@ class Login extends JFrame implements ActionListener, WindowListener {
 
 		@Override
 		public void windowClosed(WindowEvent e) {
-			// TODO Auto-generated method stub
 			
 		}
 
@@ -462,7 +431,7 @@ class Login extends JFrame implements ActionListener, WindowListener {
 	}
 
 	// 비밀번호 찾기
-	class PWsearch extends JFrame implements ActionListener {
+	class PWsearch extends JFrame implements ActionListener , WindowListener{
 
 		JLabel idSearch; // 아이디 입력
 		JLabel pwHint_S; // 비밀번호 힌트
@@ -478,8 +447,9 @@ class Login extends JFrame implements ActionListener, WindowListener {
 
 		// 액션리스너
 		PassWordFind passWordFind; // 비밀번호 알려주는 창
-
-		public PWsearch() {
+		Login lg; // 부른애
+		public PWsearch(Login lg) {
+			this.lg=lg;
 			setTitle("비밀번호 찾기");
 			setBounds(600, 230, 500, 600);
 			setLayout(null);
@@ -534,7 +504,7 @@ class Login extends JFrame implements ActionListener, WindowListener {
 			pwCancellation.setBounds(280, 470, 100, 50);
 			add(pwCancellation);
 			pwCancellation.addActionListener(this);
-			
+			addWindowListener(this);
 			
 			setResizable(false);
 			setVisible(true);
@@ -547,11 +517,12 @@ class Login extends JFrame implements ActionListener, WindowListener {
 			if (e.getSource().equals(passWordChk)) { // 비밀번호찾기 버튼 눌렀을때
 
 				passWordFind = new PassWordFind();
-
-				setVisible(false);
+				dispose();
 
 			} else if (e.getSource().equals(pwCancellation)) { // 취소 버튼 눌렀을때
-				setVisible(false);
+				
+				lg.pwSearchFrame = null;
+				dispose();
 
 			}
 
@@ -559,10 +530,10 @@ class Login extends JFrame implements ActionListener, WindowListener {
 
 		// 비밀번호 찾기
 
-		class PassWordFind extends JFrame implements ActionListener {
+		class PassWordFind extends JFrame implements ActionListener, WindowListener {
 
 			JLabel pwMessage;
-			JLabel resPW;
+			TextField resPW;
 			JLabel pwLabel;
 
 			// 확인 취소
@@ -578,12 +549,12 @@ class Login extends JFrame implements ActionListener, WindowListener {
 			public PassWordFind() {
 
 				setTitle("비밀번호 찾기");
-				setBounds(600, 300, 500, 350);
+				setBounds(600, 300, 350, 200);
 				setLayout(null);
-
+				addWindowListener(this);
 				// 비밀번호 찾기
-				pwMessage = new JLabel("회원님의 비밀번호는 ");
-				pwMessage.setBounds(100, 40, 300, 200);
+				pwMessage = new JLabel("회원님의 비밀번호 : ");
+				pwMessage.setBounds(10, 40, 120, 20);
 				add(pwMessage);
 
 				// 아이디와, 비밀번호 힌트, 답이 일치하지 않을 경우
@@ -593,24 +564,23 @@ class Login extends JFrame implements ActionListener, WindowListener {
 					// 아이디, 비밀번호 힌트, 답 이 일치 할 경우!! --> passWordFind클래스 창 띄우기!!
 				} else {
 
-					resPW = new JLabel(UserDB.searchPW(userID, userPWHINT, userPWRES));
-					resPW.setBounds(230, 40, 280, 200);
+					resPW = new TextField(UserDB.searchPW(userID, userPWHINT, userPWRES));
+					resPW.setBounds(130, 43, 120, 20);
+					resPW.setEditable(false);
 					add(resPW);
 					setVisible(true);
 				}
 
-				pwLabel = new JLabel("입니다.");
-				pwLabel.setBounds(300, 40, 300, 200);
-				add(pwLabel);
+				
 
 				// 확인 취소 버튼
 				newPassWordChk = new JButton("확인");
-				newPassWordChk.setBounds(90, 280, 150, 40);
+				newPassWordChk.setBounds(10, 100, 100, 40);
 				add(newPassWordChk);
 				newPassWordChk.addActionListener(this);
 
 				newPassWordCan = new JButton("취소");
-				newPassWordCan.setBounds(350, 280, 150, 40);
+				newPassWordCan.setBounds(350-100-30, 100, 100, 40);
 				add(newPassWordCan);
 				newPassWordCan.addActionListener(this);
 
@@ -620,22 +590,107 @@ class Login extends JFrame implements ActionListener, WindowListener {
 			public void actionPerformed(ActionEvent e) {
 
 				if (e.getSource().equals(newPassWordChk)) { // 확인 버튼 눌렀을때
-
-					setVisible(false);
+					lg.pwSearchFrame = null;
+					dispose();
 
 				} else if (e.getSource().equals(newPassWordCan)) { // 취소 버튼 눌렀을때
-					setVisible(false);
+					lg.pwSearchFrame = null;
+					dispose();
 
 				}
 
 			}
 
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO 자동 생성된 메소드 스텁
+				
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO 자동 생성된 메소드 스텁
+				
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO 자동 생성된 메소드 스텁
+				
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO 자동 생성된 메소드 스텁
+				
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO 자동 생성된 메소드 스텁
+				
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+				// TODO 자동 생성된 메소드 스텁
+				
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				// TODO 자동 생성된 메소드 스텁
+				
+			}
+
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			lg.pwSearchFrame = null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
 		}
 
 	}
 
 	// 일반+사업자 회원가입
-	class SignUp extends JFrame implements ActionListener {
+	class SignUp extends JFrame implements ActionListener ,WindowListener{
 
 		// 회원분류 버튼
 		ButtonGroup bg; // 버튼그룹
@@ -776,13 +831,14 @@ class Login extends JFrame implements ActionListener, WindowListener {
 		String sRegular = "\\S*"; // 공백
 
 		SignUpChk signUpChk;
-
-		public SignUp() {
-
+		
+		Login lg;
+		public SignUp(Login lg) {
+			this.lg = lg;
 			setTitle("점톡 회원가입 ");
 			setBounds(600, 0, 785, 1120);
 			setLayout(null);
-
+			addWindowListener(this);
 			idChkLabel = new JLabel();
 			idChkLabel.setBounds(110, 93, 30, 30);
 			add(idChkLabel);
@@ -1398,7 +1454,9 @@ class Login extends JFrame implements ActionListener, WindowListener {
 			// 1) 취소버튼 눌렀을때 ------------------------------------
 			if (e.getSource().equals(cancellation)) {
 
-				setVisible(false); // 창닫기
+				signUpEnd = false;  
+				lg.SignUp = null;
+				dispose();
 
 				// 2) 아이디 중복확인 버튼 눌렀을때----------------------------------------
 			} else if (e.getSource().equals(idCheck)) {
@@ -1531,8 +1589,9 @@ class Login extends JFrame implements ActionListener, WindowListener {
 								pwhint, pwres, coin);
 						MenuDB.makeMENU(id);
 						JOptionPane.showMessageDialog(null, "           회원가입 완료! \n점톡에 오신것을 환영합니다.");
-						setVisible(false);
-
+						lg.SignUp = null;
+						signUpEnd = false;
+						dispose();
 					}
 
 					// 점술회원 유효성
@@ -1594,7 +1653,8 @@ class Login extends JFrame implements ActionListener, WindowListener {
 						
 						//쓰레드 종료!!!!!
 						signUpEnd = false;  
-						setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+						lg.SignUp = null;
+						dispose();
 
 					}
 
@@ -1606,10 +1666,7 @@ class Login extends JFrame implements ActionListener, WindowListener {
 		// 유효성 검사 쓰레드
 		class SignUpChk extends Thread {
 
-			
-			
 
-			boolean regularChk; // 정규식 검사
 
 			@Override
 			public void run() {
@@ -1748,6 +1805,61 @@ class Login extends JFrame implements ActionListener, WindowListener {
 					}
 				}
 			}
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			lg.SignUp = null;
+			signUpEnd = false;
+			
+		}
+
+
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
 		}
 
 //             if(idChkBl == true && pwChkBl == true && textFieldList_2.size() == 12)
