@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,12 +22,16 @@ class ChatInButton extends JButton implements ActionListener {
    String sellerID;
    Date chatdate;
    int kind;
-   public ChatInButton(int kind,String userID,String sellerID, Date chatdate) {
+   User_Chat_List ucl;
+   User_Chat_Connect ucc;
+   
+   public ChatInButton(int kind,String userID,String sellerID, Date chatdate, User_Chat_List ucl) {
 
       this.kind = kind;
       this.userID = userID;
       this.sellerID = sellerID;
       this.chatdate = chatdate;
+      this.ucl = ucl;
       setText("채팅방입장");
       setBounds(350, 60, 110, 30);
       addActionListener(this);
@@ -35,15 +41,26 @@ class ChatInButton extends JButton implements ActionListener {
 
    @Override
    public void actionPerformed(ActionEvent e) {
-      if(kind==0) {
-         System.out.println("일반");
-         new User_Chat_Connect(kind, userID, sellerID,chatdate);
-      }else {
-         System.out.println("점술가");
-         new User_Chat_Connect(kind, sellerID, userID,chatdate);
-      }
+	   
+	   
+	   if(ucl.ucc == null) {
+		   
+		   if(kind==0) {
+			   System.out.println("일반");
+			   ucl.ucc = new User_Chat_Connect(kind, userID, sellerID, chatdate, ucl);
+//         new User_Chat_Connect(kind, userID, sellerID,chatdate);
+		   }else {
+			   System.out.println("점술가");
+			   ucl.ucc = new User_Chat_Connect(kind, sellerID, userID,chatdate, ucl);
+		   }
+	   } 
+	   
+	   else {System.out.println("안먹어 안들어와");}
+	   
 
    }
+
+
 
 }
 
@@ -58,11 +75,14 @@ public class User_Chat_List extends JScrollPane  { // 채팅탭 누르면 나오는 채팅�
    ArrayList<JButton> jbs;
    ArrayList<Chatlist> cc;
    Chat_List_Timer ch;
+   User_Chat_Connect ucc;
+   
    
 
    public User_Chat_List(String userID) {
 
       this.userID = userID;
+     
       
       
       cc = ChatListDB.getCHATLIST(userID);
@@ -124,7 +144,7 @@ public class User_Chat_List extends JScrollPane  { // 채팅탭 누르면 나오는 채팅�
          cnt2 += 20;
          test.add(id);
          
-         ChatInButton chb= new ChatInButton(UserDB.getUSERKIND(userID), cc.get(i).user_id, cc.get(i).sell_id, cc.get(i).chattime);
+         ChatInButton chb = new ChatInButton(UserDB.getUSERKIND(userID), cc.get(i).user_id, cc.get(i).sell_id, cc.get(i).chattime, this);
          jbs.add(chb);
          test.add(chb); // 라벨에 버튼 넣기
          chat.add(test); // 다만든 라벨을 패널에 넣기

@@ -8,6 +8,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,507 +38,774 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 
+import db_p.SelectMenuAct2.SelectTime2;
+
 public class ResNormal extends JPanel { // 나중에 JPanel로 바꿀거고 마지막에 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 이거지워주면됌
 
-   String userID;
-   int x = 600;
-   int y = 200; // 좌표 여분 절대값
+	String userID;
+	int x = 600;
+	int y = 200; // 좌표 여분 절대값
 
-   public ResNormal(String userID) {
-      this.userID = userID;
+	public ResNormal(String userID) {
+		this.userID = userID;
 
-      setLayout(null);
-      setBounds(x, y, 500, 670);
+		setLayout(null);
+		setBounds(x, y, 500, 670);
 //         setResizable(false);
-      JPanel jps = new JPanel();
-      jps.setBounds(0, 0, 500, 670);
-      jps.setLayout(null);
-      JPanel jp = new JPanel();
+		JPanel jps = new JPanel();
+		jps.setBounds(0, 0, 500, 670);
+		jps.setLayout(null);
+		JPanel jp = new JPanel();
 
-      int row = UserDB.getSELLER().size();
-      if (row < 5) {
-         row = 5;
-      }
-      jp.setLayout(new GridLayout(row, 1));
-      for (sellUser ss : UserDB.getSELLER()) {
-         jp.add(new SellerListPane(userID, ss.id, x, y)); // 로그인한일반유저아이디, 전체점술가아이디
-      }
-      for (int i = UserDB.getSELLER().size(); i < 5; i++) {
-         jp.add(new JPanel());
-      }
+		int row = UserDB.getSELLER().size();
+		if (row < 5) {
+			row = 5;
+		}
+		jp.setLayout(new GridLayout(row, 1));
+		for (sellUser ss : UserDB.getSELLER()) {
+			jp.add(new SellerListPane(userID, ss.id, x, y)); // 로그인한일반유저아이디, 전체점술가아이디
+		}
+		for (int i = UserDB.getSELLER().size(); i < 5; i++) { // 점술가가 5명보다 적을때도 Grid 모양고정
+			jp.add(new JPanel());
+		}
 
-      Dimension size = new Dimension();
-      size.setSize(400, (row * 100) + 50);
-      jp.setPreferredSize(size);
-      JScrollPane scp = new JScrollPane(jp);
+		Dimension size = new Dimension();
+		size.setSize(400, (row * 100) + 50);
+		jp.setPreferredSize(size);
+		JScrollPane scp = new JScrollPane(jp);
 
-      scp.setBounds(0, 0, 485, 630);
-      jps.add(scp);
-      scp.setVisible(true);
-      add(jps);
-      setVisible(true);
-  
-   }
+		scp.setBounds(0, 0, 485, 630);
+		jps.add(scp);
+		scp.setVisible(true);
+		add(jps);
+		setVisible(true);
 
-   public static void main(String[] args) {
-      new ResNormal("로그인된 아이디?"); // 나중에 로그인단에서 넘겨받을 아이디
-   }
-
+	}
 }
 
 class SellerListPane extends JPanel implements ActionListener {
-   String userID;
-   String sellerID;
-   int x;
-   int y;
+	String userID;
+	String sellerID;
+	int x;
+	int y;
 
-   public SellerListPane(String userID, String sellerID, int x, int y) { // 로그인한일반유저아이디, 전체점술가아이디중 이 패널의주인
-      this.userID = userID;
-      this.sellerID = sellerID;
-      this.x = x;
-      this.y = y;
+	public SellerListPane(String userID, String sellerID, int x, int y) { // 로그인한일반유저아이디, 전체점술가아이디중 이 패널의주인
+		this.userID = userID;
+		this.sellerID = sellerID;
+		this.x = x;
+		this.y = y;
 
-      setLayout(new GridLayout(2, 0));
+		setLayout(new GridLayout(2, 0));
 
-      JLabel lblSellerId = new JLabel(sellerID);
-      lblSellerId.setOpaque(true);
-      lblSellerId.setBounds(0, 0, 100, 50);
-      JButton btnDetail = new JButton("상세프로필");
-      btnDetail.addActionListener(this);
+		JLabel lblSellerId = new JLabel();
+		lblSellerId.setOpaque(true);
+		lblSellerId.setHorizontalAlignment(JLabel.CENTER);
+		lblSellerId.setText("점술가 아이디 : [ "+sellerID+" ]        평점 : "+ReviewDB.getAVGPOINT(sellerID));
+		JButton btnDetail = new JButton("상세프로필");
+		btnDetail.addActionListener(this);
 
-      add(lblSellerId);
-      add(btnDetail);
-      setVisible(true);
-   }
+		add(lblSellerId);
+		add(btnDetail);
+		setVisible(true);
+	}
 
-   @Override
-   public void actionPerformed(ActionEvent e) { // 상세프로필
+	@Override
+	public void actionPerformed(ActionEvent e) { // 상세프로필
 
-      new DetailFrame(userID, sellerID, x, y);
-   }
+		new DetailFrame(userID, sellerID, x, y);
+	}
 }
 
-class DetailFrame extends JFrame implements ActionListener { // 상세프로필
-   String userID;
-   String sellerID;
-   int x;
-   int y;
-   ProfileInOut pfio;
-   JButton btnReview;
-   JButton btnFace;
-   JButton btnSaju;
-   JButton btnLove;
-   JButton btnNewYear;
-   JButton btnCompany;
-   String[] getMenu;
+class DetailFrame extends JFrame implements ActionListener, WindowListener { // 상세프로필
+	String userID;
+	String sellerID;
+	int x;
+	int y;
+	ProfileInOut pfio;
+	JButton btnReview;
+	JButton btnFace;
+	JButton btnSaju;
+	JButton btnLove;
+	JButton btnNewYear;
+	JButton btnCompany;
+	String[] getMenu;
 
-   public DetailFrame(String userID, String sellerID, int x, int y) {
-      this.userID = userID;
-      this.sellerID = sellerID;
-      this.x = x;
-      this.y = y;
-      this.pfio = ProfileInOut.getprofileInout();
-      setLayout(new GridLayout(2, 1));
-      setBounds(x + 100, y, 500, 670);
+	// 중복실행 방지(창)
+	SelectMenuAct sm;
+	SellReviewAct sr;
 
-      JPanel jp = new JPanel();
-      jp.setLayout(null);
-      JPanel jp2 = new JPanel(new GridLayout(6, 0));
+	public DetailFrame(String userID, String sellerID, int x, int y) {
+		this.userID = userID;
+		this.sellerID = sellerID;
+		this.x = x;
+		this.y = y;
+		this.pfio = ProfileInOut.getprofileInout();
+		setLayout(new GridLayout(2, 1));
+		setBounds(x + 100, y, 500, 670);
 
-      ImageIcon imgIcon = new ImageIcon(pfio.download(sellerID));
-      Image img = imgIcon.getImage();
-      img = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-      imgIcon.setImage(img);
+		JPanel jp = new JPanel();
+		jp.setLayout(null);
+		JPanel jp2 = new JPanel(new GridLayout(6, 0));
 
-      JLabel lblImg = new JLabel();
-      lblImg.setIcon(imgIcon);
-      lblImg.setBounds(80, 80, 100, 100);
-      JLabel lblDetail = new JLabel("[상세소개] : " + UserDB.getPROFILE_TEXT(sellerID));
-      lblDetail.setBounds(250, 80, 200, 20);
-      JLabel lblPhone = new JLabel("[전화번호] : " + UserDB.getPHONE(sellerID));
-      lblPhone.setBounds(250, 130, 200, 20);
-      JLabel lblPoint = new JLabel("[평점] : " + ReviewDB.getAVGPOINT(sellerID));
-      lblPoint.setBounds(250, 180, 200, 20);
+		ImageIcon imgIcon = new ImageIcon(pfio.download(sellerID));
+		Image img = imgIcon.getImage();
+		img = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+		imgIcon.setImage(img);
 
-      jp.add(lblImg);
-      jp.add(lblDetail);
-      jp.add(lblPhone);
-      jp.add(lblPoint);
-      
-      btnReview = new JButton("리뷰보기");
-      btnReview.addActionListener(this);
-      getMenu = MenuDB.getMENU(sellerID);
-      btnFace = new JButton(getMenu[0]);
-      btnFace.addActionListener(this);
-      btnSaju = new JButton(getMenu[1]);
-      btnSaju.addActionListener(this);
-      btnLove = new JButton(getMenu[2]);
-      btnLove.addActionListener(this);
-      btnNewYear = new JButton(getMenu[3]);
-      btnNewYear.addActionListener(this);
-      btnCompany = new JButton(getMenu[4]);
-      btnCompany.addActionListener(this);
+		JLabel lblImg = new JLabel();
+		lblImg.setIcon(imgIcon);
+		lblImg.setBounds(80, 80, 100, 100);
+		JLabel lblDetail = new JLabel("[상세소개] : " + UserDB.getPROFILE_TEXT(sellerID));
+		lblDetail.setBounds(250, 80, 200, 20);
+		JLabel lblPhone = new JLabel("[전화번호] : " + UserDB.getPHONE(sellerID));
+		lblPhone.setBounds(250, 130, 200, 20);
+		JLabel lblBName = new JLabel("[사업장명] : " + UserDB.getBUSINESSNAME(sellerID));
+		lblBName.setBounds(250, 180, 200, 20);
+		JLabel lblBAddress = new JLabel("[사업장 주소] : " + UserDB.getBUSINESSADDRESS(sellerID));
+		lblBAddress.setBounds(250, 230, 200, 20);
 
-      jp2.add(btnReview);
-      jp2.add(btnFace);
-      jp2.add(btnSaju);
-      jp2.add(btnLove);
-      jp2.add(btnNewYear);
-      jp2.add(btnCompany);
+		jp.add(lblImg);
+		jp.add(lblDetail);
+		jp.add(lblPhone);
+		jp.add(lblBName);
+		jp.add(lblBAddress);
 
-      add(jp);
-      add(jp2);
+		btnReview = new JButton("리뷰보기");
+		btnReview.addActionListener(this);
+		getMenu = MenuDB.getMENU(sellerID);
+		btnFace = new JButton(getMenu[0]);
+		btnFace.addActionListener(this);
+		btnSaju = new JButton(getMenu[1]);
+		btnSaju.addActionListener(this);
+		btnLove = new JButton(getMenu[2]);
+		btnLove.addActionListener(this);
+		btnNewYear = new JButton(getMenu[3]);
+		btnNewYear.addActionListener(this);
+		btnCompany = new JButton(getMenu[4]);
+		btnCompany.addActionListener(this);
 
-      setVisible(true);
-   }
+		jp2.add(btnReview);
+		jp2.add(btnFace);
+		jp2.add(btnSaju);
+		jp2.add(btnLove);
+		jp2.add(btnNewYear);
+		jp2.add(btnCompany);
 
-   @Override
-   public void actionPerformed(ActionEvent e) {
-      if (e.getSource().equals(btnReview))
-         new SellReviewAct(userID, sellerID, x, y);
+		add(jp);
+		add(jp2);
+		addWindowListener(this);
+		setVisible(true);
+	}
 
-      if (e.getSource().equals(btnFace))
-         new SelectMenuAct2(userID, sellerID, x, y, 0, getMenu);
-      else if (e.getSource().equals(btnSaju))
-         new SelectMenuAct2(userID, sellerID, x, y, 1, getMenu);
-      else if (e.getSource().equals(btnLove))
-         new SelectMenuAct2(userID, sellerID, x, y, 2, getMenu);
-      else if (e.getSource().equals(btnNewYear))
-         new SelectMenuAct2(userID, sellerID, x, y, 3, getMenu);
-      else if (e.getSource().equals(btnCompany))
-         new SelectMenuAct2(userID, sellerID, x, y, 4, getMenu);
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(btnReview) && sr == null)
+			sr = new SellReviewAct(userID, sellerID, x, y);
 
-   }
+		if (sm == null) {
+			if (e.getSource().equals(btnFace))
+				sm = new SelectMenuAct(userID, sellerID, x, y, 0, getMenu, this);
+			else if (e.getSource().equals(btnSaju))
+				sm = new SelectMenuAct(userID, sellerID, x, y, 1, getMenu, this);
+			else if (e.getSource().equals(btnLove))
+				sm = new SelectMenuAct(userID, sellerID, x, y, 2, getMenu, this);
+			else if (e.getSource().equals(btnNewYear))
+				sm = new SelectMenuAct(userID, sellerID, x, y, 3, getMenu, this);
+			else if (e.getSource().equals(btnCompany))
+				sm = new SelectMenuAct(userID, sellerID, x, y, 4, getMenu, this);
+		}
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) { // 윈도우가 닫힘과 동시에
+		// TODO Auto-generated method stub
+		sr = null;
+		System.out.println(sr);
+		sm = null;
+		System.out.println(sm);
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) { // 윈도우가 닫힌다음에
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
 }
 
 class SellReviewAct extends JFrame {
-   String userID;
-   String sellerID;
-   int x;
-   int y;
+	String userID;
+	String sellerID;
+	int x;
+	int y;
 
-   public SellReviewAct(String userID, String sellerID, int x, int y) {
-      this.userID = userID;
-      this.sellerID = sellerID;
-      this.x = x;
-      this.y = y;
-      setLayout(null);
-      setBounds(x + 200, y, 800, 600);
+	public SellReviewAct(String userID, String sellerID, int x, int y) {
+		this.userID = userID;
+		this.sellerID = sellerID;
+		this.x = x;
+		this.y = y;
+		setLayout(null);
+		setBounds(x + 200, y, 800, 600);
 
-      JPanel showReviewP = new JPanel();
-      showReviewP.setLayout(null);
-      showReviewP.setBounds(0, 0, 800, 600);
-      JPanel showReviewP2 = new JPanel();
-      showReviewP2.setLayout(new GridLayout(ReviewDB.getREVIEW(sellerID).size(), 1));
+		JPanel showReviewP = new JPanel();
+		showReviewP.setLayout(null);
+		showReviewP.setBounds(0, 0, 800, 600);
+		JPanel showReviewP2 = new JPanel();
+		showReviewP2.setLayout(new GridLayout(ReviewDB.getREVIEW(sellerID).size(), 1));
 
-      ArrayList<String> nomComent = new ArrayList<String>();
-      ArrayList<Integer> nomPoint = new ArrayList<Integer>();
+		ArrayList<String> nomComent = new ArrayList<String>();
+		ArrayList<Integer> nomPoint = new ArrayList<Integer>();
 
-      for (Review rv : ReviewDB.getREVIEW(sellerID)) {
-         nomComent.add(rv.coment);
-         nomPoint.add(rv.point);
-      }
+		for (Review rv : ReviewDB.getREVIEW(sellerID)) {
+			nomComent.add(rv.coment);
+			nomPoint.add(rv.point);
+		}
 
-      String str = "";
-      int j = 0;
-      for (String comm : nomComent) {
-         str += comm + "\n평점 : [" + nomPoint.get(j) + "] " + "\n\n";
-         j++;
-      }
+		String str = "";
+		int j = 0;
+		for (String comm : nomComent) {
+			str += comm + "\n평점 : [" + nomPoint.get(j) + "] " + "\n\n";
+			j++;
+		}
 
-      JTextArea t1 = new JTextArea(str);
-      t1.setBounds(0, 0, 780, 560);
-      t1.setLineWrap(true);
-      t1.setFont(new Font("고딕", Font.BOLD, 15));
-      t1.setEditable(false);
+		JTextArea t1 = new JTextArea(str);
+		t1.setBounds(0, 0, 780, 560);
+		t1.setLineWrap(true);
+		t1.setFont(new Font("고딕", Font.BOLD, 15));
+		t1.setEditable(false);
 
-      JScrollPane scp = new JScrollPane(t1);
-      scp.setBounds(0, 0, 800, 600);
-      scp.setVisible(true);
+		JScrollPane scp = new JScrollPane(t1);
+		scp.setBounds(0, 0, 800, 600);
+		scp.setVisible(true);
 
-      showReviewP.add(t1);
-      add(showReviewP);
-      setVisible(true);
-   }
+		showReviewP.add(t1);
+		add(showReviewP);
+		setVisible(true);
+	}
 
 }
 
-class SelectMenuAct2 extends JFrame implements ActionListener { // 점술메뉴를 고른 후
-   String userID;
-   String sellerID;
-   int x;
-   int y;
-   int menuChoice;
-   SelectTime st;
-   SelectMenuAct2 me;
-   ArrayList<JToggleButton> btnTimeSeller;
-   String[] getMenu;
+class SelectMenuAct extends JFrame implements ActionListener, WindowListener { // 점술메뉴를 고른 후 창
+	String userID;
+	String sellerID;
+	int x;
+	int y;
+	int menuChoice;
+	SelectMenuAct me;
+	ArrayList<JToggleButton> btnTimeSeller;
+	String[] getMenu;
+	SelectMonth sm;
+	SelectDay sd;
+	SelectTime st;
+	String date;
+	ArrayList<JToggleButton> btnDay;
+	JButton btnMonthChange;
+	int selectCalDay;
+	int selectMon;
+	BtnResExe bre; // 시간까지다고르고 예약하기 버튼
+	String selectCalStr; // 고른날짜
+	int choiceTime; // 고른시간
+	DetailFrame df;
 
-   public SelectMenuAct2(String userID, String sellerID, int x, int y, int menuChoice, String[] getMenu) {
-      this.userID = userID;
-      this.sellerID = sellerID;
-      this.x = x;
-      this.y = y;
-      this.menuChoice = menuChoice;
-      this.getMenu = getMenu;
-      me = this;
+	static boolean chkInOut = true;
 
-      setLayout(null);
-      setBounds(x + 300, y, 500, 835);
+	public SelectMenuAct(String userID, String sellerID, int x, int y, int menuChoice, String[] getMenu,
+			DetailFrame df) {
+		this.userID = userID;
+		this.sellerID = sellerID;
+		this.x = x;
+		this.y = y;
+		this.menuChoice = menuChoice;
+		this.getMenu = getMenu;
+		me = this;
+		this.df = df;
 
-      add(new SelectDate(userID, sellerID, x, y));
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-      add(st = new SelectTime(userID, sellerID, x, y, menuChoice, sdf.format(new Date())));
+		setLayout(null);
+		setBounds(x + 300, y - 100, 825, 880);
 
-      setVisible(true);
-   }
+		JPanel jp = new JPanel();
+		jp.setLayout(new GridLayout(1, 7)); // 일월화수~
+		jp.setBounds(0, 230, 500, 70);
+		jp.setVisible(true);
 
-   class SelectDate extends JPanel implements ActionListener { // 날짜선택
+		Font font = new Font("고딕", Font.BOLD, 20);
+		for (int i = 0; i < 7; i++) {
+			JLabel ll = new JLabel();
+			String temp = Character.toString("일월화수목금토".charAt(i));
+			ll.setText(temp);
+			ll.setFont(font);
+			ll.setHorizontalAlignment(JLabel.CENTER);
+			if (i == 0)
+				ll.setForeground(Color.RED);
+			else if (i == 6)
+				ll.setForeground(Color.BLUE);
+			jp.add(ll);
+		}
 
-      String userID;
-      String sellerID;
-      int x;
-      int y;
-      String resDaySeller;
-      Date selectDay;
-      JComboBox<Integer> dateListSeller;
-      JButton btnSave;
-      String tempDate;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		this.date = sdf.format(new Date());
+		add(sm = new SelectMonth(userID, sellerID, x, y));
+		add(jp);
+		add(sd = new SelectDay(date));
 
-      public SelectDate(String userID, String sellerID, int x, int y) {
-         this.userID = userID;
-         this.sellerID = sellerID;
-         this.x = x;
-         this.y = y;
+		selectMon = Calendar.getInstance().get(Calendar.MONTH) + 1;
+		selectCalDay = Calendar.getInstance().get(Calendar.DATE);
+		add(st = new SelectTime(userID, sellerID, x, y, menuChoice, selectCalDay - 1));
+		add(bre = new BtnResExe());
+		addWindowListener(this);
 
-         setBounds(0, 0, 500, 50);
-         setLayout(null);
+		btnMonthChange.doClick();
+		setVisible(true);
+	}
 
-         Calendar todayC = Calendar.getInstance();
-         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-         String day = sdf.format(todayC.getTime()).substring(8, 10); // 오늘 날짜 01~31
-         tempDate = sdf.format(new Date());
+	class SelectMonth extends JPanel implements ActionListener { // 몇월인지 선택패널
 
-         JLabel lbl_year = new JLabel(todayC.get(Calendar.YEAR) + "년");
-         lbl_year.setBounds(30, 20, 70, 20);
-         JLabel lbl_month = new JLabel(((todayC.get(Calendar.MONTH)) + 1) + "월");
-         lbl_month.setBounds(90, 20, 30, 20);
+		String userID;
+		String sellerID;
+		int x;
+		int y;
+		JButton btnSave;
+		String tempDate;
+		Vector<Integer> monthList;
+		JComboBox<Integer> monthListSeller;
 
-         Vector<Integer> dayList = new Vector<Integer>();
-         for (int i = Integer.parseInt(day); i <= Integer.parseInt(day) + 2; i++) {
-            dayList.add(i);
-         }
-         dateListSeller = new JComboBox<Integer>(dayList);
-         dateListSeller.addActionListener(this);
-         dateListSeller.setBounds(140, 20, 80, 20);
+		public SelectMonth(String userID, String sellerID, int x, int y) {
+			this.userID = userID;
+			this.sellerID = sellerID;
+			this.x = x;
+			this.y = y;
 
-         JLabel lbl_date = new JLabel(" 일");
-         lbl_date.setBounds(220, 20, 20, 20);
+			setBounds(0, 0, 500, 200);
+			setLayout(null);
 
-         int rdaySeller = (int) dateListSeller.getSelectedItem(); // 일반사용자가 누른 예약날짜
-         resDaySeller = rdaySeller + ""; // string 캐스팅
+			Font font = new Font("고딕", Font.BOLD, 30);
+			Calendar today = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+			JLabel lblYear = new JLabel(sdf.format(today.getTime()) + " 년");
+			lblYear.setBounds(110, 80, 120, 30);
+			lblYear.setFont(font);
 
-         String aa = sdf.format(todayC.getTime());
+			sdf = new SimpleDateFormat("MM");
+			int monthChk = Integer.parseInt(sdf.format(today.getTime())); // 현재 월
 
-         btnSave = new JButton("예약하기");
-         btnSave.setBounds(340, 20, 100, 20);
-         btnSave.addActionListener(this);
+			monthList = new Vector<Integer>();
+			for (int i = monthChk; i <= 12; i++) {
+				monthList.add(i);
+			}
+			monthListSeller = new JComboBox<Integer>(monthList);
+			monthListSeller.addActionListener(this);
+			monthListSeller.setBounds(235, 70, 100, 40);
+			monthListSeller.addActionListener(this);
+			font = new Font("고딕", Font.BOLD, 25);
+			monthListSeller.setFont(font);
 
-         add(lbl_year);
-         add(lbl_month);
-         add(dateListSeller);
-         add(lbl_date);
-         add(btnSave);
-      }
+			JLabel lblMonth = new JLabel("월");
+			lblMonth.setBounds(360, 80, 60, 30);
+			font = new Font("고딕", Font.BOLD, 25);
+			lblMonth.setFont(font);
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
+			btnMonthChange = new JButton("변경");
+			btnMonthChange.setBounds(370, 35, 80, 30);
+			btnMonthChange.addActionListener(this);
+			btnMonthChange.setVisible(false);
 
-         if (e.getSource().equals(dateListSeller)) {
-            JComboBox<Integer> jc = (JComboBox<Integer>) e.getSource();
-            int a = (int) jc.getSelectedItem();
-            me.remove(st);
-            Date d1 = new Date();
-            d1.setDate(a);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            tempDate = sdf.format(d1);
-            me.add(st = new SelectTime(userID, sellerID, x, y, menuChoice, sdf.format(d1)));
-            me.revalidate();
-            me.repaint();
-         } else if (e.getSource().equals(btnSave)) { // 예약하기 버튼
-            new ChkFrame(userID, sellerID, x, y, btnTimeSeller, tempDate, getMenu, menuChoice, resDaySeller);
+			add(lblYear);
+			add(monthListSeller);
+			add(lblMonth);
+			add(btnMonthChange);
 
-         }
-      }
-   }
+			setVisible(true);
+		}
 
-   class SelectTime extends JPanel { // 시간선택
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// 여기서 바깥프레임 멤버변수로 바뀐 년도, 시간을
+			if (e.getSource().equals(monthListSeller)) {
+				selectMon = (int) monthListSeller.getSelectedItem(); // 몇월을 골랐는지
+				me.remove(sd);
+				me.add(sd = new SelectDay(date));
+				me.revalidate();
+				me.repaint();
+			} else {
+				selectMon = (int) monthListSeller.getSelectedItem();
+				me.remove(sd);
+				me.add(sd = new SelectDay(date));
+				me.revalidate();
+				me.repaint();
+			}
 
-      String userID;
-      String sellerID;
-      int x;
-      int y;
-      int menuChoice;
-      boolean chk = true;
+		}
 
-      public SelectTime(String userID, String sellerID, int x, int y, int menuChoice, String date) {
-         this.userID = userID;
-         this.sellerID = sellerID;
-         this.x = x;
-         this.y = y;
-         this.menuChoice = menuChoice;
+	}
 
-         setBounds(0, 50, 500, 750);
-         setLayout(new GridLayout(24, 0));
+	class SelectDay extends JPanel implements ActionListener { // 날짜선택패널
 
-         String[] schedule = null;
-         if (ScheduleDB.getScheduleDB(sellerID, date)[0] == null) {
-            chk = false;
-         } else {
-            schedule = ScheduleDB.getScheduleDB(sellerID, date);
-         }
+		String date;
 
-         btnTimeSeller = new ArrayList<JToggleButton>();
-         ButtonGroup bg = new ButtonGroup();
+		public SelectDay(String date) {
+			this.date = date;
 
-         for (int i = 0; i < 24; i++) {
-            if (chk) {
-               JToggleButton bb;
-               if (i < 9)
-                  bb = new JToggleButton("0" + i + " ~ " + "0" + (i + 1) + "시"); // 나중에 subString(0,2); 해서올려주면되려나
-               else
-                  bb = new JToggleButton(i + " ~ " + (i + 1) + "시");
+			setLayout(new GridLayout(5, 7));
+			setBounds(0, 300, 500, 400);
 
-               SimpleDateFormat sdf = new SimpleDateFormat("H");
-               SimpleDateFormat sdf2 = new SimpleDateFormat("d");
-               String a = sdf.format(new Date());
-               if (schedule[i].equals("false") || date.split("-")[2].equals(sdf2.format(new Date())) && (i <= Integer.parseInt(a))) {
-                  bb.setEnabled(false);
-                  bb.setText("예약불가");
-               } else if (schedule[i].equals(userID)) {
-                  bb.setEnabled(false);
-                  bb.setText("나의 예약시간" + " (" + MenuDB.getMENU(sellerID)[menuChoice] + ")");
-               }
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.MONTH, selectMon - 1);
 
-               bg.add(bb);
-               btnTimeSeller.add(bb);
-               add(btnTimeSeller.get(i));
-            } else {
-               JToggleButton bb;
-               bb = new JToggleButton("예약불가");
+			ButtonGroup bg = new ButtonGroup();
+			Font font = new Font("고딕", Font.BOLD, 20);
+			btnDay = new ArrayList<JToggleButton>();
+			for (int i = 1; i <= cal.getActualMaximum(Calendar.DATE); i++) {
+				cal.set(Calendar.DATE, i);
+				JToggleButton btn;
+				if (i == 1) {
+					for (int j = 1; j < cal.get(Calendar.DAY_OF_WEEK); j++) {
+						btn = new JToggleButton();
+						btn.setEnabled(false);
+						btn.setVisible(false);
+						add(btn);
+					}
+				}
+				btn = new JToggleButton(i + "");
+				btn.setFont(font);
+				btn.addActionListener(this);
+				bg.add(btn);
+				btnDay.add(btn);
+				add(btn);
+			}
+			setVisible(true);
+		}
 
-               bb.setEnabled(false);
-               btnTimeSeller.add(bb);
-               add(btnTimeSeller.get(i));
-            }
-         }
-         // 챗리스트
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (int i = 0; i < btnDay.size(); i++) {
+				if (btnDay.get(i).equals(e.getSource()))
+					selectCalDay = i;
+			}
 
-      }
-   }
+			me.remove(st);
+			me.add(st = new SelectTime(userID, sellerID, x, y, menuChoice, selectCalDay));
+			me.revalidate();
+			me.repaint();
+		}
+	}
 
-   @Override
-   public void actionPerformed(ActionEvent e) {
-      // TODO Auto-generated method stub
+	class SelectTime extends JPanel implements ActionListener { // 시간선택패널
 
-   }
+		String userID;
+		String sellerID;
+		int selectCalDay;
+		int x;
+		int y;
+		int menuChoice;
+		boolean chk = true;
+
+		public SelectTime(String userID, String sellerID, int x, int y, int menuChoice, int selectCalDay) {
+			this.userID = userID;
+			this.sellerID = sellerID;
+			this.x = x;
+			this.y = y;
+			this.menuChoice = menuChoice;
+			this.selectCalDay = selectCalDay; // 달력에서누른날짜
+			selectCalStr = (selectCalDay + 1) + ""; // +1 해야맞음
+
+//			setBounds(503, 93, 480, 750);
+			setBounds(503, 93, 300, 750);
+			setLayout(new GridLayout(24, 0));
+
+			SimpleDateFormat sss = new SimpleDateFormat("yyyy-MM-dd");
+			Date d = new Date();
+			d.setMonth(selectMon - 1);
+			d.setDate(selectCalDay + 1);
+
+			date = sss.format(d);
+
+			String[] schedule = null;
+			if (ScheduleDB.getScheduleDB(sellerID, date)[0] == null) {
+				chk = false;
+			} else {
+				schedule = ScheduleDB.getScheduleDB(sellerID, date);
+			}
+
+			btnTimeSeller = new ArrayList<JToggleButton>();
+			ButtonGroup bg = new ButtonGroup();
+
+			for (int i = 0; i < 24; i++) {
+				if (chk) { // 해당하는 날짜의 스케줄이 생성되어있을때
+					JToggleButton bb;
+					if (i < 9)
+						bb = new JToggleButton("0" + i + " ~ " + "0" + (i + 1) + "시");
+					else if (i == 9)
+						bb = new JToggleButton("0" + i + " ~ " + (i + 1) + "시");
+					else
+						bb = new JToggleButton(i + " ~ " + (i + 1) + "시");
+
+					SimpleDateFormat sdf = new SimpleDateFormat("HH");
+					SimpleDateFormat sdf2 = new SimpleDateFormat("dd");
+					String a = sdf.format(new Date());
+
+					if (schedule[i].equals("false")
+							|| (date.split("-")[2].equals(sdf2.format(new Date())) && (i <= Integer.parseInt(a)))) {
+						bb.setEnabled(false);
+						bb.setText("예약불가");
+					} else if (schedule[i].equals(userID)) {
+						bb.setEnabled(false);
+						bb.setText("나의 예약시간");
+					} else if (schedule[i] != null && !schedule[i].equals("true")) {
+						bb.setEnabled(false);
+						bb.setText("다른 고객 예약완료");
+					}
+					bg.add(bb);
+					bb.addActionListener(this);
+					btnTimeSeller.add(bb);
+					add(btnTimeSeller.get(i));
+				} else { // 해당스케줄이 생성되어있지않을때
+					JToggleButton bb;
+					bb = new JToggleButton("예약불가");
+					bb.addActionListener(this);
+					bb.setEnabled(false);
+					btnTimeSeller.add(bb);
+					add(btnTimeSeller.get(i));
+				}
+			}
+
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			for (int i = 0; i < btnTimeSeller.size(); i++) {
+				if (e.getSource().equals(btnTimeSeller.get(i)))
+					choiceTime = i;
+			}
+		}
+
+	}
+
+	class BtnResExe extends JButton implements ActionListener { // 예약하기 버튼
+
+		public BtnResExe() {
+			setLayout(null);
+			setBounds(590, 30, 120, 40);
+			setText("예약하기");
+			addActionListener(this);
+
+			setVisible(true);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			new ChkFrame(userID, sellerID, x, y, btnTimeSeller, selectMon, getMenu, menuChoice, selectCalStr, me,
+					btnDay);
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		df.sr = null;
+		df.sm = null;
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
 
 class ChkFrame extends JFrame implements ActionListener {
 
-   String userID;
-   String sellerID;
-   int x;
-   int y;
-   String tempDate;
-   ArrayList<JToggleButton> btnTimeSeller;
-   JLabel lbl;
-   JLabel lbl2;
-   JButton btnChkY;
-   JButton btnChkN;
-   int chkTog;
-   String[] getMenu;
-   int menuChoice;
-   String resDaySeller; // 예약날짜
+	String userID;
+	String sellerID;
+	int x;
+	int y;
+	int selectMon;
+	ArrayList<JToggleButton> btnTimeSeller;
+	JLabel lbl;
+	JLabel lbl2;
+	JButton btnChkY;
+	JButton btnChkN;
+	int chkTog;
+	String[] getMenu;
+	int menuChoice; // 고른메뉴
+	String selectCalStr; // 예약날짜
+	SelectMenuAct sm;
+	ArrayList<JToggleButton> btnDay;
 
-   public ChkFrame(String userID, String sellerID, int x, int y, ArrayList<JToggleButton> btnTimeSeller,
-         String tempDate, String[] getMenu, int menuChoice, String resDaySeller) {
-      this.userID = userID;
-      this.sellerID = sellerID;
-      this.x = x;
-      this.y = y;
-      this.tempDate = tempDate;
-      this.btnTimeSeller = btnTimeSeller;
-      this.getMenu = getMenu;
-      this.menuChoice = menuChoice;
-      this.resDaySeller = resDaySeller;
+	public ChkFrame(String userID, String sellerID, int x, int y, ArrayList<JToggleButton> btnTimeSeller, int selectMon,
+			String[] getMenu, int menuChoice, String selectCalStr, SelectMenuAct me, ArrayList<JToggleButton> btnDay) {
+		this.userID = userID;
+		this.sellerID = sellerID;
+		this.x = x;
+		this.y = y;
+		this.selectMon = selectMon; // 선택한월
+		this.btnTimeSeller = btnTimeSeller;
+		this.getMenu = getMenu;
+		this.menuChoice = menuChoice;
+		this.selectCalStr = selectCalStr; // 선택한 날짜
+		this.selectMon = selectMon;
+		this.sm = me;
+		this.btnDay = btnDay;
 
-      setLayout(null);
-      setBounds(x + 400, y, 400, 200);
-      chkTog = 0;
-      for (int i = 0; i < btnTimeSeller.size(); i++) {
-         if (btnTimeSeller.get(i).isSelected())
-            chkTog = i;
-      }
-      System.out.println(Arrays.deepToString(getMenu));
-      lbl = new JLabel("[" + tempDate + "]일     [" + chkTog + "]시     [" + getMenu[menuChoice].split(" ")[0]
-            + "]     예약하시겠습니까");
-      lbl.setBounds(30, 30, 350, 30);
-      lbl2 = new JLabel("[" + getMenu[menuChoice].split(" ")[1] + "] 코인 차감됩니다");
-      lbl2.setBounds(130, 70, 350, 30);
-      btnChkY = new JButton("예");
-      btnChkY.setBounds(100, 120, 50, 30);
-      btnChkY.addActionListener(this);
-      btnChkN = new JButton("아니오");
-      btnChkN.setBounds(200, 120, 80, 30);
-      btnChkN.addActionListener(this);
+		setLayout(null);
+		setBounds(x + 400, y, 400, 200);
+		chkTog = 0;
+		for (int i = 0; i < btnTimeSeller.size(); i++) {
+			if (btnTimeSeller.get(i).isSelected())
+				chkTog = i; // 선택한 시간
+		}
+		System.out.println(Arrays.deepToString(getMenu));
+		lbl = new JLabel("[" + selectMon + "]월    [" + selectCalStr + "]일     [" + chkTog + "]시     ["
+				+ getMenu[menuChoice].split(" ")[0] + "]     예약하시겠습니까");
+		lbl.setBounds(30, 30, 350, 30);
+		lbl2 = new JLabel("[" + getMenu[menuChoice].split(" ")[1] + "] 코인 차감됩니다");
+		lbl2.setBounds(130, 70, 350, 30);
+		btnChkY = new JButton("예");
+		btnChkY.setBounds(100, 120, 50, 30);
+		btnChkY.addActionListener(this);
+		btnChkN = new JButton("아니오");
+		btnChkN.setBounds(200, 120, 80, 30);
+		btnChkN.addActionListener(this);
 
-      add(lbl);
-      add(lbl2);
-      add(btnChkY);
-      add(btnChkN);
+		add(lbl);
+		add(lbl2);
+		add(btnChkY);
+		add(btnChkN);
 
-      setVisible(true);
-   }
+		setVisible(true);
+	}
 
-   @Override
-   public void actionPerformed(ActionEvent e) {
+	@Override
+	public void actionPerformed(ActionEvent e) {
 
-      if (e.getSource().equals(btnChkY)) {
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+		Date dd = new Date();
+		dd.setMonth(selectMon);
+		int dayy = Integer.parseInt(selectCalStr);
+		dd.setDate(dayy);
+		String dd2 = sdf2.format(dd);
 
-         if (UserDB.getCOIN(userID) < (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))) {
-            JOptionPane.showMessageDialog(null, "코인이 부족합니다");
-            setVisible(false);
-         } 
-         else {
+		String[] scheduleTemp = null;
+		scheduleTemp = ScheduleDB.getScheduleDB(sellerID, dd2);
 
-            String str = "2020-06-" + resDaySeller + " " + chkTog + ":00:00";
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-               // 채팅리스트 저장
-               ChatListDB.saveCHATLIST(sellerID, userID, sdf.parse(str), getMenu[menuChoice].split(" ")[0]);
-            } catch (ParseException e1) {
-               // TODO Auto-generated catch block
-               e1.printStackTrace();
-            }
-            
-            // 유저 코인차감
-            UserDB.setCOIN(userID,
-                  (UserDB.getCOIN(userID) - (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))));
-            // 점술가 코인증가
-            UserDB.setCOIN(sellerID,
-                  (UserDB.getCOIN(sellerID) + (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))));
-            // 예약 DB저장
-            System.out.println("time" + chkTog + "    " + tempDate);
-            ScheduleDB.setSchedule(sellerID, tempDate, "time" + chkTog, userID);
-            JOptionPane.showMessageDialog(null, "예약이 완료되었습니다");
-            setVisible(false);
-         }
-         
-      } 
-      else {
-         setVisible(false);
-      }
-      
-   }
+		if (e.getSource().equals(btnChkY)) { //// DB 쿼리문날릴때 where절 true만 처리
+
+			if (UserDB.getCOIN(userID) < (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))) {
+				JOptionPane.showMessageDialog(null, "코인이 부족합니다");
+				setVisible(false);
+			} else {
+				String str = Calendar.getInstance().get(Calendar.YEAR) + "-" + selectMon + "-" + selectCalStr + " "
+						+ chkTog + ":00:00";
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				try {
+					// 채팅리스트 저장
+					ChatListDB.saveCHATLIST(sellerID, userID, sdf.parse(str), getMenu[menuChoice].split(" ")[0]);
+					ReservationDB.saveRESERVATION(sellerID, userID, sdf.parse(str), getMenu[menuChoice].split(" ")[0]);
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				// 유저 코인차감
+				UserDB.setCOIN(userID,
+						(UserDB.getCOIN(userID) - (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))));
+				// 점술가 코인증가
+				UserDB.setCOIN(sellerID,
+						(UserDB.getCOIN(sellerID) + (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))));
+
+				// 예약 DB저장
+				int ss = Integer.parseInt(selectCalStr);
+				SimpleDateFormat sss = new SimpleDateFormat("yyyy-MM-dd");
+				Date d = new Date();
+				d.setMonth(selectMon - 1);
+				d.setDate(ss);
+				String date = sss.format(d);
+
+				int aa = Integer.parseInt(selectCalStr);
+				if (ScheduleDB.setSchedule(sellerID, date, "time" + chkTog, userID)) {
+					JOptionPane.showMessageDialog(null, "예약이 완료되었습니다");
+					btnDay.get(aa - 1).doClick();
+					sm.st.repaint();
+					setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(null, "예약실패");
+					btnDay.get(aa - 1).doClick();
+					sm.st.repaint();
+					setVisible(false);
+				}
+			}
+
+		} else if (e.getSource().equals(btnChkN)) {
+			setVisible(false);
+		} else {
+			JOptionPane.showMessageDialog(null, "이미 예약되었습니다. 다시 선택해주세요");
+			setVisible(false);
+		}
+
+	}
+
 }

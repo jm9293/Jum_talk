@@ -1,6 +1,5 @@
 package db_p;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -39,7 +38,7 @@ class normalUser {
 
 public class UserDB {
 
-   static final String host = "localhost";
+   static final String host = IP_Num.host;
 
    private static boolean creativeDBusers(int userkind, String id, String pw, String name, String gender,
          String birthYYYYMMDD, String phone, String email, String address, String cardnumber, String pwhint,
@@ -111,7 +110,6 @@ public class UserDB {
       boolean res = false;
       Connection con = null;
       Statement stmt = null;
-     
 
       try {
          Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -231,7 +229,7 @@ public class UserDB {
 
       return res;
    }
-   
+
    static ArrayList<normalUser> getNomUser() {
       ArrayList<normalUser> res = new ArrayList<normalUser>();
       Connection con = null;
@@ -365,10 +363,11 @@ public class UserDB {
    static String getGENDER(String userID) {
       return getDBString("GENDER", userID);
    }
-   
+
    static String getUSER_IP(String userID) {
-	  return getDBString("USER_IP", userID);
+      return getDBString("USER_IP", userID);
    }
+
    static int getCOIN(String userID) {
       return getDBInt("COIN", userID);
    }
@@ -444,124 +443,134 @@ public class UserDB {
    static boolean setFORTUNE_TIME(String userID, String setString) {
       return setDBString("FORTUNE_TIME", userID, setString);
    }
-   
+
    static boolean setUSER_IP(String userID, String setString) {
-	      return setDBString("USER_IP", userID, setString);
+      return setDBString("USER_IP", userID, setString);
    }
-   
+
+   static boolean setFORTUNE_NUM(String userID, int setInt) {
+      return setDBInt("FORTUNE_NUM", userID, setInt);
+   }
+
+   static int getFORTUNE_NUM(String userID) {
+      return getDBInt("FORTUNE_NUM", userID);
+   }
+
    static String searchID(String userNAME, String userPHONE) {
-	   
-	   String res = ""; //없으면 "" 리턴
 
-	      Connection con = null;
-	      Statement stmt = null;
-	      ResultSet rs = null;
+      String res = ""; // 없으면 "" 리턴
 
-	      try {
-	         Class.forName("oracle.jdbc.driver.OracleDriver");
+      Connection con = null;
+      Statement stmt = null;
+      ResultSet rs = null;
 
-	         con = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":1521:xe", "HR", "HR");
+      try {
+         Class.forName("oracle.jdbc.driver.OracleDriver");
 
-	         stmt = con.createStatement();
+         con = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":1521:xe", "HR", "HR");
 
-	         rs = stmt.executeQuery("select id from userdata where name= '" + userNAME + "' and phone= '" + userPHONE + "'");
+         stmt = con.createStatement();
 
-	         while (rs.next()) {
-	            res = rs.getString("id");
-	         }
+         rs = stmt.executeQuery(
+               "select id from userdata where name= '" + userNAME + "' and phone= '" + userPHONE + "'");
 
-	      } catch (Exception e) {
-	         e.printStackTrace();
-	      } finally {
-	         try {
-	            rs.close();
-	            stmt.close();
-	            con.close();
-	         } catch (Exception e2) {
-	            e2.printStackTrace();
-	         }
-	      }
+         while (rs.next()) {
+            res = rs.getString("id");
+         }
 
-	      return res;
-	   
+      } catch (Exception e) {
+         e.printStackTrace();
+      } finally {
+         try {
+            rs.close();
+            stmt.close();
+            con.close();
+         } catch (Exception e2) {
+            e2.printStackTrace();
+         }
+      }
+
+      return res;
+
    }
-   
-static String searchIP(String userIP) {
-	   
-	   String res = ""; //없으면 "" 리턴
 
-	      Connection con = null;
-	      Statement stmt = null;
-	      ResultSet rs = null;
+   static String searchIP(String userIP) {
 
-	      try {
-	         Class.forName("oracle.jdbc.driver.OracleDriver");
+      String res = ""; // 없으면 "" 리턴
 
-	         con = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":1521:xe", "HR", "HR");
+      Connection con = null;
+      Statement stmt = null;
+      ResultSet rs = null;
 
-	         stmt = con.createStatement();
+      try {
+         Class.forName("oracle.jdbc.driver.OracleDriver");
 
-	         rs = stmt.executeQuery("select id from userdata where USER_IP= '" + userIP + "'");
+         con = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":1521:xe", "HR", "HR");
 
-	         while (rs.next()) {
-	            res = rs.getString("id");
-	         }
+         stmt = con.createStatement();
 
-	      } catch (Exception e) {
-	         e.printStackTrace();
-	      } finally {
-	         try {
-	            rs.close();
-	            stmt.close();
-	            con.close();
-	         } catch (Exception e2) {
-	            e2.printStackTrace();
-	         }
-	      }
+         rs = stmt.executeQuery("select id from userdata where USER_IP= '" + userIP + "'");
 
-	      return res;
-	   
+         while (rs.next()) {
+            res = rs.getString("id");
+         }
+
+      } catch (Exception e) {
+         e.printStackTrace();
+      } finally {
+         try {
+            rs.close();
+            stmt.close();
+            con.close();
+         } catch (Exception e2) {
+            e2.printStackTrace();
+         }
+      }
+
+      return res;
+
    }
-   
+
    static String searchPW(String userID, String userPWHINT, String userPWRES) {
-	   
-	   String res = ""; //없으면 "" 리턴
 
-	      Connection con = null;
-	      Statement stmt = null;
-	      ResultSet rs = null;
+      String res = ""; // 없으면 "" 리턴
 
-	      try {
-	         Class.forName("oracle.jdbc.driver.OracleDriver");
+      Connection con = null;
+      Statement stmt = null;
+      ResultSet rs = null;
 
-	         con = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":1521:xe", "HR", "HR");
+      try {
+         Class.forName("oracle.jdbc.driver.OracleDriver");
 
-	         stmt = con.createStatement();
+         con = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":1521:xe", "HR", "HR");
 
-	         rs = stmt.executeQuery("select PW from userdata where ID= '" + userID + "' AND PWHINT= '" + userPWHINT + "' AND PWRES ='" + userPWRES+"'");
+         stmt = con.createStatement();
 
-	         while (rs.next()) {
-	            res = rs.getString("PW");
-	         }
+         rs = stmt.executeQuery("select PW from userdata where ID= '" + userID + "' AND PWHINT= '" + userPWHINT
+               + "' AND PWRES ='" + userPWRES + "'");
 
-	      } catch (Exception e) {
-	         e.printStackTrace();
-	      } finally {
-	         try {
-	            rs.close();
-	            stmt.close();
-	            con.close();
-	         } catch (Exception e2) {
-	            e2.printStackTrace();
-	         }
-	      }
+         while (rs.next()) {
+            res = rs.getString("PW");
+         }
 
-	      return res;
-	   
+      } catch (Exception e) {
+         e.printStackTrace();
+      } finally {
+         try {
+            rs.close();
+            stmt.close();
+            con.close();
+         } catch (Exception e2) {
+            e2.printStackTrace();
+         }
+      }
+
+      return res;
+
    }
 
    public static void main(String[] args) {
-	  
+
    }
 
 }

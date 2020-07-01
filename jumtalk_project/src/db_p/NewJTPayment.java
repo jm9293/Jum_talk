@@ -1,5 +1,6 @@
 package db_p;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -10,18 +11,23 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Vector;
+
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-
+import javax.swing.table.DefaultTableModel;
 
 
 class BuyerFrame extends JPanel implements ActionListener {
@@ -32,7 +38,7 @@ class BuyerFrame extends JPanel implements ActionListener {
    JLabel haveCoin;
 
    public BuyerFrame(String userID) {
-      this.userID =  userID;
+      this.userID = userID;
       
       setLayout(null);
       // 버튼 생성 및 버튼 그룹 만들기 - 패널 스위치용 버튼
@@ -57,11 +63,10 @@ class BuyerFrame extends JPanel implements ActionListener {
       // 두개의 패널 (이너클래스) 추가 //
       add(fortunepanel = new FortunePanel());
       add(chargepanel = new ChargePanel());
-
-      setVisible(true);
       
-   }
+      setVisible(true);
 
+   }
    // BuyerFrame ActionEvent
    @Override
    public void actionPerformed(ActionEvent e) {
@@ -74,7 +79,6 @@ class BuyerFrame extends JPanel implements ActionListener {
          chargepanel.setVisible(true);
       }
    }
-
    /// 오늘의 포춘 쿠키 패널 - 스윙 1번 패널
    class FortunePanel extends JPanel implements ActionListener {
 
@@ -85,7 +89,8 @@ class BuyerFrame extends JPanel implements ActionListener {
       ImageIcon beforeCK = new ImageIcon("icon\\aaa.png");
       ImageIcon afterCK = new ImageIcon("icon\\bbb.png");
       String time;
-
+      int portuneNUM = UserDB.getFORTUNE_NUM(userID);
+      String texttt = TodayFortuneDB.getFORTUNEMESSAGE(portuneNUM);
       // 현 시간 나타내는 메소드 - 오늘의 쿠키 클릭 시 필요 //
       String times() {
          Calendar cal = Calendar.getInstance();
@@ -112,22 +117,27 @@ class BuyerFrame extends JPanel implements ActionListener {
          clickResult = new JTextField();
          clickResult.setLayout(null);
          clickResult.setBounds(20, 400, 450, 30);
+         
          add(clickResult);
-         clickResult.disable();
+         clickResult.setEditable(false);
 
          // 하루 한번만 누를 수 있게 - 누른 시간이 그 날일 경우 버튼 비활성화
          if (UserDB.getFORTUNE_TIME(userID).equals(times())) {
             CKClickBT.setEnabled(false);
             CKClickBT.setIcon(afterCK);
          }
+         clickResult.setText(texttt);
+         
          setVisible(true);
       }
 
       @Override
       public void actionPerformed(ActionEvent e) {
+         UserDB.setFORTUNE_TIME(userID, times());
+         UserDB.setFORTUNE_NUM(userID, (int)(Math.random()*10+1));
 
          // 오늘의 쿠키 - 격언 정보 DB에서 받아오기
-         clickResult.setText(TodayFortuneDB.getFORTUNEMESSAGE((int) (Math.random() * 10 + 1)));
+         clickResult.setText(TodayFortuneDB.getFORTUNEMESSAGE(UserDB.getFORTUNE_NUM(userID)));
          // 클릭 후 버튼 이미지 바꾸기
          CKClickBT.setIcon(afterCK);
          // 클릭 후 코인 갯수 업데이트 -> 라벨 + DB
@@ -136,7 +146,6 @@ class BuyerFrame extends JPanel implements ActionListener {
          // 쿠키 버튼 클릭 후 비활겅화
          CKClickBT.setEnabled(false);
          // 버튼 클릭한 시간 DB로 보내기//
-         UserDB.setFORTUNE_TIME(userID, times());
          // 보너스 갯수 DB로 보내기 - 충전과 구분하기 위해 + 순수익 합산을 위한 보너스 쿠키 갯수 분류//
          MoneyLogDB.saveMONEYLOG(userID, bonus * 100, bonus, 2);
          // 클릭 후 보너스로 얻은 갯수 시각적으로 확인시키기
@@ -202,30 +211,50 @@ class BuyerFrame extends JPanel implements ActionListener {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-         int[] price = { 100, 200, 300, 500, 1000 };
-
          for (int i = 0; i < res.size(); i++) {
-            if (res.get(i).isSelected()) {
-               int coinnum = UserDB.getCOIN(userID) + price[i];
-               UserDB.setCOIN(userID, coinnum);
-               MoneyLogDB.saveMONEYLOG(userID, price[i] * 100, price[i], 0);
+            int[] price = { 100, 200, 300, 500, 1000 };
 
-               String[][] data = MoneyLogDB.getMONEYLOG(userID, 0);
-               String[] ListInfo = { "충전 금액", "충전한 코인 갯수", "시간" };
-               chargepanel.remove(MtoCPan);
-               MtoCList = new JTable(data, ListInfo);
-               MtoCPan = new JScrollPane(MtoCList);
-               MtoCPan.setBounds(15, 250, 450, 150);
-               chargepanel.add(MtoCPan);
-
-               chargepanel.repaint();
-
-               break;
-            }
          }
-         refresh();
 
-         JOptionPane.showMessageDialog(this, "입력하신 카드번호 " + UserDB.getCARDNUMBER(userID) + "로 결제되었습니다.");
+         Box box = Box.createHorizontalBox();
+         JLabel jl = new JLabel("비밀번호: ");
+         box.add(jl);
+         JPasswordField jpf = new JPasswordField(30);
+         box.add(jpf);
+         int button = JOptionPane.showConfirmDialog(null, box, "비밀번호를 입력하세요", JOptionPane.OK_CANCEL_OPTION);
+         char[] input = jpf.getPassword();
+
+         String pop = new String(input);
+         for (int i = 0; i < res.size(); i++) {
+            int[] price = { 100, 200, 300, 500, 1000 };
+            if (res.get(i).isSelected()) {
+
+               if (pop.equals(UserDB.getPW(userID))) {
+
+                  int coinnum = UserDB.getCOIN(userID) + price[i];
+                  UserDB.setCOIN(userID, coinnum);
+                  MoneyLogDB.saveMONEYLOG(userID, price[i] * 100, price[i], 0);
+                  String[][] data = MoneyLogDB.getMONEYLOG(userID, 0);
+                  String[] ListInfo = { "충전 금액", "충전한 코인 갯수", "시간" };
+                  chargepanel.remove(MtoCPan);
+                  MtoCList = new JTable(data, ListInfo);
+                  MtoCPan = new JScrollPane(MtoCList);
+                  MtoCPan.setBounds(15, 250, 450, 150);
+                  chargepanel.add(MtoCPan);
+                  chargepanel.repaint();
+                  JOptionPane.showMessageDialog(this,
+                        "입력하신 카드번호 " + UserDB.getCARDNUMBER(userID) + " 로 결제되었습니다.");
+
+                  refresh();
+                  break;
+
+               } else {
+                  JOptionPane.showMessageDialog(this, "비밀번호가 다릅니다");
+                  break;
+               }
+            }
+
+         }
       }
    }
 }
@@ -240,8 +269,8 @@ class SellerFrame extends JPanel implements ActionListener {
    int nowMyCoin;
 
    public SellerFrame(String userID) {
-      this.userID =  userID;
-      
+      this.userID = userID;
+      nowMyCoin = UserDB.getCOIN(userID);
       setLayout(null);
       // 점술가 본인이 얻은 코인의 수를 보여주는 패널 + 라벨
       JPanel nowHaveCoinPan = new JPanel();
@@ -251,8 +280,6 @@ class SellerFrame extends JPanel implements ActionListener {
       add(nowHaveCoinPan);
       haveCoinNumLB = new JLabel();
       haveCoinNumLB.setBounds(10, 50, 200, 100);
-      
-      nowMyCoin = UserDB.getCOIN(userID);
       haveCoinNumLB.setText("환전 가능한 코인 갯수 : " + nowMyCoin + "개");
       nowHaveCoinPan.add(haveCoinNumLB);
 
@@ -293,7 +320,7 @@ class SellerFrame extends JPanel implements ActionListener {
       }
 
       setVisible(true);
-   
+
    }
 
    void refresh() {
@@ -338,32 +365,249 @@ class SellerFrame extends JPanel implements ActionListener {
    }
 }
 
-class EditerFrame extends JPanel implements ActionListener {
+
+
+
+class NotEditTable extends DefaultTableModel {
+
+   public NotEditTable(final Object[][] rowData, final Object[] columnNames) {
+      super(rowData, columnNames);
+      // TODO Auto-generated constructor stub
+   }
+
+   public boolean isCellEditable(int row, int column) {
+      // TODO Auto-generated method stub
+      return false;
+   }
+}
+
+class panelOne extends JPanel {
+
+   public panelOne(String date, int statkind) {
+      setBounds(5, 100, 340, 200);
+      setLayout(new BorderLayout());
+      String[] ListInfo = { "ID", "충전 금액", "충전한 코인", "충전 시간" };
+      String[][] dataB = MoneyLogDB.getSTATSMONEYLOG(0, date, statkind);
+      JTable btc = new JTable(new NotEditTable(dataB, ListInfo));
+      JScrollPane buyerToCoin = new JScrollPane(btc);
+
+      btc.getColumn("ID").setPreferredWidth(70);
+      btc.getColumn("충전 금액").setPreferredWidth(70);
+      btc.getColumn("충전한 코인").setPreferredWidth(70);
+      btc.getColumn("충전 시간").setPreferredWidth(130);
+
+      add(buyerToCoin);
+
+      if (btc == null) {
+         btc = new JTable(new String[1][4], ListInfo);
+      }
+      setVisible(true);
+
+   }
+}
+
+class panelTwo extends JPanel {
+
+   public panelTwo(String date, int statkind) {
+      setBounds(5, 335, 340, 200);
+      setLayout(new BorderLayout());
+      String[] ListInfoS = { "ID", "환전 금액", "환전한 코인", "환전 시간" };
+      String[][] dataS = MoneyLogDB.getSTATSMONEYLOG(1, date, statkind); //// (x ,x , 0 ) <--0번이면 가공된 데이터
+
+      JTable stm = new JTable(new NotEditTable(dataS, ListInfoS));
+      JScrollPane sellToMoney = new JScrollPane(stm);
+
+      stm.getColumn("ID").setPreferredWidth(70);
+      stm.getColumn("환전 금액").setPreferredWidth(70);
+      stm.getColumn("환전한 코인").setPreferredWidth(70);
+      stm.getColumn("환전 시간").setPreferredWidth(130);
+      sellToMoney.setBounds(15, 320, 340, 200);
+
+      add(sellToMoney);
+      if (stm == null) {
+         stm = new JTable(new String[1][4], ListInfoS);
+      }
+
+      setVisible(true);
+   }
+}
+
+class Calenderpane extends JPanel implements ActionListener {
+   JComboBox boxM;
+   JComboBox boxD;
+   JComboBox boxY;
+   JButton conf;
+   EditerFrame ef;
+   DecimalFormat df = new DecimalFormat("###");
+   
+   public Calenderpane(EditerFrame ef) {
+      this.ef = ef;
+      setBounds(0, 10, 500, 50);
+      setLayout(null);
+      Calendar cal = Calendar.getInstance();
+
+      int[] y = { 2020, 2019, 2018 };
+      Vector yy = new Vector();
+      yy.add("전체");
+      for (int i = 0; i < y.length; i++) {
+         yy.add(y[i]);
+      }
+
+      Vector mm = new Vector();
+      mm.add("전체");
+      for (int i = 1; i <= 12; i++) {
+         mm.add(i);
+      }
+
+      Vector dd = new Vector();
+      dd.add("전체");
+      for (int i = 1; i <= 31; i++) {
+         dd.add(i);
+      }
+
+      boxY = new JComboBox(yy);
+      boxY.setSelectedItem(cal.get(Calendar.YEAR));
+      boxY.addActionListener(this);
+      boxM = new JComboBox(mm);
+      boxM.setSelectedItem(cal.get(Calendar.MONTH) + 1);
+      boxM.addActionListener(this);
+      boxD = new JComboBox(dd);
+      boxD.setSelectedItem(cal.get(Calendar.DATE));
+
+      boxY.setBounds(10, 20, 80, 30);
+      boxM.setBounds(130, 20, 80, 30);
+      boxD.setBounds(250, 20, 80, 30);
+      add(boxY);
+      add(boxM);
+      add(boxD);
+
+      conf = new JButton("검색");
+      conf.setBounds(380, 20, 80, 30);
+      conf.addActionListener(this);
+      add(conf);
+
+      JLabel ylb = new JLabel("년");
+      JLabel mlb = new JLabel("월");
+      JLabel dlb = new JLabel("일");
+      ylb.setBounds(100, 20, 30, 30);
+      mlb.setBounds(220, 20, 30, 30);
+      dlb.setBounds(340, 20, 30, 30);
+      add(ylb);
+      add(mlb);
+      add(dlb);
+
+   }
+
+   @Override
+   public void actionPerformed(ActionEvent e) {
+      if (e.getSource().equals(boxM)) {
+
+         if (boxM.getSelectedItem().equals("전체")) {
+            boxD.setSelectedItem("전체");
+            boxD.setEnabled(false);
+            return;
+         } else {
+            boxD.setSelectedItem("전체");
+            boxD.setEnabled(true);
+         }
+
+         int a = (int) boxM.getSelectedItem();
+         Calendar cal = Calendar.getInstance();
+         cal.set(Calendar.YEAR, (int) boxY.getSelectedItem());
+         cal.set(Calendar.DATE, 1);
+         cal.set(Calendar.MONTH, a - 1);
+         System.out.println(a);
+         Vector dd = new Vector();
+         dd.add("전체");
+
+         for (int i = 1; i <= cal.getActualMaximum(Calendar.DATE); i++) {
+            dd.add(i);
+         }
+         remove(boxD);
+         add(boxD = new JComboBox(dd));
+         boxD.setBounds(250, 20, 80, 30);
+         boxD.setSelectedItem("전체");
+         revalidate();
+         repaint();
+
+      } else if (e.getSource().equals(boxY)) {
+         if (boxY.getSelectedItem().equals("전체")) {
+            boxM.setSelectedItem("전체");
+            boxM.setEnabled(false);
+            boxD.setSelectedItem("전체");
+            boxD.setEnabled(false);
+         } else {
+            boxM.setSelectedItem("전체");
+            boxM.setEnabled(true);
+            boxD.setSelectedItem("전체");
+            boxD.setEnabled(false);
+         }
+      } else if (e.getSource().equals(conf)) {
+         System.out.println(boxY.getSelectedItem() + "-" + boxM.getSelectedItem() + "-" + boxD.getSelectedItem());
+         ef.remove(ef.kk);
+         ef.remove(ef.tt);
+         ef.add(ef.kk = new panelOne(
+               boxY.getSelectedItem() + "-" + boxM.getSelectedItem() + "-" + boxD.getSelectedItem(), 1));
+         ef.add(ef.tt = new panelTwo(
+               boxY.getSelectedItem() + "-" + boxM.getSelectedItem() + "-" + boxD.getSelectedItem(), 1));
+         ef.revalidate();
+         ef.repaint();
+         
+         
+         ef.totprice = 0;
+         String[][] dataB = MoneyLogDB.getSTATSMONEYLOG(0,
+               boxY.getSelectedItem() + "-" + boxM.getSelectedItem() + "-" + boxD.getSelectedItem(), 0);
+         for (int i = 0; i < dataB.length; i++) {
+            try {
+               ef.totprice += (long) df.parse(dataB[i][1]);
+            } catch (ParseException f) {
+               // TODO Auto-generated catch block
+               f.printStackTrace();
+            }
+         }
+         ef.totbonus = 0;
+         String[][] dataC = MoneyLogDB.getMONEYLOG(2);
+         for (int i = 0; i < dataC.length; i++) {
+            try {
+               ef.totbonus += (long) df.parse(dataC[i][1]);
+            } catch (ParseException f) {
+               // TODO Auto-generated catch block
+               f.printStackTrace();
+            }
+         }
+         ef.salesIn.setText(ef.totprice+"원");
+         ef.netIn.setText((int) (ef.totprice * 0.3 - ef.totbonus * 0.7) + " 원");
+
+      }
+
+   }
+}
+
+class EditerFrame extends JPanel implements ActionListener{
 
    String userID;
-   JTable btc, stm;
-   JScrollPane buyerToCoin, sellToMoney;
+   
    JLabel salesIn, netIn;
    int totprice = 0;
    int totbonus = 0;
-   String[] ListInfo = { "ID", "충전 금액", "충전한 코인 갯수", "시간" };
-   String[] ListInfoS = { "ID", "환전 금액", "환전한 코인 갯수", "시간" };
-
+   panelOne kk;
+   panelTwo tt;
+   Calenderpane cp;
+   DecimalFormat df = new DecimalFormat("###");
+   
    public EditerFrame(String userID) {
-      this.userID =  userID;
-      
+      setBounds(1020 + 0, 70, 500, 670);
       setLayout(null);
-      JButton ns = new JButton("새로고침");
-      DecimalFormat df = new DecimalFormat("###");
+
       JPanel salesPan = new JPanel();
       JPanel netgainPan = new JPanel();
       ArrayList<JLabel> jlb = new ArrayList<JLabel>();
 
       // JLabel 모음
       String[] labelName = { "COL", "MOL", "sales", "netgain" };
-      String[] labelText = { "코인 충전 구매자 리스트", "코인 환전 점술가 리스트", "매출액", "순수익(매출액 30% - 보너스 코인)" };
-      int[][] labelBounds = { { 30, 15, 220, 50 }, { 30, 220, 420, 50 }, { 30, 425, 200, 50 },
-            { 270, 425, 200, 50 } };
+      String[] labelText = { "코인 충전 구매자 리스트", "코인 환전 점술가 리스트", "매출액", "순수익" };
+      int[][] labelBounds = { { 30, 55, 220, 50 }, { 30, 295, 420, 50 }, { 30, 525, 200, 50 },
+            { 270, 525, 200, 50 } };
       for (int i = 0; i < labelName.length; i++) {
          jlb.add(new JLabel(labelName[i]));
          jlb.get(i).setBounds(labelBounds[i][0], labelBounds[i][1], labelBounds[i][2], labelBounds[i][3]);
@@ -371,34 +615,17 @@ class EditerFrame extends JPanel implements ActionListener {
          add(jlb.get(i));
       }
 
-      // 모든 충전자 리스트
-      String[][] dataB = MoneyLogDB.getMONEYLOG(0);
-      btc = new JTable(dataB, ListInfo);
-      buyerToCoin = new JScrollPane(btc);
-      buyerToCoin.setBounds(15, 70, 450, 150);
-      add(buyerToCoin);
-      if (btc == null) {
-         btc = new JTable(new String[1][4], ListInfo);
-      }
+      add(cp = new Calenderpane(this));
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-d");
+      add(kk = new panelOne(sdf.format(new Date()), 1));
+      add(tt = new panelTwo(sdf.format(new Date()), 1));
 
-      // 모든 환전자 리스트
-      String[][] dataS = MoneyLogDB.getMONEYLOG(1);
-      stm = new JTable(dataS, ListInfoS);
-      sellToMoney = new JScrollPane(stm);
-      sellToMoney.setBounds(15, 270, 450, 150);
-      add(sellToMoney);
-      if (stm == null) {
-         stm = new JTable(new String[1][4], ListInfo);
-      }
-
-      // 새로고침 버튼
-      ns.addActionListener(this);
-      ns.setBounds(260, 15, 100, 40);
-      add(ns);
+      String[][] dataB = MoneyLogDB.getSTATSMONEYLOG(0,
+            cp.boxY.getSelectedItem() + "-" + cp.boxM.getSelectedItem() + "-" + cp.boxD.getSelectedItem(), 0);
 
       // 총 매출 금액 -- 모든 소비자들의 충전 금액(원) ++
       salesIn = new JLabel();
-      salesIn.setBounds(50, 25, 140, 50);
+      salesIn.setBounds(20, 0, 140, 50);
       for (int i = 0; i < dataB.length; i++) {
          try {
             totprice += (long) df.parse(dataB[i][1]);
@@ -412,10 +639,21 @@ class EditerFrame extends JPanel implements ActionListener {
       // 총 매출 금액 패널 - (금액)
       salesPan.setLayout(null);
       salesPan.add(salesIn);
-      salesPan.setBounds(30, 485, 200, 100);
+      salesPan.setBounds(30, 570, 100, 50);
       salesPan.setBackground(Color.LIGHT_GRAY);
       add(salesPan);
-
+      
+      // 총 순수익 금액 --> (총 매출 *30%) - (보너스 코인 금액*70%) (원) ++
+      netIn = new JLabel();
+      netIn.setBounds(20, 0, 140, 50);
+      netIn.setText((int) (totprice * 0.3 - totbonus * 0.7) + " 원");
+      // 총 순수익 금액 패널
+      netgainPan.setLayout(null);
+      netgainPan.add(netIn);
+      netgainPan.setBounds(260, 570, 100, 50);
+      netgainPan.setBackground(Color.LIGHT_GRAY);
+      add(netgainPan);
+      
       // 총 보너스 갯수 구하기 - 순수익 때 필요
       String[][] dataC = MoneyLogDB.getMONEYLOG(2);
       for (int i = 0; i < dataC.length; i++) {
@@ -427,17 +665,23 @@ class EditerFrame extends JPanel implements ActionListener {
          }
       }
 
-      // 총 순수익 금액 --> (총 매출 *30%) - (보너스 코인 금액*70%) (원) ++
-      netIn = new JLabel();
-      netIn.setBounds(50, 25, 140, 50);
-      netIn.setText((int) (totprice * 0.3 - totbonus * 0.7) + " 원");
-
-      // 총 순수익 금액 패널
-      netgainPan.setLayout(null);
-      netgainPan.add(netIn);
-      netgainPan.setBounds(260, 485, 200, 100);
-      netgainPan.setBackground(Color.LIGHT_GRAY);
-      add(netgainPan);
+      JButton chargeTot = new JButton("충전총합계");
+      chargeTot.addActionListener(this);
+      chargeTot.setBounds(360, 100, 100, 40);
+      add(chargeTot);
+      JButton monthCharge = new JButton("충전 순위");
+      monthCharge.addActionListener(this);
+      monthCharge.setBounds(360, 160, 100, 40);
+      add(monthCharge);
+      JButton sellerList = new JButton("환전총합계");
+      sellerList.addActionListener(this);
+      sellerList.setBounds(360, 335, 100, 40);
+      add(sellerList);
+      JButton momthseller = new JButton("환전 순위");
+      momthseller.addActionListener(this);
+      momthseller.setBounds(360, 395, 100, 40);
+      add(momthseller);
+      
 
       setVisible(true);
       
@@ -450,59 +694,36 @@ class EditerFrame extends JPanel implements ActionListener {
 
    @Override
    public void actionPerformed(ActionEvent e) {
-
-      JButton bt = (JButton) e.getSource();
-      String[][] dataB = MoneyLogDB.getMONEYLOG(0);
-      String[][] dataS = MoneyLogDB.getMONEYLOG(1);
-
-      // 새로고침 버튼 누르면 업데이트
-      if (bt.getText().equals("새로고침")) {
-         // 충전 해준 코인들 총합 + 리스트
-         remove(buyerToCoin);
-         btc = new JTable(dataB, ListInfo);
-         btc.setLayout(null);
-         buyerToCoin = new JScrollPane(btc);
-         buyerToCoin.setBounds(15, 70, 450, 150);
-         add(buyerToCoin);
-         buyerToCoin.repaint();
-
-         // 환전 해준 코인들 총합 + 리스트
-         remove(sellToMoney);
-         stm = new JTable(dataS, ListInfoS);
-         sellToMoney = new JScrollPane(stm);
-         totprice = 0;
-         DecimalFormat df = new DecimalFormat("###");
-         for (int i = 0; i < dataB.length; i++) {
-            try {
-               totprice += (long) df.parse(dataB[i][1]);
-            } catch (ParseException f) {
-               // TODO Auto-generated catch block
-               f.printStackTrace();
-            }
-         }
-
-         // 보너스로 받은 코인들 총합 + 리스트
-         String[][] dataC = MoneyLogDB.getMONEYLOG(2);
-         for (int i = 0; i < dataC.length; i++) {
-            try {
-               totbonus += (long) df.parse(dataC[i][1]);
-            } catch (ParseException f) {
-               // TODO Auto-generated catch block
-               f.printStackTrace();
-            }
-         }
-         sellToMoney.setBounds(15, 270, 450, 150);
-         add(sellToMoney);
-         sellToMoney.repaint();
-         salesIn.setText(totprice + "원");
-         netIn.setText((int) (totprice * 0.3 - totbonus * 0.7) + " 원");
-         repaint();
-         revalidate();
+      //getSource 는 주소를 갖고옴
+      JButton b = (JButton) e.getSource();
+      
+      if(b.getText().equals("충전총합계")) {
+         remove(kk);
+         add(kk = new panelOne(
+               cp.boxY.getSelectedItem() + "-" + cp.boxM.getSelectedItem() + "-" + cp.boxD.getSelectedItem(),
+               1));
+      }else if(b.getText().equals("충전 순위")) {
+         remove(kk);
+         add(kk = new panelOne(
+               cp.boxY.getSelectedItem() + "-" + cp.boxM.getSelectedItem() + "-" + cp.boxD.getSelectedItem(),
+               0));
+      }else if(b.getText().equals("환전총합계")) {
+         remove(tt);
+         add(tt = new panelTwo(
+               cp.boxY.getSelectedItem() + "-" + cp.boxM.getSelectedItem() + "-" + cp.boxD.getSelectedItem(),
+               1));
+      }else if(b.getText().equals("환전 순위")) {
+         remove(tt);
+         add(tt = new panelTwo(
+               cp.boxY.getSelectedItem() + "-" + cp.boxM.getSelectedItem() + "-" + cp.boxD.getSelectedItem(),
+               0));
       }
+      
+      revalidate();
+      repaint();
    }
 }
 
 public class NewJTPayment {
-
 
 }

@@ -9,6 +9,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -43,7 +45,7 @@ import java.util.regex.Pattern;
 
 
 
-public class User_Chat_Connect extends JFrame implements ActionListener { // Ã¤ÆÃ¹æ ÀÔÀå ´©¸£¸é ¶ß´Â ÇÁ·¹ÀÓ(´ëÈ­Ã¢)
+public class User_Chat_Connect extends JFrame implements ActionListener, WindowListener { // Ã¤ÆÃ¹æ ÀÔÀå ´©¸£¸é ¶ß´Â ÇÁ·¹ÀÓ(´ëÈ­Ã¢)
 
   
    ChatRecord cr; // Ã¤ÆÃ ´ëÈ­ ±â·Ï ¶ß°Ô ÇÏ´Â ÆÐ³ÎÅ¬·¡½º
@@ -52,7 +54,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener { // Ã¤Æ
    String msg; // ¸Þ¼¼Áö
    SingleSender ss; // ½Ì±Û¼¾ÅÍ
    SingleReciever sr; // ½Ì±Û¸®½Ã¹ö
-   String ipadd = "192.168.1.208"; // ipÀûÈù
+   String ipadd = IP_Num.host; // ipÀûÈù
    int portnum = 7777; // Æ÷Æ®³Ñ¹ö
    Dimension size2; // chatrecord(Ã¤ÆÃ´ëÈ­ ±â·Ï ¶ß°ÔÇÏ´ÂÆÐ³Î Å¬·¡½º) »çÀÌÁî Àâ±â
    Timer timerTH; // ³²Àº ½Ã°£ ¾Ë·ÁÁÖ´Â ½º·¹µå»ó¼Ó Å¬·¡½º
@@ -68,6 +70,9 @@ public class User_Chat_Connect extends JFrame implements ActionListener { // Ã¤Æ
    Content content = null;
    JButton sendB;  //Àü¼Û¹öÆ°
    int kind;   //0 ¼Õ´Ô 1 Á¡¼ú°¡ 2°ü¸®ÀÚ
+   Date chatdate;
+   User_Chat_Connect ucc;
+   User_Chat_List ucl;
 
    class ChatRecord extends JScrollPane { // Ã¤ÆÃ ´ëÈ­ ±â·Ï ¶ß´Â°÷
 
@@ -357,13 +362,14 @@ public class User_Chat_Connect extends JFrame implements ActionListener { // Ã¤Æ
          chatout();
       }
    }
-   Date chatdate;
-   public User_Chat_Connect(int kind, String user1, String user2, Date chatdate) {
-
+   
+   public User_Chat_Connect(int kind, String user1, String user2, Date chatdate, User_Chat_List ucl) {
+	   System.out.println(user1+" , "+user2);
      this.kind = kind;
      this.userID = user1;
      this.sellID = user2;
      this.chatdate = chatdate;
+     this.ucl = ucl;
      
       setBounds(700, 300, 515, 800);
       setLayout(null);
@@ -427,6 +433,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener { // Ã¤Æ
       exit.addActionListener(this);
       cw.add(exit);
 
+      addWindowListener(this);
       setVisible(true);
       setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -502,43 +509,45 @@ public class User_Chat_Connect extends JFrame implements ActionListener { // Ã¤Æ
       setVisible(false);
       
 
-
-      review = new JFrame("¸®ºä¾²±â");
-      review.getContentPane().setBackground(new Color(255, 254, 215));
-      review.setBounds(250, 210, 600, 800);
-      review.setLayout(null);
-
-      JLabel reviewTitle = new JLabel("¸®ºä¾²±â");
-      reviewTitle.setBounds(250, 10, 100, 50);
-
-      reviewWrite = new JTextArea();   //¸®ºä¾²´Â(±Û¾¾)°÷
-      reviewWrite.setLineWrap(true);
-
-      JScrollPane reviewWriteJP = new JScrollPane(reviewWrite);
-      reviewWriteJP.setBounds(20, 80, 540, 400);
-
-      String[] radio = { "1Á¡", "2Á¡", "3Á¡", "4Á¡", "5Á¡" };
-      ButtonGroup allgrade = new ButtonGroup();
-      score = new JRadioButton[5];
-
-      int cnt = 0;
-      for (int i = 0; i < score.length; i++) {
-         score[i] = new JRadioButton(radio[i]);
-         score[i].setBounds(85 + cnt, 570, 50, 30);
-         allgrade.add(score[i]);
-         review.add(score[i]);
-         cnt += 90;
+      if(kind==0) {
+    	  
+    	  review = new JFrame("¸®ºä¾²±â");
+    	  review.getContentPane().setBackground(new Color(255, 254, 215));
+    	  review.setBounds(250, 210, 600, 800);
+    	  review.setLayout(null);
+    	  
+    	  JLabel reviewTitle = new JLabel("¸®ºä¾²±â");
+    	  reviewTitle.setBounds(250, 10, 100, 50);
+    	  
+    	  reviewWrite = new JTextArea();   //¸®ºä¾²´Â(±Û¾¾)°÷
+    	  reviewWrite.setLineWrap(true);
+    	  
+    	  JScrollPane reviewWriteJP = new JScrollPane(reviewWrite);
+    	  reviewWriteJP.setBounds(20, 80, 540, 400);
+    	  
+    	  String[] radio = { "1Á¡", "2Á¡", "3Á¡", "4Á¡", "5Á¡" };
+    	  ButtonGroup allgrade = new ButtonGroup();
+    	  score = new JRadioButton[5];
+    	  
+    	  int cnt = 0;
+    	  for (int i = 0; i < score.length; i++) {
+    		  score[i] = new JRadioButton(radio[i]);
+    		  score[i].setBounds(85 + cnt, 570, 50, 30);
+    		  allgrade.add(score[i]);
+    		  review.add(score[i]);
+    		  cnt += 90;
+    	  }
+    	  
+    	  JButton up = new JButton("¿Ã¸®±â");
+    	  up.setName("¿Ã¸®±â");
+    	  up.setBounds(250, 650, 100, 50);
+    	  up.addActionListener(this);
+    	  
+    	  review.add(up);
+    	  review.add(reviewTitle);
+    	  review.add(reviewWriteJP);
+    	  review.setVisible(true);
       }
-
-      JButton up = new JButton("¿Ã¸®±â");
-      up.setName("¿Ã¸®±â");
-      up.setBounds(250, 650, 100, 50);
-      up.addActionListener(this);
-
-      review.add(up);
-      review.add(reviewTitle);
-      review.add(reviewWriteJP);
-      review.setVisible(true);
 
    }
 
@@ -725,5 +734,48 @@ public class User_Chat_Connect extends JFrame implements ActionListener { // Ã¤Æ
       }
 
    }
+
+@Override
+public void windowOpened(WindowEvent e) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void windowClosing(WindowEvent e) {
+	ucl.ucc = null;
+	System.out.println(ucl.ucc==null);
+	
+}
+
+@Override
+public void windowClosed(WindowEvent e) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void windowIconified(WindowEvent e) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void windowDeiconified(WindowEvent e) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void windowActivated(WindowEvent e) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void windowDeactivated(WindowEvent e) {
+	// TODO Auto-generated method stub
+	
+}
 
 }
