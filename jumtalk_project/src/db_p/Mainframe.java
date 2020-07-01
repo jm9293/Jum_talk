@@ -5,6 +5,9 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -27,7 +30,7 @@ import javax.swing.UIManager;
 
 
 
-public class Mainframe extends JFrame implements ActionListener{
+public class Mainframe extends JFrame implements ActionListener, WindowListener{
    
 	String userID;
 	JPanel catePanel;
@@ -74,7 +77,7 @@ public class Mainframe extends JFrame implements ActionListener{
       jb2.addActionListener(this);
       jb3.addActionListener(this);
       jb4.addActionListener(this);
-      
+      addWindowListener(this);
       add(cate);
       catePanel = new JPanel(); // 첫번째 탭
       catePanel.setBounds(0, 90, 500, 670);
@@ -161,7 +164,8 @@ public class Mainframe extends JFrame implements ActionListener{
 			}else if(jb.getText().equals("채팅")){
 				remove(catePanel);
 				add(catePanel = new JPanel());
-				catePanel.add(new User_Chat_List(userID));
+				User_Chat_List ucl = new User_Chat_List(userID);
+				catePanel.add(ucl);
 				catePanel.setBounds(0, 90, 500, 670);
 				revalidate();
 				repaint();
@@ -190,8 +194,8 @@ public class Mainframe extends JFrame implements ActionListener{
 			}else if(jb.getText().equals("채팅")){
 				remove(catePanel);
 				add(catePanel = new JPanel());
-				catePanel.setLayout(null);
-				catePanel.add(new User_Chat_List(userID));
+				User_Chat_List ucl = new User_Chat_List(userID);
+				catePanel.add(ucl);
 				catePanel.setBounds(0, 90, 500, 670);
 				revalidate();
 				repaint();
@@ -226,6 +230,54 @@ public class Mainframe extends JFrame implements ActionListener{
 				repaint();
 			}
 		}
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		try {
+			ProfileInOut.getprofileInout().ois.close();
+			ProfileInOut.getprofileInout().oos.close();
+		} catch (IOException e1) {
+			// TODO 자동 생성된 catch 블록
+			e1.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
 		
 	}
 	   

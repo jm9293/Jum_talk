@@ -40,7 +40,6 @@ import javax.xml.crypto.Data;
 class SellerReviseInfor2 extends JFrame
 implements ActionListener, WindowListener { // Á¡¼ú°¡ Á¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ (¼ÒºñÀÚ ¼öÁ¤ ÇÁ·¹ÀÓ »ó¼Ó)
 
-	SellerReviseInfor2 me = this;
 	
 	JLabel profile; // »ó¼¼Á¤º¸
 	JLabel photo; // »çÁø
@@ -60,7 +59,7 @@ implements ActionListener, WindowListener { // Á¡¼ú°¡ Á¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ (¼ÒºñÀÚ ¼
 	JLabel workplaceAddress; // Á¡¼ú°¡ »ç¾÷Àå ÁÖ¼Ò
 	ArrayList<JLabel> information; // °³ÀÎÁ¤º¸ ¸®½ºÆ®
 	JButton reviseGo; // °³ÀÎÁ¤º¸ ¼öÁ¤ ¿Ï·á ¹öÆ°
-	JButton back; // °³ÀÎÁ¤º¸ ¼öÁ¤ ³ª°¡±â ¹öÆ°
+	
 	JButton photoButton;
 
 	JLabel photoFileName;
@@ -83,11 +82,11 @@ implements ActionListener, WindowListener { // Á¡¼ú°¡ Á¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ (¼ÒºñÀÚ ¼
 	String userID;
 	ProfileInOut pfio = ProfileInOut.getprofileInout();
 	
-
-	public SellerReviseInfor2(String userID) { // Á¤º¸¼öÁ¤ »ý¼ºÀÚ
+	OptionPanel optionPanel;
+	public SellerReviseInfor2(String userID, OptionPanel optionPanel) { // Á¤º¸¼öÁ¤ »ý¼ºÀÚ
 		this.userID = userID;
 		setTitle("°³ÀÎÁ¤º¸ ¼öÁ¤"); // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ Å¸ÀÌÆ²
-
+		this.optionPanel = optionPanel;
 		setBounds(700, 0, 600, 900);
 		setLayout(null);
 		addWindowListener(this);
@@ -184,10 +183,10 @@ implements ActionListener, WindowListener { // Á¡¼ú°¡ Á¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ (¼ÒºñÀÚ ¼
 		// ¼öÁ¤¿Ï·á ¹öÆ°
 		reviseGo = new JButton("¼öÁ¤ ¿Ï·á");
 		// °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ ³ª°¡±â ¹öÆ°
-		back = new JButton("³ª°¡±â");
+
 
 		reviseGo.setBounds(470, 10, 100, 40);
-		back.setBounds(10, 10, 100, 40);
+
 
 		photoFileName.setBounds(130, 10, 100, 100);
 		photoButton.setBounds(330, 60, 100, 50);
@@ -217,7 +216,7 @@ implements ActionListener, WindowListener { // Á¡¼ú°¡ Á¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ (¼ÒºñÀÚ ¼
 		pwChk.setBounds(10, 300, 100, 50);
 
 		reviseGo.addActionListener(this); // ¼öÁ¤¿Ï·á ¹öÆ°
-		back.addActionListener(this); // ³ª°¡±â ¹öÆ°
+
 
 		System.out.println(UserDB.getBANKNUMBER(userID));
 
@@ -235,7 +234,7 @@ implements ActionListener, WindowListener { // Á¡¼ú°¡ Á¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ (¼ÒºñÀÚ ¼
 		workAddressText.setText(UserDB.getBUSINESSADDRESS(userID));
 
 		add(reviseGo); // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡ ¼öÁ¤¿Ï·á ¹öÆ° Ãß°¡
-		add(back); // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡ ³ª°¡±â ¹öÆ° Ãß°¡
+
 		add(nowPw);
 		add(pwChk);
 
@@ -271,11 +270,7 @@ implements ActionListener, WindowListener { // Á¡¼ú°¡ Á¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ (¼ÒºñÀÚ ¼
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(back)) { // °³ÀÎÁ¤º¸¼öÁ¤ ÇÁ·¹ÀÓ¿¡¼­ ³ª°¡±â ¹öÆ° Å¬¸¯
-			// °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ »ç¶óÁö±â
-//			setVisible(false);
-			dispose();
-		} else if (e.getSource().equals(reviseGo)) { // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡¼­ ¿Ï·á ¹öÆ° Å¬¸¯
+			if (e.getSource().equals(reviseGo)) { // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡¼­ ¿Ï·á ¹öÆ° Å¬¸¯
 			// ¼öÁ¤¿Ï·á ÆË¾÷ ¶ç¿îÈÄ ÇÁ·¹ÀÓ »ç¶óÁö±â
 			System.out.println("µé¾î¿À´Ï");
 
@@ -331,7 +326,7 @@ implements ActionListener, WindowListener { // Á¡¼ú°¡ Á¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ (¼ÒºñÀÚ ¼
 					System.out.println(workAddressText.getText() + userID);
 					UserDB.setBUSINESSADDRESS(userID, workAddressText.getText());
 				}
-
+				optionPanel.ri =null;
 //				setVisible(false);
 				dispose();
 			}
@@ -367,8 +362,8 @@ implements ActionListener, WindowListener { // Á¡¼ú°¡ Á¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ (¼ÒºñÀÚ ¼
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		
-		me = null;
+		optionPanel.ri =null;
+
 	}
 
 	@Override
@@ -522,14 +517,14 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 				}
 			} else {
 				if(ri == null) {
-				ri = new SellerReviseInfor2(userID);
+				ri = new SellerReviseInfor2(userID, this);
 				}
 			}
 		}
 
 	}
 
-	class ReviseInfor extends JFrame implements ActionListener { // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ
+	class ReviseInfor extends JFrame implements ActionListener , WindowListener{ // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ
 
 		JLabel profile; // »ó¼¼Á¤º¸
 		JLabel photo; // »çÁø
@@ -543,7 +538,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 		JLabel hintAnswer; // ºñ¹Ð¹øÈ£ ÈùÆ® ´ä
 		ArrayList<JLabel> information; // °³ÀÎÁ¤º¸ ¸®½ºÆ®
 		JButton reviseGo; // °³ÀÎÁ¤º¸ ¼öÁ¤ ¿Ï·á ¹öÆ°
-		JButton back; // °³ÀÎÁ¤º¸ ¼öÁ¤ ³ª°¡±â ¹öÆ°
+		
 		JButton photoButton;
 		JLabel photoFileName;
 		JLabel nowPw;
@@ -570,9 +565,9 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 			setTitle("°³ÀÎÁ¤º¸ ¼öÁ¤"); // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ Å¸ÀÌÆ²
 
-			setBounds(700, 100, 600, 900);
+			setBounds(700, 100, 500, 870);
 			setLayout(null);
-
+			addWindowListener(this);
 			// °³ÀÎÁ¤º¸ ¶óº§ »ý¼º
 			profile = new JLabel("»ó¼¼ ÇÁ·ÎÇÊ");
 			photo = new JLabel("»çÁø ¼öÁ¤");
@@ -658,10 +653,10 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			// ¼öÁ¤¿Ï·á ¹öÆ°
 			reviseGo = new JButton("¼öÁ¤ ¿Ï·á");
 			// °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ ³ª°¡±â ¹öÆ°
-			back = new JButton("³ª°¡±â");
+		
 
 			reviseGo.setBounds(370, 10, 100, 40);
-			back.setBounds(10, 10, 100, 40);
+		
 			pwhint.setBounds(130, 700, 300, 50);
 
 			photoFileName.setBounds(100, 60, 200, 100);
@@ -688,7 +683,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			pwChk.setBounds(10, 400, 100, 50);
 
 			reviseGo.addActionListener(this); // ¼öÁ¤¿Ï·á ¹öÆ°
-			back.addActionListener(this); // ³ª°¡±â ¹öÆ°
+
 			photoButton.addActionListener(this);
 
 			helloText.setText(UserDB.getPROFILE_TEXT(userID));
@@ -703,7 +698,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			pwhint.setSelectedItem(UserDB.getPWHINT(userID));
 
 			add(reviseGo); // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡ ¼öÁ¤¿Ï·á ¹öÆ° Ãß°¡
-			add(back); // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡ ³ª°¡±â ¹öÆ° Ãß°¡
+
 //			add(passWordHint_S);
 			add(nowPw);
 			add(pwChk);
@@ -735,11 +730,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (e.getSource().equals(back)) { // °³ÀÎÁ¤º¸¼öÁ¤ ÇÁ·¹ÀÓ¿¡¼­ ³ª°¡±â ¹öÆ° Å¬¸¯
-				// °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ »ç¶óÁö±â
-//				setVisible(false);
-				dispose();
-			} else if (e.getSource().equals(reviseGo)) { // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡¼­ ¿Ï·á ¹öÆ° Å¬¸¯
+			if (e.getSource().equals(reviseGo)) { // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡¼­ ¿Ï·á ¹öÆ° Å¬¸¯
 				// ¼öÁ¤¿Ï·á ÆË¾÷ ¶ç¿îÈÄ ÇÁ·¹ÀÓ »ç¶óÁö±â
 
 				boolean pwhintChk = pwhint.getSelectedIndex() == 0;
@@ -774,6 +765,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 						UserDB.setPWRES(userID, hintAnswerText.getText());
 					}
 //					setVisible(false);
+					ri=null;
 					dispose();
 				}
 
@@ -797,6 +789,48 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 				}
 			}
 
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			ri = null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
 		}
 
 	}
@@ -861,32 +895,43 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 					JOptionPane.showMessageDialog(null, "¸Þ¼¼Áö¸¦ ÀÔ·ÂÇÏ¼¼¿ä");
 				}
 			} else if (e.getSource().equals(msgButton.get(1))) { // º¸³½ ¸Þ¼¼ÁöÇÔ ¹öÆ° Å¬¸¯ ÇßÀ» ¶§
-				sendMessage = new SendMessage();
+				if(sendMessage==null) {
+					sendMessage = new SendMessage(this);
+					if(!sendMessage.chk) {
+						sendMessage = null;
+					}
+				}
 			} else if (e.getSource().equals(msgButton.get(2))) { // ¹ÞÀº ¸Þ¼¼ÁöÇÔ ¹öÆ° Å¬¸¯ ÇßÀ» ¶§
-				giveMessage = new GiveMessage();
+				if(giveMessage==null) {
+					giveMessage = new GiveMessage(this);
+					if(!giveMessage.chk) {
+						giveMessage = null;
+					}
+				}
 			}
 
 		}
 
 	}
-
-	class SendMessage extends JFrame implements ActionListener, MouseListener { // º¸³½¸Þ¼¼ÁöÇÔ ÇÁ·¹ÀÓ Å¬·¡½º
+	SendMessageClick sendMessageClick;
+	class SendMessage extends JFrame implements ActionListener, MouseListener,WindowListener { // º¸³½¸Þ¼¼ÁöÇÔ ÇÁ·¹ÀÓ Å¬·¡½º
 
 		JTable sendList;
 		JScrollPane scroll;
 		JButton delete;
 		
-		
+		boolean chk = true;
 		String[][] arr2;
-
-		public SendMessage() {
+		MessagePanel messagePanel;
+		public SendMessage(MessagePanel messagePanel) {
 			setTitle("º¸³½ ¸Þ¼¼ÁöÇÔ");
 			setBounds(600, 100, 515, 800);
 			setLayout(null);
-
+			this.messagePanel = messagePanel;
 			arr2 = MessageDB.getFROM_MESSAGE(userID);
 			if (arr2 == null) {
 				JOptionPane.showMessageDialog(null, "º¸³½¸Þ¼¼ÁöÇÔÀÌ ºñ¾ú½À´Ï´Ù.");
+				chk = false;
 				return;
 			}
 
@@ -904,7 +949,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 			sendList.addMouseListener(this);
 			delete.addActionListener(this);
-
+			addWindowListener(this);
 			add(delete);
 			add(scroll);
 			
@@ -919,6 +964,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			MessageDB.deleteSendMESSAGE(userID);
 			JOptionPane.showMessageDialog(null, "»èÁ¦¿Ï·á");
 //			setVisible(false);
+			messagePanel.sendMessage =null;
 			dispose();
 			}
 
@@ -929,10 +975,12 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 			if (e.getSource().equals(sendList)) {
 				if (e.getClickCount() == 2) {
-					SendMessageClick sendMessageClick = new SendMessageClick();
+					if(sendMessageClick==null) {
+					sendMessageClick = new SendMessageClick();
 					sendMessageClick.writer.setText(arr2[sendList.getSelectedRow()][0]);
 					sendMessageClick.content.setText(arr2[sendList.getSelectedRow()][1]);
 					sendMessageClick.time.setText(arr2[sendList.getSelectedRow()][2]);
+					}
 				}
 			}
 
@@ -962,9 +1010,51 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 		}
 
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			messagePanel.sendMessage =null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
 	}
 
-	class SendMessageClick extends JFrame {
+	class SendMessageClick extends JFrame implements WindowListener{
 
 		JLabel writerLabel;
 		JLabel contentLabel;
@@ -978,7 +1068,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 			setBounds(600, 100, 400, 500);
 			setLayout(null);
-
+			addWindowListener(this);
 			writerLabel = new JLabel("¹ÞÀº»ç¶÷ : ");
 			timeLabel = new JLabel("º¸³½½Ã°£ : ");
 			contentLabel = new JLabel("³»¿ë");
@@ -1005,8 +1095,50 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			add(time);
 			add(content);
 
-			setVisible(true);
+			dispose();
 
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			sendMessageClick = null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
 		}
 
 	}
@@ -1023,16 +1155,22 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			return false;
 		}
 	}
-
+	
+	
+	GiveMessageClick giveMessageClick; //ÇöÀç ¶°ÀÖ´Â ¸Þ½ÃÁöÃ¢
+	
+	
 	class GiveMessage extends JFrame
-	implements ActionListener, MouseListener { // ¹ÞÀº¸Þ¼¼ÁöÇÔ ÇÁ·¹ÀÓ Å¬·¡½º
+	implements ActionListener, MouseListener, WindowListener { // ¹ÞÀº¸Þ¼¼ÁöÇÔ ÇÁ·¹ÀÓ Å¬·¡½º
 
 		JTable giveList;
 		JScrollPane scroll;
 		JButton delete;
 		String[][] arr2;
-
-		public GiveMessage() {
+		MessagePanel messagePanel;
+		boolean chk = true;
+		public GiveMessage(MessagePanel messagePanel) {
+			this.messagePanel = messagePanel;
 			setTitle("¹ÞÀº ¸Þ¼¼ÁöÇÔ");
 			setBounds(600, 100, 515, 800);
 			setLayout(null);
@@ -1041,9 +1179,10 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			String[] arr = new String[] { "º¸³½»ç¶÷", "³»¿ë", "½Ã°£" };
 			if (arr2 == null) {
 				JOptionPane.showMessageDialog(null, "¹ÞÀº¸Þ¼¼ÁöÇÔÀÌ ºñ¾ú½À´Ï´Ù.");
+				chk = false; //ºñÁ¤»óÀû »ý¼º
 				return;
 			}
-
+			addWindowListener(this);
 			giveList = new JTable(new NotEditTable(arr2, arr));
 			scroll = new JScrollPane(giveList);
 			delete = new JButton("»èÁ¦");
@@ -1062,13 +1201,14 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 			setVisible(true);
 		}
-
+	
 		@Override
 		public void actionPerformed(ActionEvent e) {
 
 			MessageDB.deleteGiveMESSAGE(userID);
 			JOptionPane.showMessageDialog(null, "»èÁ¦¿Ï·á");
 //			setVisible(false);
+			messagePanel.giveMessage =null;
 			dispose();
 
 		}
@@ -1078,10 +1218,12 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 			if (e.getSource().equals(giveList)) {
 				if (e.getClickCount() == 2) {
-					GiveMessageClick giveMessageClick = new GiveMessageClick();
+					if(giveMessageClick==null) {
+					giveMessageClick = new GiveMessageClick();
 					giveMessageClick.writer.setText(arr2[giveList.getSelectedRow()][0]);
 					giveMessageClick.content.setText(arr2[giveList.getSelectedRow()][1]);
 					giveMessageClick.time.setText(arr2[giveList.getSelectedRow()][2]);
+					}
 				}
 			}
 
@@ -1111,9 +1253,51 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 		}
 
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			messagePanel.giveMessage =null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
 	}
 
-	class GiveMessageClick extends JFrame {
+	class GiveMessageClick extends JFrame implements WindowListener{
 
 		JLabel writerLabel;
 		JLabel contentLabel;
@@ -1122,7 +1306,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 		JLabel writer;
 		JLabel time;
 		JTextArea content;
-
+		
 		public GiveMessageClick() {
 
 			setTitle("¹ÞÀº¸Þ¼¼Áö");
@@ -1154,9 +1338,51 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			add(writer);
 			add(time);
 			add(content);
-
+			addWindowListener(this);
 			setVisible(true);
 
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			giveMessageClick =null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
 		}
 
 	}
@@ -1177,7 +1403,9 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			for (Notice ntc : notices) {
 				notice.add(ntc.title);
 			}
-
+			if(notice.isEmpty()) {
+				notice.add("°øÁö»çÇ×¾øÀ½");
+			}
 			noticeGo = new JButton("°øÁöÈ®ÀÎ");
 			noticeGo.setBounds(400, 100, 90, 50);
 
@@ -1202,12 +1430,13 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 					break;
 				}
 			}
-
-			noticeFrame = new NoticeFrame(ntc);
+			if(noticeFrame==null) {
+				noticeFrame = new NoticeFrame(ntc,this);	
+			}
 		}
 	}
 
-	class NoticeFrame extends JFrame { // °øÁö È®ÀÎ ÇÁ·¹ÀÓ
+	class NoticeFrame extends JFrame implements WindowListener{ // °øÁö È®ÀÎ ÇÁ·¹ÀÓ
 		JLabel noticeLabel;
 		JTextArea contentLabel;
 		JLabel writerLabel;
@@ -1218,15 +1447,15 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 		JLabel makeTime;
 		JLabel modifTime;
 		JLabel writer;
-
-		public NoticeFrame(Notice notice) {
+		NoticePanel np;
+		public NoticeFrame(Notice notice,NoticePanel np) {
 
 			setTitle("°øÁö»çÇ×");
 
 			setBounds(jumTalkOption_User.getX() + jumTalkOption_User.getWidth() + 50, jumTalkOption_User.getY(), 700,
 					800);
 			setLayout(null);
-
+			this.np =np;
 			noticeLabel = new JLabel(notice.title);
 			contentLabel = new JTextArea(notice.content);
 			writerLabel = new JLabel(notice.writer);
@@ -1243,7 +1472,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			writerLabel.setBounds(500, 50, 100, 50);
 			makeTimeLabel.setBounds(80, 10, 200, 30);
 			modifLabel.setBounds(80, 50, 200, 30);
-
+			addWindowListener(this);
 			title.setBounds(255, 10, 50, 50);
 			makeTime.setBounds(10, 10, 100, 30);
 			modifTime.setBounds(10, 50, 100, 30);
@@ -1263,6 +1492,48 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			add(writer);
 
 			setVisible(true);
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			np.noticeFrame = null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO ÀÚµ¿ »ý¼ºµÈ ¸Þ¼Òµå ½ºÅÓ
+			
 		}
 	}
 }

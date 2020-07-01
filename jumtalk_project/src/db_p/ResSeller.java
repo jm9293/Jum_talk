@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -44,41 +45,68 @@ public class ResSeller extends JPanel { // 나중에 JPanel로 바꿀거고 마지막에 set
 	String userID;
 	int x = 600;
 	int y = 200; // 좌표 여분 절대값
-//   ProfileInOut pfio = ProfileInOut.getprofileInout();
+	ProfileInOut pfio = ProfileInOut.getprofileInout();
 
 	public ResSeller(String userID) {
 		this.userID = userID;
 
 		setLayout(null);
 		setBounds(x, y, 500, 670);
-//      ImageIcon ii = new ImageIcon(pfio.download(userID));
-//      Image img = ii.getImage();
-//      img =img.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-//      ii = new ImageIcon(img);
-//
-//      JLabel jl1= new JLabel(ii);
-//      jl1.setBounds(10, 70, 200, 200);
-//      add(jl1);
-		JLabel jl2 = new JLabel("이름 : " + UserDB.getNAME(userID));
-		jl2.setBounds(280, 70, 200, 60);
-		add(jl2);
-		JLabel jl3 = new JLabel("전화번호 : " + UserDB.getPHONE(userID));
-		jl3.setBounds(280, 140, 200, 60);
-		add(jl3);
-		setVisible(true);
-		JLabel jl5 = new JLabel("평점 : " + ReviewDB.getAVGPOINT(userID));
-		jl5.setBounds(280, 200, 200, 60);
-		add(jl5);
-		JLabel jl4 = new JLabel("프로필 메세지");
-		jl4.setBounds(280, 230, 200, 60);
-		add(jl4);
+		JPanel jp = new JPanel();
+		jp.setBounds(0, 0, 475, 370);
+		jp.setLayout(null);
+		
 
-		JTextArea jt1 = new JTextArea(UserDB.getPROFILE_TEXT(userID));
-		jt1.setBounds(230, 280, 200, 100);
-		add(jt1);
-		repaint();
+		ImageIcon imgIcon = new ImageIcon(pfio.download(userID));
+		Image img = imgIcon.getImage();
+		img = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+		imgIcon.setImage(img);
+
+		JLabel lblImg = new JLabel();
+		lblImg.setIcon(imgIcon);
+		lblImg.setBounds(50, 80, 100, 100);
+		JLabel lblDetail = new JLabel("[간단소개]");
+		lblDetail.setBounds(180, 10, 200, 20);
+		JTextArea lbprofile_text = new JTextArea(UserDB.getPROFILE_TEXT(userID));
+		lbprofile_text.setBounds(180, 35, 200, 110);
+		lbprofile_text.setLineWrap(true);
+		lbprofile_text.setEditable(false);
+		lbprofile_text.setBackground(new Color(245,245,245));
+		JScrollPane lbprofile_text_scroll =  new JScrollPane(lbprofile_text);
+		lbprofile_text_scroll.setBounds(180, 35, 200, 110);
+		lbprofile_text_scroll.setBorder(BorderFactory.createEmptyBorder());
+	
+	 		JLabel lblPhone = new JLabel("[전화번호]");
+			lblPhone.setBounds(180, 130+20, 200, 20);
+			JLabel lblBName = new JLabel("[상호명]");
+			lblBName.setBounds(180, 180+20, 200, 20);
+			JLabel lblBAddress = new JLabel("[찾아오시는곳]");
+			lblBAddress.setBounds(180, 230+20, 200, 20);
+			JLabel rev_avg = new JLabel("[평점]");
+			rev_avg.setBounds(180, 280+20, 200, 20);
+			JLabel lblPhone_txt = new JLabel(UserDB.getPHONE(userID));
+			lblPhone_txt.setBounds(180, 130+20+20, 200, 20);
+			JLabel lblBName_txt = new JLabel(UserDB.getBUSINESSNAME(userID));
+			lblBName_txt.setBounds(180, 180+20+20, 200, 20);
+			JLabel lblBAddress_txt = new JLabel(UserDB.getBUSINESSADDRESS(userID));
+			lblBAddress_txt.setBounds(180, 230+20+20, 200, 20);
+			JLabel rev_avg_txt = new JLabel(ReviewDB.getAVGPOINT(userID)+" 점");
+			rev_avg_txt.setBounds(180, 280+20+20, 200, 20);
+			jp.add(lblImg);
+			jp.add(lblDetail);
+			jp.add(lbprofile_text_scroll);
+			jp.add(lblPhone);
+			jp.add(lblBName);
+			jp.add(lblBAddress);
+			jp.add(lblPhone_txt);
+			jp.add(lblBName_txt);
+			jp.add(lblBAddress_txt);
+			jp.add(rev_avg);
+			jp.add(rev_avg_txt);
+		
+
 		Selectpanel jp1 = new Selectpanel(userID);
-
+		add(jp);
 		add(jp1);
 		setVisible(true);
 
@@ -88,7 +116,7 @@ public class ResSeller extends JPanel { // 나중에 JPanel로 바꿀거고 마지막에 set
 
 class Selectpanel extends JPanel implements ActionListener {
 	String userID;
-
+	SellReviewAct sr;
 	public Selectpanel(String userID) {
 		this.userID = userID;
 		setBounds(5, 390, 475, 230);
@@ -101,23 +129,33 @@ class Selectpanel extends JPanel implements ActionListener {
 			jb.addActionListener(this);
 		}
 	}
-
+	SelectMenuAct2 sa2;
+	DetailFrame2 df2;
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton jb = (JButton) e.getSource();
 		if (jb.getText().equals("예약관리")) {
-			new SelectMenuAct2(userID, 700, 200, 0); // 일단 다 로그인한 점술가아이디만보냄
+			if(sa2==null) {
+				sa2 = new SelectMenuAct2(userID, 700, 200, 0, this); // 일단 다 로그인한 점술가아이디만보냄
+			}
 		} else if (jb.getText().equals("예약메뉴표관리")) {
-			new DetailFrame2(userID, 700, 200);
+			if(df2==null) {
+				df2 = new DetailFrame2(userID, 700, 200, this);	
+			}
 		} else if (jb.getText().equals("본인리뷰보기")) {
-			new SellReviewAct(userID, userID, 700, 200);
+			if(sr==null) {
+				sr = new SellReviewAct(userID, userID, 700, 200, this);
+				if(sr.emptyChk) { // 리뷰가 빈상태로 만들어져있다면
+					sr = null;
+				}
+			}
 		}
 
 	}
 }
 
 
-class DetailFrame2 extends JFrame implements ActionListener { // 메뉴표수정
+class DetailFrame2 extends JFrame implements ActionListener,WindowListener { // 메뉴표수정
 	String userID;
 	int x;
 	int y;
@@ -128,12 +166,12 @@ class DetailFrame2 extends JFrame implements ActionListener { // 메뉴표수정
 	JButton btnNewYear;
 	JButton btnCompany;
 	String[] arr;
-
-	public DetailFrame2(String userID, int x, int y) {
+	Selectpanel selectpanel;
+	public DetailFrame2(String userID, int x, int y, Selectpanel selectpanel) {
 		this.userID = userID;
 		this.x = x;
 		this.y = y;
-
+		this.selectpanel = selectpanel;
 		setBounds(x + 100, y, 500, 670);
 
 		JPanel jp = new JPanel();
@@ -151,7 +189,7 @@ class DetailFrame2 extends JFrame implements ActionListener { // 메뉴표수정
 		btnNewYear.addActionListener(this);
 		btnCompany = new JButton(arr[4].split(" ")[0] + arr[4].split(" ")[1]);
 		btnCompany.addActionListener(this);
-
+		addWindowListener(this);
 		jp2.add(btnFace);
 		jp2.add(btnSaju);
 		jp2.add(btnLove);
@@ -162,43 +200,86 @@ class DetailFrame2 extends JFrame implements ActionListener { // 메뉴표수정
 
 		setVisible(true);
 	}
-
+	Sellmenuset smt;
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
+		if(smt==null) {
 		if (e.getSource().equals(btnFace))
-			new Sellmenuset(userID, arr[0].split(" ")[0], arr[0].split(" ")[1], 0, this);
+			smt=new Sellmenuset(userID, arr[0].split(" ")[0], arr[0].split(" ")[1], 0, this);
 		else if (e.getSource().equals(btnSaju))
-			new Sellmenuset(userID, arr[1].split(" ")[0], arr[1].split(" ")[1], 1, this);
+			smt=new Sellmenuset(userID, arr[1].split(" ")[0], arr[1].split(" ")[1], 1, this);
 		else if (e.getSource().equals(btnLove))
-			new Sellmenuset(userID, arr[2].split(" ")[0], arr[2].split(" ")[1], 2, this);
+			smt=new Sellmenuset(userID, arr[2].split(" ")[0], arr[2].split(" ")[1], 2, this);
 		else if (e.getSource().equals(btnNewYear))
-			new Sellmenuset(userID, arr[3].split(" ")[0], arr[3].split(" ")[1], 3, this);
+			smt=new Sellmenuset(userID, arr[3].split(" ")[0], arr[3].split(" ")[1], 3, this);
 		else if (e.getSource().equals(btnCompany))
-			new Sellmenuset(userID, arr[4].split(" ")[0], arr[4].split(" ")[1], 4, this);
+			smt=new Sellmenuset(userID, arr[4].split(" ")[0], arr[4].split(" ")[1], 4, this);
+		}
 
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		selectpanel.df2 = null;
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
 	}
 }
 
-class Sellmenuset extends JFrame implements ActionListener {
+class Sellmenuset extends JFrame implements ActionListener, WindowListener {
 	String userID;
 	String menu;
 	int price;
 	int kind;
 	JTextField jf1;
 	JTextField jf2;
-	JFrame jf;
 
-	public Sellmenuset(String userID, String menu, String price, int kind, JFrame jf) {
+	DetailFrame2 detailFrame2;
+	public Sellmenuset(String userID, String menu, String price, int kind, DetailFrame2 detailFrame2) {
 		super();
 		this.userID = userID;
 		this.menu = menu;
-		this.jf = jf;
+		this.detailFrame2 = detailFrame2;
 		this.price = Integer.parseInt(price);
 		this.kind = kind;
 		setBounds(800, 200, 300, 400);
 		setLayout(new GridLayout(5, 1, 10, 10));
-		JLabel jl1 = new JLabel("메뉴명");
+		JLabel jl1 = new JLabel("메뉴명   (메뉴 비활성화시 '비활성화' 입력");
 		jf1 = new JTextField(menu);
 		JLabel jl2 = new JLabel("금액");
 		jf2 = new JTextField(price + "");
@@ -209,7 +290,7 @@ class Sellmenuset extends JFrame implements ActionListener {
 		add(jl2);
 		add(jf2);
 		add(jb1);
-
+		addWindowListener(this);
 		setVisible(true);
 
 	}
@@ -219,7 +300,51 @@ class Sellmenuset extends JFrame implements ActionListener {
 		MenuDB.setMENU(userID, kind + 1, jf1.getText() + " " + jf2.getText());
 		JOptionPane.showMessageDialog(null, "저장완료");
 		setVisible(false);
-		jf.setVisible(false);
+		detailFrame2.smt = null;
+		detailFrame2.selectpanel.df2=null;
+		detailFrame2.dispose();
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		detailFrame2.smt = null;
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
 	}
 
 }
@@ -245,12 +370,13 @@ class SelectMenuAct2 extends JFrame implements ActionListener, WindowListener { 
 	BtnResExe2 bre2; // 시간까지다고르고 예약하기 버튼
 	String selectCalStr; // 고른날짜
 	int choiceTime; // 고른시간
-
-	public SelectMenuAct2(String userID, int x, int y, int menuChoice) {
+	Selectpanel selectpanel ;
+	public SelectMenuAct2(String userID, int x, int y, int menuChoice, Selectpanel selectpanel) {
 		this.userID = userID;
 		this.x = x;
 		this.y = y;
 		this.menuChoice = menuChoice;
+		this.selectpanel = selectpanel;
 		me2 = this;
 
 		setLayout(null);
@@ -556,8 +682,8 @@ class SelectMenuAct2 extends JFrame implements ActionListener, WindowListener { 
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-//		df2.sr2 = null;
-//		df2.sm2 = null;
+		selectpanel.sa2 = null;
+		
 	}
 
 	@Override

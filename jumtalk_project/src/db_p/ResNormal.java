@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -45,7 +46,7 @@ public class ResNormal extends JPanel { // 나중에 JPanel로 바꿀거고 마지막에 set
 	String userID;
 	int x = 600;
 	int y = 200; // 좌표 여분 절대값
-
+	DetailFrame preDetailFrame; // 현재 열린 DetailFrame
 	public ResNormal(String userID) {
 		this.userID = userID;
 
@@ -63,7 +64,7 @@ public class ResNormal extends JPanel { // 나중에 JPanel로 바꿀거고 마지막에 set
 		}
 		jp.setLayout(new GridLayout(row, 1));
 		for (sellUser ss : UserDB.getSELLER()) {
-			jp.add(new SellerListPane(userID, ss.id, x, y)); // 로그인한일반유저아이디, 전체점술가아이디
+			jp.add(new SellerListPane(userID, ss.id, x, y,this)); // 로그인한일반유저아이디, 전체점술가아이디
 		}
 		for (int i = UserDB.getSELLER().size(); i < 5; i++) { // 점술가가 5명보다 적을때도 Grid 모양고정
 			jp.add(new JPanel());
@@ -88,12 +89,13 @@ class SellerListPane extends JPanel implements ActionListener {
 	String sellerID;
 	int x;
 	int y;
-
-	public SellerListPane(String userID, String sellerID, int x, int y) { // 로그인한일반유저아이디, 전체점술가아이디중 이 패널의주인
+	ResNormal rs ; //나를 부른 패널
+	public SellerListPane(String userID, String sellerID, int x, int y,ResNormal rs) { // 로그인한일반유저아이디, 전체점술가아이디중 이 패널의주인
 		this.userID = userID;
 		this.sellerID = sellerID;
 		this.x = x;
 		this.y = y;
+		this.rs= rs;
 
 		setLayout(new GridLayout(2, 0));
 
@@ -111,8 +113,9 @@ class SellerListPane extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) { // 상세프로필
-
-		new DetailFrame(userID, sellerID, x, y);
+		if(rs.preDetailFrame==null) {
+			rs.preDetailFrame = new DetailFrame(userID, sellerID, x, y, this);
+		}
 	}
 }
 
@@ -129,21 +132,22 @@ class DetailFrame extends JFrame implements ActionListener, WindowListener { // 
 	JButton btnNewYear;
 	JButton btnCompany;
 	String[] getMenu;
-
+	JPanel jp;
 	// 중복실행 방지(창)
 	SelectMenuAct sm;
 	SellReviewAct sr;
-
-	public DetailFrame(String userID, String sellerID, int x, int y) {
+	SellerListPane sl; // 나를 부른 패널
+	public DetailFrame(String userID, String sellerID, int x, int y,SellerListPane sl) {
 		this.userID = userID;
 		this.sellerID = sellerID;
 		this.x = x;
 		this.y = y;
+		this.sl = sl;
 		this.pfio = ProfileInOut.getprofileInout();
 		setLayout(new GridLayout(2, 1));
-		setBounds(x + 100, y, 500, 670);
-
-		JPanel jp = new JPanel();
+		setBounds(x + 100, y, 400, 670);
+		
+		jp = new JPanel();
 		jp.setLayout(null);
 		JPanel jp2 = new JPanel(new GridLayout(6, 0));
 
@@ -154,34 +158,76 @@ class DetailFrame extends JFrame implements ActionListener, WindowListener { // 
 
 		JLabel lblImg = new JLabel();
 		lblImg.setIcon(imgIcon);
-		lblImg.setBounds(80, 80, 100, 100);
-		JLabel lblDetail = new JLabel("[상세소개] : " + UserDB.getPROFILE_TEXT(sellerID));
-		lblDetail.setBounds(250, 80, 200, 20);
-		JLabel lblPhone = new JLabel("[전화번호] : " + UserDB.getPHONE(sellerID));
-		lblPhone.setBounds(250, 130, 200, 20);
-		JLabel lblBName = new JLabel("[사업장명] : " + UserDB.getBUSINESSNAME(sellerID));
-		lblBName.setBounds(250, 180, 200, 20);
-		JLabel lblBAddress = new JLabel("[사업장 주소] : " + UserDB.getBUSINESSADDRESS(sellerID));
-		lblBAddress.setBounds(250, 230, 200, 20);
-
+		lblImg.setBounds(50, 80, 100, 100);
+		JLabel lblDetail = new JLabel("[간단소개]");
+		lblDetail.setBounds(180, 10, 200, 20);
+		JTextArea lbprofile_text = new JTextArea(UserDB.getPROFILE_TEXT(sellerID));
+		lbprofile_text.setBounds(180, 35, 200, 110);
+		lbprofile_text.setLineWrap(true);
+		lbprofile_text.setEditable(false);
+		lbprofile_text.setBackground(new Color(245,245,245));
+		JScrollPane lbprofile_text_scroll =  new JScrollPane(lbprofile_text);
+		lbprofile_text_scroll.setBounds(180, 35, 200, 110);
+		lbprofile_text_scroll.setBorder(BorderFactory.createEmptyBorder());
+		JLabel lblPhone = new JLabel("[전화번호]");
+		lblPhone.setBounds(180, 130+20, 200, 20);
+		JLabel lblBName = new JLabel("[상호명]");
+		lblBName.setBounds(180, 180+20, 200, 20);
+		JLabel lblBAddress = new JLabel("[찾아오시는곳]");
+		lblBAddress.setBounds(180, 230+20, 200, 20);
+		JLabel lblPhone_txt = new JLabel(UserDB.getPHONE(sellerID));
+		lblPhone_txt.setBounds(180, 130+20+20, 200, 20);
+		JLabel lblBName_txt = new JLabel(UserDB.getBUSINESSNAME(sellerID));
+		lblBName_txt.setBounds(180, 180+20+20, 200, 20);
+		JLabel lblBAddress_txt = new JLabel(UserDB.getBUSINESSADDRESS(sellerID));
+		lblBAddress_txt.setBounds(180, 230+20+20, 200, 20);
+		
 		jp.add(lblImg);
 		jp.add(lblDetail);
+		jp.add(lbprofile_text_scroll);
 		jp.add(lblPhone);
 		jp.add(lblBName);
 		jp.add(lblBAddress);
+		jp.add(lblPhone_txt);
+		jp.add(lblBName_txt);
+		jp.add(lblBAddress_txt);
 
 		btnReview = new JButton("리뷰보기");
 		btnReview.addActionListener(this);
 		getMenu = MenuDB.getMENU(sellerID);
 		btnFace = new JButton(getMenu[0]);
+		if(getMenu[0].contains("비활성화")) {
+			btnFace.setEnabled(false);
+			btnFace.setText("메뉴 없음");
+		}
 		btnFace.addActionListener(this);
+		
 		btnSaju = new JButton(getMenu[1]);
+		if(getMenu[1].contains("비활성화")) {
+			btnSaju.setEnabled(false);
+			btnSaju.setText("메뉴 없음");
+		}
 		btnSaju.addActionListener(this);
+		
 		btnLove = new JButton(getMenu[2]);
+		if(getMenu[2].contains("비활성화")) {
+			btnLove.setEnabled(false);
+			btnLove.setText("메뉴 없음");
+		}
 		btnLove.addActionListener(this);
+		
 		btnNewYear = new JButton(getMenu[3]);
+		if(getMenu[3].contains("비활성화")) {
+			btnNewYear.setEnabled(false);
+			btnNewYear.setText("메뉴 없음");
+		}
 		btnNewYear.addActionListener(this);
+		
 		btnCompany = new JButton(getMenu[4]);
+		if(getMenu[4].contains("비활성화")) {
+			btnCompany.setEnabled(false);
+			btnCompany.setText("메뉴 없음");
+		}
 		btnCompany.addActionListener(this);
 
 		jp2.add(btnReview);
@@ -196,11 +242,80 @@ class DetailFrame extends JFrame implements ActionListener, WindowListener { // 
 		addWindowListener(this);
 		setVisible(true);
 	}
+	
+	public DetailFrame(String sellerID, int userkind) {
+		
+		setBounds(x + 100, y, 400, 670);
+		this.pfio = ProfileInOut.getprofileInout();
+		jp = new JPanel();
+		jp.setLayout(null);
+		
+
+		ImageIcon imgIcon = new ImageIcon(pfio.download(sellerID));
+		Image img = imgIcon.getImage();
+		img = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+		imgIcon.setImage(img);
+
+		JLabel lblImg = new JLabel();
+		lblImg.setIcon(imgIcon);
+		lblImg.setBounds(50, 80, 100, 100);
+		JLabel lblDetail = new JLabel("[간단소개]");
+		lblDetail.setBounds(180, 10, 200, 20);
+		JTextArea lbprofile_text = new JTextArea(UserDB.getPROFILE_TEXT(sellerID));
+		lbprofile_text.setBounds(180, 35, 200, 110);
+		lbprofile_text.setLineWrap(true);
+		lbprofile_text.setEditable(false);
+		lbprofile_text.setBackground(new Color(245,245,245));
+		JScrollPane lbprofile_text_scroll =  new JScrollPane(lbprofile_text);
+		lbprofile_text_scroll.setBounds(180, 35, 200, 110);
+		lbprofile_text_scroll.setBorder(BorderFactory.createEmptyBorder());
+		if(userkind==0) {
+			JLabel lblPhone = new JLabel("[전화번호]");
+			lblPhone.setBounds(180, 130+20, 200, 20);
+			JLabel lblBName = new JLabel("[상호명]");
+			lblBName.setBounds(180, 180+20, 200, 20);
+			JLabel lblBAddress = new JLabel("[찾아오시는곳]");
+			lblBAddress.setBounds(180, 230+20, 200, 20);
+			JLabel lblPhone_txt = new JLabel(UserDB.getPHONE(sellerID));
+			lblPhone_txt.setBounds(180, 130+20+20, 200, 20);
+			JLabel lblBName_txt = new JLabel(UserDB.getBUSINESSNAME(sellerID));
+			lblBName_txt.setBounds(180, 180+20+20, 200, 20);
+			JLabel lblBAddress_txt = new JLabel(UserDB.getBUSINESSADDRESS(sellerID));
+			lblBAddress_txt.setBounds(180, 230+20+20, 200, 20);
+			jp.add(lblImg);
+			jp.add(lblDetail);
+			jp.add(lbprofile_text_scroll);
+			jp.add(lblPhone);
+			jp.add(lblBName);
+			jp.add(lblBAddress);
+			jp.add(lblPhone_txt);
+			jp.add(lblBName_txt);
+			jp.add(lblBAddress_txt);
+			
+		}else {
+			JLabel lblPhone = new JLabel("[전화번호]");
+			lblPhone.setBounds(180, 130+20, 200, 20);
+			JLabel lblPhone_txt = new JLabel(UserDB.getPHONE(sellerID));
+			lblPhone_txt.setBounds(180, 130+20+20, 200, 20);
+			jp.add(lblImg);
+			jp.add(lblDetail);
+			jp.add(lbprofile_text_scroll);
+			jp.add(lblPhone);
+		}
+	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		System.out.println(sr);
 		if (e.getSource().equals(btnReview) && sr == null)
-			sr = new SellReviewAct(userID, sellerID, x, y);
+			if(sr==null) {
+				
+				sr = new SellReviewAct(userID, sellerID, x, y, this);
+				if(sr.emptyChk) { // 리뷰가 빈상태로 만들어져있다면
+					sr = null;
+				}
+			}
 
 		if (sm == null) {
 			if (e.getSource().equals(btnFace))
@@ -226,9 +341,8 @@ class DetailFrame extends JFrame implements ActionListener, WindowListener { // 
 	public void windowClosing(WindowEvent e) { // 윈도우가 닫힘과 동시에
 		// TODO Auto-generated method stub
 		sr = null;
-		System.out.println(sr);
 		sm = null;
-		System.out.println(sm);
+		sl.rs.preDetailFrame = null;
 	}
 
 	@Override
@@ -261,30 +375,39 @@ class DetailFrame extends JFrame implements ActionListener, WindowListener { // 
 	}
 }
 
-class SellReviewAct extends JFrame {
+class SellReviewAct extends JFrame implements WindowListener {
 	String userID;
 	String sellerID;
 	int x;
 	int y;
-
-	public SellReviewAct(String userID, String sellerID, int x, int y) {
+	DetailFrame df;
+	Selectpanel sp;
+	boolean emptyChk;
+	public SellReviewAct(String userID, String sellerID, int x, int y, DetailFrame df) {
 		this.userID = userID;
 		this.sellerID = sellerID;
 		this.x = x;
 		this.y = y;
+		this.df=  df;
 		setLayout(null);
-		setBounds(x + 200, y, 800, 600);
-
+		setBounds(x + 200, y, 400, 670);
+		emptyChk = false; // 리뷰가 비었는지 체크
 		JPanel showReviewP = new JPanel();
 		showReviewP.setLayout(null);
-		showReviewP.setBounds(0, 0, 800, 600);
+		showReviewP.setBounds(0, 0, 400, 670);
 		JPanel showReviewP2 = new JPanel();
 		showReviewP2.setLayout(new GridLayout(ReviewDB.getREVIEW(sellerID).size(), 1));
 
 		ArrayList<String> nomComent = new ArrayList<String>();
 		ArrayList<Integer> nomPoint = new ArrayList<Integer>();
 
-		for (Review rv : ReviewDB.getREVIEW(sellerID)) {
+		ArrayList<Review> reviews = ReviewDB.getREVIEW(sellerID);
+		if(reviews.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "해당 점술가에게 쓰여진 리뷰가 없습니다.");
+			emptyChk = true; // 리뷰가빔
+			return;
+		}
+		for (Review rv : reviews) {
 			nomComent.add(rv.coment);
 			nomPoint.add(rv.point);
 		}
@@ -297,7 +420,7 @@ class SellReviewAct extends JFrame {
 		}
 
 		JTextArea t1 = new JTextArea(str);
-		t1.setBounds(0, 0, 780, 560);
+		t1.setBounds(0, 0, 400, 670);
 		t1.setLineWrap(true);
 		t1.setFont(new Font("고딕", Font.BOLD, 15));
 		t1.setEditable(false);
@@ -305,10 +428,107 @@ class SellReviewAct extends JFrame {
 		JScrollPane scp = new JScrollPane(t1);
 		scp.setBounds(0, 0, 800, 600);
 		scp.setVisible(true);
-
+		addWindowListener(this);
 		showReviewP.add(t1);
 		add(showReviewP);
 		setVisible(true);
+	}
+	
+	public SellReviewAct(String userID, String sellerID, int x, int y, Selectpanel sp) {
+		this.userID = userID;
+		this.sellerID = sellerID;
+		this.x = x;
+		this.y = y;
+		this.sp=  sp;
+		emptyChk = false; // 리뷰가 비었는지 체크
+		setLayout(null);
+		setBounds(x + 200, y, 400, 670);
+
+		JPanel showReviewP = new JPanel();
+		showReviewP.setLayout(null);
+		showReviewP.setBounds(0, 0, 400, 670);
+		JPanel showReviewP2 = new JPanel();
+		showReviewP2.setLayout(new GridLayout(ReviewDB.getREVIEW(sellerID).size(), 1));
+
+		ArrayList<String> nomComent = new ArrayList<String>();
+		ArrayList<Integer> nomPoint = new ArrayList<Integer>();
+		ArrayList<Review> reviews = ReviewDB.getREVIEW(sellerID);
+		if(reviews.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "점술가님에게 쓰여진 리뷰가 없습니다.");
+			emptyChk = true; // 리뷰가빔
+			return;
+		}
+		for (Review rv : reviews) {
+			nomComent.add(rv.coment);
+			nomPoint.add(rv.point);
+		}
+
+		String str = "";
+		int j = 0;
+		for (String comm : nomComent) {
+			str += comm + "\n평점 : [" + nomPoint.get(j) + "] " + "\n\n";
+			j++;
+		}
+
+		JTextArea t1 = new JTextArea(str);
+		t1.setBounds(0, 0, 400, 670);
+		t1.setLineWrap(true);
+		t1.setFont(new Font("고딕", Font.BOLD, 15));
+		t1.setEditable(false);
+
+		JScrollPane scp = new JScrollPane(t1);
+		scp.setBounds(0, 0, 800, 600);
+		scp.setVisible(true);
+		addWindowListener(this);
+		showReviewP.add(t1);
+		add(showReviewP);
+		setVisible(true);
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		if(df!=null) {
+			df.sr =null;
+		}else {
+			sp.sr = null;
+		}
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO 자동 생성된 메소드 스텁
+		
 	}
 
 }

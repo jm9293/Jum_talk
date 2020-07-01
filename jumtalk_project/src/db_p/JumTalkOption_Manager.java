@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -37,9 +39,14 @@ class JumTalkOptionManager extends JPanel {
 		messagePanel = new MessagePanelManager();
 		setBounds(0, 200, 515, 600);
 		setBackground(Color.white);
-		setLayout(new GridLayout(3, 1));
-		add(new JumOption());
-		add(noticePanel);
+		JPanel jp = new JPanel();
+		setLayout(new GridLayout(2, 1));
+		jp.setLayout(new GridLayout(3,1,10,10));
+		
+		jp.add(new JumOption());
+		jp.add(noticePanel);
+		jp.add(new JPanel());
+		add(jp);
 		add(messagePanel);
 
 		setVisible(true);
@@ -57,7 +64,6 @@ class JumTalkOptionManager extends JPanel {
 		public JumOption() {
 
 			setBounds(0, 100, 515, 100);
-			setBackground(Color.red);
 			setLayout(new GridLayout());
 
 			opt1_Manager = new JButton("로그아웃");
@@ -162,7 +168,7 @@ class JumTalkOptionManager extends JPanel {
 //
 //	}
 
-	NoticeRevise ntNoticeRevise;
+	
 
 	// 공지사항 패널
 	class NoticePanelManager extends JPanel implements ActionListener {
@@ -170,15 +176,16 @@ class JumTalkOptionManager extends JPanel {
 		JLabel noticeLabel;
 		JButton noticeWrite;
 		JButton noticeRevise;
-
+		JFrame preFrame; //현재뛰어져있는 프레임
 		public NoticePanelManager() {
 
-			setLayout(null);
-
+			setLayout(new GridLayout(2,1));
+			
 			noticeLabel = new JLabel("공지사항 관리");
 			noticeWrite = new JButton("공지사항 작성");
 			noticeRevise = new JButton("공지사항 수정");
-
+			JPanel jp = new JPanel();
+			jp.setLayout(new GridLayout(1,2,10,10));
 			noticeWrite.addActionListener(this);
 			noticeRevise.addActionListener(this);
 
@@ -187,19 +194,21 @@ class JumTalkOptionManager extends JPanel {
 			noticeRevise.setBounds(253, 50, 243, 200);
 
 			add(noticeLabel);
-			add(noticeWrite);
-			add(noticeRevise);
+			add(jp);
+			jp.add(noticeWrite);
+			jp.add(noticeRevise);
 
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			if(preFrame==null) {
 			if (e.getSource().equals(noticeWrite)) {// 공지 사항 작성
-				new NoticeWrite();
+				preFrame = new NoticeWrite(this);
 			} else if (e.getSource().equals(noticeRevise)) {
-				ntNoticeRevise = new NoticeRevise();
+				preFrame = new NoticeRevise(this);
 			}
-
+			}
 		}
 	}
 
@@ -219,7 +228,7 @@ class JumTalkOptionManager extends JPanel {
 		JLabel messageLabel;
 		JLabel toLabel;
 		JLabel content;
-
+		JFrame preFrame;
 		public MessagePanelManager() {
 
 			setLayout(null);
@@ -263,9 +272,19 @@ class JumTalkOptionManager extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource().equals(sendMessage)) {
-				new SendMessageManager();
+				if(preFrame==null) {
+					preFrame = new SendMessageManager(this);
+					if(!((SendMessageManager)preFrame).chk) {
+						preFrame =null;
+					}
+				}
 			} else if (e.getSource().equals(giveMessage)) {
-				new GiveMessageManager();
+				if(preFrame==null) {
+					preFrame =new GiveMessageManager(this);
+					if(!((GiveMessageManager)preFrame).chk) {
+						preFrame =null;
+					}
+				}
 			} else if (e.getSource().equals(complete)) {
 				if (messageText.getText().isEmpty() || toMessage.getText().isEmpty()) {
 					JOptionPane.showMessageDialog(null, "빈 칸을 입력해 주세요");
@@ -367,7 +386,7 @@ class JumTalkOptionManager extends JPanel {
 	Vector<String> noticeTitleVt = new Vector<String>();
 
 	// 공지사항 작성 프레임
-	class NoticeWrite extends JFrame implements ActionListener {
+	class NoticeWrite extends JFrame implements ActionListener, WindowListener {
 
 		JLabel titleLabel;
 		JLabel noticeLable;
@@ -377,9 +396,9 @@ class JumTalkOptionManager extends JPanel {
 		JButton complete;
 		JTextArea titleText;
 		JTextArea noticeText;
-
-		public NoticeWrite() {
-
+		NoticePanelManager noticePanelManager;
+		public NoticeWrite(NoticePanelManager noticePanelManager) {
+			this.noticePanelManager = noticePanelManager;
 			setTitle("공지사항 작성");
 			setBounds(500, 100, 700, 800);
 			setLayout(null);
@@ -402,7 +421,7 @@ class JumTalkOptionManager extends JPanel {
 			titleText.setBounds(100, 60, 350, 30);
 			noticeText.setBounds(50, 150, 600, 550);
 			complete.setBounds(550, 50, 100, 50);
-
+			addWindowListener(this);
 			complete.addActionListener(this);
 
 			add(titleLabel);
@@ -425,20 +444,62 @@ class JumTalkOptionManager extends JPanel {
 					JOptionPane.showMessageDialog(null, "공지사항 등록 완료");
 					noticeTitleVt.add(titleText.getText());
 					NoticeDB.saveNOTICE(titleText.getText(), noticeText.getText(), userID);
-
-					setVisible(false);
+					noticePanelManager.preFrame =null;
+					dispose();
 				} else {
 					JOptionPane.showMessageDialog(null, "빈 칸을 입력해 주세요");
 				}
 			}
 
 		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			noticePanelManager.preFrame =null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
 	}
 
 	ArrayList<String> noticeTextArr = new ArrayList<String>();
 	JComboBox noticeBox = new JComboBox<String>(noticeTitleVt);
 
-	class NoticeReviseFrame extends JFrame implements ActionListener {
+	class NoticeReviseFrame extends JFrame implements ActionListener, WindowListener {
 
 		JLabel titleReviseLabel;
 		JLabel noticeReviseLabel;
@@ -459,14 +520,14 @@ class JumTalkOptionManager extends JPanel {
 
 		JButton complete;
 		String title;
-		NoticeRevise noticeRevise;
-
-		public NoticeReviseFrame(String title) {
+	
+		NoticeRevise noticeRevise2;
+		public NoticeReviseFrame(String title, NoticeRevise noticeRevise2) {
 			this.title = title;
 			setTitle("공지사항 수정");
 			setBounds(700, 100, 600, 700);
 			setLayout(null);
-
+			this.noticeRevise2 = noticeRevise2;
 			titleReviseText = new JTextArea();
 			noticeReviseText = new JTextArea();
 			writeTime = new JLabel();
@@ -478,7 +539,7 @@ class JumTalkOptionManager extends JPanel {
 			modifTimeLabel = new JLabel("수정시간 : ");
 			titleLabel = new JLabel("제목 : ");
 			contentLabel = new JLabel("내용");
-
+			addWindowListener(this);
 			titleReviseText.setBounds(150, 110, 300, 30);
 			noticeReviseText.setBounds(150, 200, 300, 400);
 			writeTime.setBounds(100, 0, 200, 30);
@@ -522,27 +583,72 @@ class JumTalkOptionManager extends JPanel {
 			for (Notice notice : noticeArr) {
 				noticeTitleVt.add(notice.title);
 			}
-			ntNoticeRevise.remove(noticeBox);
+			noticeRevise2.remove(noticeBox);
 			noticeBox = new JComboBox<String>(noticeTitleVt);
 			noticeBox.setBounds(75, 70, 350, 50);
 			noticeBox.setBackground(Color.white);
-			ntNoticeRevise.add(noticeBox);
-			ntNoticeRevise.repaint();
+			noticeRevise2.add(noticeBox);
+			noticeRevise2.repaint();
 
 			JOptionPane.showMessageDialog(null, "수정완료");
-			setVisible(false);
+			noticeRevise2.noticePanelManager.preFrame=null;
+			noticeRevise2.noticeReviseFrame =null;
+			dispose();
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			noticeRevise2.noticePanelManager.preFrame=null;
+			noticeRevise2.noticeReviseFrame =null;
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
 		}
 	}
 
 	ArrayList<Notice> noticeArr = new ArrayList<Notice>();
 
-	class NoticeRevise extends JFrame implements ActionListener {
+	class NoticeRevise extends JFrame implements ActionListener, WindowListener {
 
 		JButton noticeChk;
 		JButton noticeDel;
 		NoticeReviseFrame noticeReviseFrame;
-
-		public NoticeRevise() {
+		NoticePanelManager noticePanelManager;
+		public NoticeRevise(NoticePanelManager noticePanelManager) {
+			this.noticePanelManager = noticePanelManager;
 			setTitle("공지사항 수정");
 			setBounds(600, 100, 500, 300);
 			setLayout(null);
@@ -561,7 +667,7 @@ class JumTalkOptionManager extends JPanel {
 			noticeBox = new JComboBox<String>(noticeTitleVt);
 			noticeChk.addActionListener(this);
 			noticeDel.addActionListener(this);
-
+			addWindowListener(this);
 			noticeBox.setBounds(75, 70, 350, 50);
 			noticeBox.setBackground(Color.white);
 			add(noticeChk);
@@ -619,7 +725,7 @@ class JumTalkOptionManager extends JPanel {
 				for (Notice notice : noticeArr) {
 					if (notice.title.equals(noticeTitleVt.get(noticeBox.getSelectedIndex()))) {
 						ntc = notice;
-						noticeReviseFrame = new NoticeReviseFrame(ntc.title);
+						noticeReviseFrame = new NoticeReviseFrame(ntc.title, this);
 						noticeReviseFrame.titleReviseText.setText(ntc.title);
 						noticeReviseFrame.noticeReviseText.setText(ntc.content);
 						noticeReviseFrame.writeTime.setText(ntc.maketime);
@@ -636,12 +742,54 @@ class JumTalkOptionManager extends JPanel {
 			}
 
 		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			noticePanelManager.preFrame =null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
 	}
 
-	class SendMessageManager extends JFrame implements ActionListener, MouseListener {
+	class SendMessageManager extends JFrame implements ActionListener, MouseListener, WindowListener {
 		MessagePanelManager messagePanelManager;
 
-		JButton delete;
+		
 		JTable sendList;
 		JScrollPane scroll;
 		
@@ -653,17 +801,19 @@ class JumTalkOptionManager extends JPanel {
 		String messageStr;
 		String[][] arr2;
 		String[] arr;
-
-		public SendMessageManager() {
-
+		MessagePanelManager messagePanelManager2;
+		boolean chk = true;
+		public SendMessageManager(MessagePanelManager messagePanelManager2) {
+			this.messagePanelManager2 = messagePanelManager2;
 			setTitle("보낸메세지함");
 			setBounds(600, 100, 515, 800);
 			setLayout(null);
-
+			addWindowListener(this);
 			arr2 = MessageDB.getFROM_MESSAGE("admin");
-
+			
 			if (arr2 == null) {
 				JOptionPane.showMessageDialog(null, "보낸메세지함이 비었습니다.");
+				chk = false;
 				return;
 			}
 
@@ -676,21 +826,21 @@ class JumTalkOptionManager extends JPanel {
 			searchText = new JTextField();
 			idSearchLabel = new JLabel("받은사람 : ");
 
-			delete = new JButton("삭제");
+			
 
 			scroll.setBounds(0, 150, 500, 500);
-			delete.setBounds(390, 660, 100, 50);
+			
 			search.setBounds(360, 90, 100, 50);
 			allMessage.setBounds(250, 90, 100, 50);
 			searchText.setBounds(130, 30, 330, 50);
 			idSearchLabel.setBounds(50, 30, 100, 50);
 
-			delete.addActionListener(this);
+			
 			search.addActionListener(this);
 			sendList.addMouseListener(this);
 			allMessage.addActionListener(this);
 
-			add(delete);
+			
 			add(scroll);
 			add(idSearchLabel);
 			add(searchText);
@@ -703,11 +853,7 @@ class JumTalkOptionManager extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 
-			if (e.getSource().equals(delete)) {
-				MessageDB.deleteSendMESSAGE("admin");
-				JOptionPane.showMessageDialog(null, "삭제완료");
-				setVisible(false);
-			}else if(e.getSource().equals(search)) {
+			if(e.getSource().equals(search)) {
 				if (UserDB.getID(searchText.getText()).equals("")) {
 					JOptionPane.showMessageDialog(null, "없는 아이디입니다");
 				} else {
@@ -745,16 +891,19 @@ class JumTalkOptionManager extends JPanel {
 			}
 
 		}
-
+		SendMessageClickManager sendMessageClickManager;
 		@Override
 		public void mouseClicked(MouseEvent e) {
 
 			if (e.getSource().equals(sendList)) {
-				if (e.getClickCount() == 2) {
-					SendMessageClickManager sendMessageClickManager = new SendMessageClickManager();
-					sendMessageClickManager.writer.setText(arr2[sendList.getSelectedRow()][0]);
-					sendMessageClickManager.content.setText(arr2[sendList.getSelectedRow()][1]);
-					sendMessageClickManager.time.setText(arr2[sendList.getSelectedRow()][2]);
+				if(sendMessageClickManager==null) {
+					if (e.getClickCount() == 2) {
+						
+						sendMessageClickManager = new SendMessageClickManager(this);
+						sendMessageClickManager.writer.setText(arr2[sendList.getSelectedRow()][0]);
+						sendMessageClickManager.content.setText(arr2[sendList.getSelectedRow()][1]);
+						sendMessageClickManager.time.setText(arr2[sendList.getSelectedRow()][2]);
+					}
 				}
 			}
 
@@ -784,9 +933,51 @@ class JumTalkOptionManager extends JPanel {
 
 		}
 
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			messagePanelManager2.preFrame = null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
 	}
 
-	class SendMessageClickManager extends JFrame {
+	class SendMessageClickManager extends JFrame implements WindowListener{
 
 		JLabel writerLabel;
 		JLabel contentLabel;
@@ -795,16 +986,16 @@ class JumTalkOptionManager extends JPanel {
 		JLabel writer;
 		JLabel time;
 		JTextArea content;
-
-		public SendMessageClickManager() {
+		SendMessageManager sendMessageManager;
+		public SendMessageClickManager(SendMessageManager sendMessageManager) {
 
 			setBounds(600, 100, 400, 500);
 			setLayout(null);
-
+			this.sendMessageManager = sendMessageManager;
 			writerLabel = new JLabel("받은사람 : ");
 			timeLabel = new JLabel("보낸시간 : ");
 			contentLabel = new JLabel("내용");
-
+			addWindowListener(this);
 			writer = new JLabel();
 			time = new JLabel();
 			content = new JTextArea();
@@ -830,6 +1021,41 @@ class JumTalkOptionManager extends JPanel {
 			setVisible(true);
 
 		}
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+		@Override
+		public void windowClosing(WindowEvent e) {
+			sendMessageManager.sendMessageClickManager =null;
+			
+		}
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
 
 	}
 
@@ -846,7 +1072,7 @@ class JumTalkOptionManager extends JPanel {
 		}
 	}
 
-	class GiveMessageManager extends JFrame implements ActionListener, MouseListener {
+	class GiveMessageManager extends JFrame implements ActionListener, MouseListener, WindowListener{
 
 		JButton delete;
 		JTable giveList;
@@ -858,22 +1084,25 @@ class JumTalkOptionManager extends JPanel {
 		JButton search;
 		JButton allMessage;
 		JTextField searchText;
-
-		public GiveMessageManager() {
-
+		MessagePanelManager messagePanelManager;
+		
+		boolean chk = true;
+		public GiveMessageManager(MessagePanelManager messagePanelManager) {
+			
 			setTitle("받은메세지함");
 			setBounds(600, 100, 515, 800);
 			setLayout(null);
-
+			this.messagePanelManager =messagePanelManager;
 			arr2 = MessageDB.getTO_MESSAGE("admin");
 			arr = new String[] { "보낸사람", "내용", "시간" };
 			if (arr2 == null) {
 				JOptionPane.showMessageDialog(null, "받은메세지함이 비었습니다.");
+				chk =false;
 				return;
 			}
 			giveList = new JTable(new NotEditTable(arr2, arr));
 			scroll = new JScrollPane(giveList);
-			
+			addWindowListener(this);
 			search = new JButton("찾기");
 			allMessage = new JButton("전체");
 			searchText = new JTextField();
@@ -908,7 +1137,8 @@ class JumTalkOptionManager extends JPanel {
 			if(e.getSource().equals(delete)) {
 			MessageDB.deleteGiveMESSAGE("admin");
 			JOptionPane.showMessageDialog(null, "삭제완료");
-			setVisible(false);
+			messagePanelManager.preFrame = null;
+			dispose();
 			}else if(e.getSource().equals(search)) {
 				if (UserDB.getID(searchText.getText()).equals("")) {
 					JOptionPane.showMessageDialog(null, "없는 아이디입니다");
@@ -947,16 +1177,18 @@ class JumTalkOptionManager extends JPanel {
 			}
 
 		}
-
+		GiveMessageClickManager giveMessageClickManager;
 		@Override
 		public void mouseClicked(MouseEvent e) {
 
 			if (e.getSource().equals(giveList)) {
 				if (e.getClickCount() == 2) {
-					GiveMessageClickManager giveMessageClickManager = new GiveMessageClickManager();
-					giveMessageClickManager.writer.setText(arr2[giveList.getSelectedRow()][0]);
-					giveMessageClickManager.content.setText(arr2[giveList.getSelectedRow()][1]);
-					giveMessageClickManager.time.setText(arr2[giveList.getSelectedRow()][2]);
+					if(giveMessageClickManager==null) {
+						giveMessageClickManager = new GiveMessageClickManager(this);
+						giveMessageClickManager.writer.setText(arr2[giveList.getSelectedRow()][0]);
+						giveMessageClickManager.content.setText(arr2[giveList.getSelectedRow()][1]);
+						giveMessageClickManager.time.setText(arr2[giveList.getSelectedRow()][2]);
+					}
 				}
 			}
 
@@ -986,9 +1218,50 @@ class JumTalkOptionManager extends JPanel {
 
 		}
 
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			messagePanelManager.preFrame = null;
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
 	}
 
-	class GiveMessageClickManager extends JFrame {
+	class GiveMessageClickManager extends JFrame implements WindowListener{
 
 		JLabel writerLabel;
 		JLabel contentLabel;
@@ -997,17 +1270,18 @@ class JumTalkOptionManager extends JPanel {
 		JLabel writer;
 		JLabel time;
 		JTextArea content;
+		GiveMessageManager giveMessageManager;
 
-		public GiveMessageClickManager() {
+		public GiveMessageClickManager(GiveMessageManager giveMessageManager) {
 
 			setTitle("받은메세지");
 			setBounds(600, 100, 400, 500);
 			setLayout(null);
-
+			this.giveMessageManager =giveMessageManager;
 			writerLabel = new JLabel("보낸사람 : ");
 			timeLabel = new JLabel("받은시간 : ");
 			contentLabel = new JLabel("내용");
-
+			addWindowListener(this);
 			writer = new JLabel();
 			time = new JLabel();
 			content = new JTextArea();
@@ -1032,6 +1306,48 @@ class JumTalkOptionManager extends JPanel {
 
 			setVisible(true);
 
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			giveMessageManager.giveMessageClickManager=null;
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO 자동 생성된 메소드 스텁
+			
 		}
 
 	}

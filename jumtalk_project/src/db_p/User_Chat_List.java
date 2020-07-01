@@ -24,14 +24,15 @@ class ChatInButton extends JButton implements ActionListener {
    int kind;
    User_Chat_List ucl;
    User_Chat_Connect ucc;
-   
-   public ChatInButton(int kind,String userID,String sellerID, Date chatdate, User_Chat_List ucl) {
+   String chatmenu;
+   public ChatInButton(int kind,String userID,String sellerID, Date chatdate, User_Chat_List ucl,String chatmenu) {
 
       this.kind = kind;
       this.userID = userID;
       this.sellerID = sellerID;
       this.chatdate = chatdate;
       this.ucl = ucl;
+      this.chatmenu= chatmenu;
       setText("Ã¤ÆÃ¹æÀÔÀå");
       setBounds(350, 60, 110, 30);
       addActionListener(this);
@@ -47,11 +48,11 @@ class ChatInButton extends JButton implements ActionListener {
 		   
 		   if(kind==0) {
 			   System.out.println("ÀÏ¹Ý");
-			   ucl.ucc = new User_Chat_Connect(kind, userID, sellerID, chatdate, ucl);
+			   ucl.ucc = new User_Chat_Connect(kind, userID, sellerID, chatdate, ucl,chatmenu);
 //         new User_Chat_Connect(kind, userID, sellerID,chatdate);
 		   }else {
 			   System.out.println("Á¡¼ú°¡");
-			   ucl.ucc = new User_Chat_Connect(kind, sellerID, userID,chatdate, ucl);
+			   ucl.ucc = new User_Chat_Connect(kind, sellerID, userID,chatdate, ucl,chatmenu);
 		   }
 	   } 
 	   
@@ -69,8 +70,8 @@ public class User_Chat_List extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸
    String userID;
    String sellerID;
 
-   
-   boolean chk = true;
+   static boolean chk= true;
+  
    JLabel id;
    ArrayList<JButton> jbs;
    ArrayList<Chatlist> cc;
@@ -80,7 +81,7 @@ public class User_Chat_List extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸
    
 
    public User_Chat_List(String userID) {
-
+	   chk =false; // ¸ðµç¾²·¹µå¸¦ Á×ÀÌ±â
       this.userID = userID;
      
       
@@ -103,7 +104,11 @@ public class User_Chat_List extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸
       JPanel chat = new JPanel(); // ½ºÅ©·ÑÆÐ³Î¿¡ ºÙÀÏ ÆÐ³Î
 
       Dimension size = new Dimension(); // »çÀÌÁî¸¦ ÁöÁ¤ÇÏ±â À§ÇÑ °´Ã¼
-      size.setSize(480, (cc.size() * 170) + 50); // »çÀÌÁî ÁöÁ¤
+      int a =  (cc.size() * 170);
+      if(a==0) {
+    	  a=50;
+      }
+      size.setSize(480, a); // »çÀÌÁî ÁöÁ¤
       chat.setPreferredSize(size); // »çÀÌÁî Á¤º¸¸¦ °¡Áö°í ÀÖ´Â °´Ã¼¸¦ ÀÌ¿ëÇØ ÆÐ³ÎÀÇ »çÀÌÁî ÁöÁ¤
       setViewportView(chat); // ½ºÅ©·Ñ ÆÐ³Î À§¿¡ ÆÐ³Î ¿Ã¸®±â
 
@@ -144,11 +149,20 @@ public class User_Chat_List extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸
          cnt2 += 20;
          test.add(id);
          
-         ChatInButton chb = new ChatInButton(UserDB.getUSERKIND(userID), cc.get(i).user_id, cc.get(i).sell_id, cc.get(i).chattime, this);
+         ChatInButton chb = new ChatInButton(UserDB.getUSERKIND(userID), cc.get(i).user_id, cc.get(i).sell_id, cc.get(i).chattime, this,cc.get(i).chatmenu);
          jbs.add(chb);
          test.add(chb); // ¶óº§¿¡ ¹öÆ° ³Ö±â
          chat.add(test); // ´Ù¸¸µç ¶óº§À» ÆÐ³Î¿¡ ³Ö±â
       }
+      System.out.println(cc.size());
+      if(cc.isEmpty()) {
+    	 System.out.println("µé¾î¿À´Ï?");
+    	 JLabel emptypanel = new JLabel("Ã¤ÆÃ¹æÀÌ ¾ø½À´Ï´Ù.",JLabel.CENTER);
+    	 emptypanel.setBounds(0,0,480,50);
+    	 emptypanel.setVisible(true);
+    	 chat.add(emptypanel); 
+      }
+      chk = true; //³»¾²·¹µå´Â »ì¸®±â
       ch = new Chat_List_Timer();
       ch.start();
    }
@@ -157,7 +171,7 @@ public class User_Chat_List extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸
 
       @Override
       public void run() {
-         while (true && ch != null) {
+         while (chk && ch != null) {
             for (int i = 0; i < cc.size(); i++) {
                Date date = cc.get(i).chattime;
                Calendar cal = Calendar.getInstance();

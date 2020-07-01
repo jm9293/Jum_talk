@@ -73,7 +73,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
    Date chatdate;
    User_Chat_Connect ucc;
    User_Chat_List ucl;
-
+   String chatmenu;
    class ChatRecord extends JScrollPane { // 채팅 대화 기록 뜨는곳
 
       public ChatRecord() {
@@ -319,11 +319,12 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
 
       int sec;
       int mi;
+      boolean close = false;
       public Timer() {
         
          Date d1 = new Date(); // 예약된시간
          
-         d1 = chatdate; // 예약된시간
+         d1 = (Date) chatdate.clone(); // 예약된시간
         
          Date d2 = new Date(); // 1대1 채팅에 들어온시간
          long diff = d1.getTime() - d2.getTime(); // 예약된시간에서 1대1채팅 들어온시간의 차이
@@ -345,11 +346,18 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
 
       @Override
       public void run() {
+    	 
          for (int i = mi; i >= 0; i--) {
+        	 if(close) {
+         		return;
+         	}
             if(i!=mi) {
                sec = 60;
             }
          for (int j = sec ; j > 0; j--) {
+        	if(close) {
+        		return;
+        	}
             try {
                sleep(1000);
             } catch (InterruptedException e) {
@@ -358,19 +366,19 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
             }
             timer.setText("남은시간 "+i+"분 "+j+"초");
          }
-         }
          chatout();
+      }
       }
    }
    
-   public User_Chat_Connect(int kind, String user1, String user2, Date chatdate, User_Chat_List ucl) {
+   public User_Chat_Connect(int kind, String user1, String user2, Date chatdate, User_Chat_List ucl,String chatmenu) {
 	   System.out.println(user1+" , "+user2);
      this.kind = kind;
      this.userID = user1;
      this.sellID = user2;
      this.chatdate = chatdate;
      this.ucl = ucl;
-     
+     this.chatmenu =chatmenu;
       setBounds(700, 300, 515, 800);
       setLayout(null);
       System.out.println(sellID);
@@ -414,7 +422,9 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
       cw.add(sendB);
 
       ImageIcon clip = new ImageIcon("icon\\clip.png");
-
+      img = clip.getImage();
+      img = img.getScaledInstance(30, 30, img.SCALE_SMOOTH);
+      clip = new ImageIcon(img);
       JButton filesend = new JButton(clip); // 파일첨부 버튼
       filesend.setName("파일첨부");
       filesend.setBounds(5, 175, 30, 30);
@@ -424,7 +434,9 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
       cw.add(filesend);
 
       ImageIcon exitP = new ImageIcon("icon\\exit.png");
-
+      img = exitP.getImage();
+      img = img.getScaledInstance(30, 30, img.SCALE_SMOOTH);
+      exitP = new ImageIcon(img);
       JButton exit = new JButton(exitP); // 나가기 버튼
       exit.setName("나가기");
       exit.setBounds(450, 175, 30, 30);
@@ -472,33 +484,37 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
       }
 
    }
+   JFrame pro ;
    ProfileInOut pfio = ProfileInOut.getprofileInout();
    void profile() { // 프로필창
+	  if(pro==null) {
+      pro = new JFrame(); // 프로필 새창
+      pro.setBounds(100, 100, 400, 350);
+      pro.setLayout(new GridLayout(1,1));
+      DetailFrame df = new DetailFrame(sellID,UserDB.getUSERKIND(userID));
+      pro.add(df.jp);
+      df = null;
+      pro.addWindowListener(new WindowListener() {
+		
+		public void windowOpened(WindowEvent e) {}
+		
+		public void windowIconified(WindowEvent e) {}
+		
+		public void windowDeiconified(WindowEvent e) {}
+		
+		public void windowDeactivated(WindowEvent e) {}
+		
+		
+		public void windowClosing(WindowEvent e) {
+			pro=null;
+		}
 
-      JFrame pro = new JFrame(); // 프로필 새창
-      pro.setBounds(100, 100, 500, 700);
-      pro.setLayout(null);
-      JPanel proJP = new JPanel(); // 프로필 안에 패널
-      proJP.setBounds(0, 0, 483, 653);
-      proJP.setLayout(new GridLayout(3, 1));
-      ImageIcon ii =  new ImageIcon(pfio.download(sellID));
-      Image img = ii.getImage();
-      img = img.getScaledInstance(100, 100, img.SCALE_SMOOTH);
-      ii = new ImageIcon(img);
-      JLabel pho = new JLabel(ii); // 사진 넣을
-      JLabel intro = new JLabel(); // 상세소개넣을
-      JLabel phonenum = new JLabel(); // 전화번호 넣을
-     
-      intro.setText("상세소개 : "+ UserDB.getPROFILE_TEXT(sellID));
-      phonenum.setText("전화번호 : "+ UserDB.getPHONE(sellID));
+		public void windowClosed(WindowEvent e) {}
 
-
-      proJP.add(pho);
-      proJP.add(intro);
-      proJP.add(phonenum);
-
-      pro.add(proJP);
+		public void windowActivated(WindowEvent e) {}
+	});
       pro.setVisible(true);
+	  }
    }
 
    void chatout() { // 채팅나가기
@@ -655,9 +671,9 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
          System.out.println(finalscore);
       }
 
-     ReviewDB.saveREVIEW(sellID, finalreview, finalscore);
-      
-      review.setVisible(false);
+      ReviewDB.saveREVIEW(sellID, finalreview, finalscore);
+      ChatListDB.deleteCHATLIST(sellID, userID, chatdate, chatmenu);
+      review.dispose();
 
    }
    
@@ -745,6 +761,9 @@ public void windowOpened(WindowEvent e) {
 public void windowClosing(WindowEvent e) {
 	ucl.ucc = null;
 	System.out.println(ucl.ucc==null);
+	ss.close = true;
+    sr.close = true;
+    timerTH.close = true;
 	
 }
 
