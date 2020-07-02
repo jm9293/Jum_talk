@@ -36,6 +36,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 	JPanel catePanel;
 	JScrollPane catescpamel;
 	int userkind;
+	JButton jb1,jb2,jb3,jb4;
    public Mainframe(String userID) {
       
       super("  점톡");
@@ -51,12 +52,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
       
       userkind=UserDB.getUSERKIND(userID);
      
-      try {
-		UserDB.setUSER_IP(userID, "/"+InetAddress.getLocalHost().toString().split("/")[1]);
-	} catch (UnknownHostException e) {
-		// TODO 자동 생성된 catch 블록
-		e.printStackTrace();
-	}
+      
       if(UserDB.getUSERKIND(userID)==0) {
       setBounds(600,100,500+15,800);
       setLayout(null);
@@ -64,7 +60,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
       //cate.setBackground(Color.black);
       cate.setBounds(0, 0, 500, 80);
       cate.setLayout(new GridLayout(1,4,10,10));
-      JButton jb1,jb2,jb3,jb4;
+      
       cate.add(jb1=new JButton("예약"));
       jb1.setBorderPainted(false);
       cate.add(jb2=new JButton("채팅"));
@@ -115,7 +111,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
           //cate.setBackground(Color.black);
           cate.setBounds(0, 0, 500, 80);
           cate.setLayout(new GridLayout(1,3,10,10));
-          JButton jb1,jb2,jb3,jb4;
+          
           cate.add(jb1=new JButton("회원관리"));
           jb1.setBorderPainted(false);
 //          cate.add(jb2=new JButton("채팅"));
@@ -217,7 +213,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 			}else if(jb.getText().equals("회원관리")){
 				remove(catePanel);
 				
-				add(catePanel = new ResSuperuser(userID));
+				add(catePanel = new ResSuperuser(userID,this));
 				catePanel.setBounds(0, 90, 500, 670);
 				catePanel.setVisible(true);
 				revalidate();

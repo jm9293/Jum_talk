@@ -15,7 +15,7 @@ public class ProfileInOut {
    ObjectOutputStream oos;
    private ProfileInOut() {
       try {
-         Socket socket = new Socket("192.168.219.103", 8888);
+         Socket socket = new Socket("192.168.0.218", 8888);
          ois = new ObjectInputStream(socket.getInputStream());
          oos = new ObjectOutputStream(socket.getOutputStream());
          

@@ -975,6 +975,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
 			if (e.getSource().equals(sendList)) {
 				if (e.getClickCount() == 2) {
+					System.out.println(sendMessageClick);
 					if(sendMessageClick==null) {
 					sendMessageClick = new SendMessageClick();
 					sendMessageClick.writer.setText(arr2[sendList.getSelectedRow()][0]);
@@ -1095,7 +1096,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 			add(time);
 			add(content);
 
-			dispose();
+			setVisible(true);
 
 		}
 

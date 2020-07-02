@@ -3,6 +3,7 @@ package db_p;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -90,7 +92,14 @@ class Login extends JFrame implements ActionListener {
 		setBounds(600, 100, 515, 800);
 		setResizable(false);
 		setLayout(null);
-
+		ImageIcon title = new ImageIcon("icon\\title.jpg");
+		Image ii = title.getImage();
+		ii = ii.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+		title = new ImageIcon(ii);
+		
+		JLabel titlelb = new JLabel(title);
+		titlelb.setBounds(100, 60, 300, 300);
+		add(titlelb);
 		// 아이디
 		idLabel = new JLabel("아이디");
 		idLabel.setBounds(60, 400, 100, 50);
@@ -516,7 +525,11 @@ class Login extends JFrame implements ActionListener {
 
 			if (e.getSource().equals(passWordChk)) { // 비밀번호찾기 버튼 눌렀을때
 
-				passWordFind = new PassWordFind();
+				passWordFind = new PassWordFind(this);
+				if(!passWordFind.chk) {
+					lg.pwSearchFrame = null;
+					passWordFind =null;
+				}
 				dispose();
 
 			} else if (e.getSource().equals(pwCancellation)) { // 취소 버튼 눌렀을때
@@ -545,9 +558,10 @@ class Login extends JFrame implements ActionListener {
 			String userID = idSearch_t.getText();
 			String userPWHINT = hintBox_S.getSelectedItem().toString();
 			String userPWRES = pwSearch_t.getText();
-
-			public PassWordFind() {
-
+			PWsearch pWsearch;
+			boolean chk = true;
+			public PassWordFind(PWsearch pWsearch) {
+				this.pWsearch = pWsearch;
 				setTitle("비밀번호 찾기");
 				setBounds(600, 300, 350, 200);
 				setLayout(null);
@@ -559,8 +573,9 @@ class Login extends JFrame implements ActionListener {
 
 				// 아이디와, 비밀번호 힌트, 답이 일치하지 않을 경우
 				if (UserDB.searchPW(userID, userPWHINT, userPWRES).equals("")) {
+					chk =  false;
 					JOptionPane.showMessageDialog(null, "일치하지 않은 정보입니다.", "비밀번호 찾기", JOptionPane.ERROR_MESSAGE);
-
+					
 					// 아이디, 비밀번호 힌트, 답 이 일치 할 경우!! --> passWordFind클래스 창 띄우기!!
 				} else {
 
@@ -609,7 +624,7 @@ class Login extends JFrame implements ActionListener {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				// TODO 자동 생성된 메소드 스텁
+				lg.pwSearchFrame = null;
 				
 			}
 
@@ -1646,10 +1661,10 @@ class Login extends JFrame implements ActionListener {
 						// 다 오류가 아닐경우 가입조건에 충족되어 가입완료 창을 띄움.
 					} else {
 						System.out.println(textFieldList.size());
-						UserDB.signupSELLERUSER(id, pwChkStr, name, gender, birthYYYYMMDD, phone, email, address,
+						BufUserDB.signupSELLERUSER(id, pwChkStr, name, gender, birthYYYYMMDD, phone, email, address,
 								pwhint, pwres, businessname, businessaddress, banknum, coin);
 						MenuDB.makeMENU(id);
-						JOptionPane.showMessageDialog(null, "           회원가입 완료 !\n점톡에 오신것을 환영합니다.");
+						JOptionPane.showMessageDialog(null, "           회원가입 완료 !\n점톡에 오신것을 환영합니다.\n 점술회원은 가입승인후 로그인할수 있습니다. \n승인시 연락드리겠습니다.");
 						
 						//쓰레드 종료!!!!!
 						signUpEnd = false;  

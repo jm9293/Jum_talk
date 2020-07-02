@@ -6,48 +6,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-class sellUser {
-   String id;
-   String name;
-   String phone;
-   String profile_text;
-   String loginTime;
-   
-   public sellUser(String id, String name, String phone, String profile_text, String loginTime) {
-	super();
-	this.id = id;
-	this.name = name;
-	this.phone = phone;
-	this.profile_text = profile_text;
-	this.loginTime = loginTime;
-   }
 
 
-   
-}
-
-class normalUser {
-   String name;
-   String id;
-   String phone;
-   String gender;
-   String loginTime;
-   
-   public normalUser(String name, String id, String phone, String gender, String loginTime) {
-		super();
-		this.name = name;
-		this.id = id;
-		this.phone = phone;
-		this.gender = gender;
-		this.loginTime = loginTime;
-	}
-   
-   
-
-  
-}
-
-public class UserDB {
+public class BufUserDB {
 
    static final String host = IP_Num.host;
 
@@ -67,11 +28,11 @@ public class UserDB {
          stmt = con.createStatement();
 
          stmt.executeUpdate(
-               "INSERT INTO USERDATA (USERKIND, ID, PW, NAME, GENDER ,BIRTHDATE, PHONE, EMAIL, ADDRESS, CARDNUMBER, PWHINT, PWRES, BUSINESSNAME, BUSINESSADDRESS, BANKNUMBER, COIN) "
+               "INSERT INTO bufUSERDATA (USERKIND, ID, PW, NAME, GENDER ,BIRTHDATE, PHONE, EMAIL, ADDRESS, CARDNUMBER, PWHINT, PWRES, BUSINESSNAME, BUSINESSADDRESS, BANKNUMBER, COIN ,  logintime) "
                      + "VALUES  (" + userkind + ", '" + id + "', '" + pw + "', '" + name + "', '" + gender
                      + "', TO_DATE('" + birthYYYYMMDD + "', 'YYYYMMDD'), '" + phone + "', '" + email + "', "
                      + "'" + address + "', '" + cardnumber + "', '" + pwhint + "', '" + pwres + "', '"
-                     + businessname + "', '" + businessaddress + "', '" + banknum + "', '" + coin + "')");
+                     + businessname + "', '" + businessaddress + "', '" + banknum + "', '" + coin + "', systimestamp)");
          System.out.println("성공");
          res = true;
       } catch (Exception e) {
@@ -100,7 +61,7 @@ public class UserDB {
 
          stmt = con.createStatement();
 
-         stmt.executeUpdate("UPDATE userdata set " + column + "='" + setString + "' where id= '" + userID + "'");
+         stmt.executeUpdate("UPDATE bufuserdata set " + column + "='" + setString + "' where id= '" + userID + "'");
 
          res = true;
       } catch (Exception e) {
@@ -129,7 +90,7 @@ public class UserDB {
 
          stmt = con.createStatement();
 
-         stmt.executeUpdate("UPDATE userdata set " + column + "=" + setInt + " where id= '" + userID + "'");
+         stmt.executeUpdate("UPDATE bufuserdata set " + column + "=" + setInt + " where id= '" + userID + "'");
 
          res = true;
       } catch (Exception e) {
@@ -181,7 +142,7 @@ public class UserDB {
 
          stmt = con.createStatement();
 
-         rs = stmt.executeQuery("select " + column + " from userdata where id= '" + userID + "'");
+         rs = stmt.executeQuery("select " + column + " from BUFuserdata where id= '" + userID + "'");
 
          while (rs.next()) {
             res = rs.getString(column);
@@ -282,7 +243,7 @@ public class UserDB {
       return res;
    }
    
-   static ArrayList<normalUser> getUsers(int kind) {
+   static ArrayList<normalUser> getbufUsers() {
 	      ArrayList<normalUser> res = new ArrayList<normalUser>();
 	      Connection con = null;
 	      Statement stmt = null;
@@ -294,14 +255,9 @@ public class UserDB {
 	         con = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":1521:xe", "HR", "HR");
 
 	         stmt = con.createStatement();
-	         if(kind==2) {
-	        	 rs = stmt.executeQuery("SELECT id,name,phone, gender,LOGINTIME from userdata WHERE userkind > 2 order by logintime desc");
-	         }else if(kind ==3){
-	        	 rs = stmt.executeQuery("SELECT id,name,phone, gender,LOGINTIME from bufuserdata WHERE userkind = "+2+" order by logintime desc");
-	         }else {
-	        	 rs = stmt.executeQuery("SELECT id,name,phone, gender,LOGINTIME from userdata WHERE userkind = "+kind+" order by logintime desc");
-	        	 
-	         }
+	         
+	         rs = stmt.executeQuery("SELECT id,name,phone, gender,LOGINTIME from bufuserdata WHERE userkind = "+1+" order by logintime asc");
+	         
 
 	         while (rs.next()) {
 	            String id = rs.getString("ID");
@@ -671,7 +627,7 @@ public class UserDB {
 	         
 	         stmt = con.createStatement();
 	         
-	         stmt.executeUpdate("delete from  userdata where ID = '"+userID+"'");
+	         stmt.executeUpdate("delete from  bufuserdata where ID = '"+userID+"'");
 	         System.out.println("성공");
 	         res = true;
 	      } catch (Exception e) {

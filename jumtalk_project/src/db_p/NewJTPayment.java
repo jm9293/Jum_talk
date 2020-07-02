@@ -200,6 +200,9 @@ class BuyerFrame extends JPanel implements ActionListener {
          finBt.addActionListener(this);
          add(finBt);
 
+         MtoCList.getTableHeader().setReorderingAllowed(false);
+         MtoCList.getTableHeader().setResizingAllowed(false);
+         
          setVisible(false);
       }
 
@@ -319,6 +322,9 @@ class SellerFrame extends JPanel implements ActionListener {
          add(CtoMListPan);
       }
 
+      CtoMList.getTableHeader().setReorderingAllowed(false);
+      CtoMList.getTableHeader().setResizingAllowed(false);
+      
       setVisible(true);
 
    }
@@ -386,21 +392,25 @@ class panelOne extends JPanel {
    public panelOne(String date, int statkind) {
       setBounds(5, 100, 340, 200);
       setLayout(new BorderLayout());
-      String[] ListInfo = { "ID", "충전 금액", "충전한 코인", "충전 시간" };
+      String[] ListInfo = { "ID", "충전 금액", "코인", "충전 시간" };
       String[][] dataB = MoneyLogDB.getSTATSMONEYLOG(0, date, statkind);
       JTable btc = new JTable(new NotEditTable(dataB, ListInfo));
       JScrollPane buyerToCoin = new JScrollPane(btc);
 
       btc.getColumn("ID").setPreferredWidth(70);
       btc.getColumn("충전 금액").setPreferredWidth(70);
-      btc.getColumn("충전한 코인").setPreferredWidth(70);
-      btc.getColumn("충전 시간").setPreferredWidth(130);
+      btc.getColumn("코인").setPreferredWidth(60);
+      btc.getColumn("충전 시간").setPreferredWidth(140);
 
+     
       add(buyerToCoin);
 
       if (btc == null) {
          btc = new JTable(new String[1][4], ListInfo);
       }
+      
+      btc.getTableHeader().setReorderingAllowed(false);
+      btc.getTableHeader().setResizingAllowed(false);
       setVisible(true);
 
    }
@@ -411,7 +421,7 @@ class panelTwo extends JPanel {
    public panelTwo(String date, int statkind) {
       setBounds(5, 335, 340, 200);
       setLayout(new BorderLayout());
-      String[] ListInfoS = { "ID", "환전 금액", "환전한 코인", "환전 시간" };
+      String[] ListInfoS = { "ID", "환전 금액", "코인", "환전 시간" };
       String[][] dataS = MoneyLogDB.getSTATSMONEYLOG(1, date, statkind); //// (x ,x , 0 ) <--0번이면 가공된 데이터
 
       JTable stm = new JTable(new NotEditTable(dataS, ListInfoS));
@@ -419,8 +429,8 @@ class panelTwo extends JPanel {
 
       stm.getColumn("ID").setPreferredWidth(70);
       stm.getColumn("환전 금액").setPreferredWidth(70);
-      stm.getColumn("환전한 코인").setPreferredWidth(70);
-      stm.getColumn("환전 시간").setPreferredWidth(130);
+      stm.getColumn("코인").setPreferredWidth(60);
+      stm.getColumn("환전 시간").setPreferredWidth(140);
       sellToMoney.setBounds(15, 320, 340, 200);
 
       add(sellToMoney);
@@ -428,6 +438,8 @@ class panelTwo extends JPanel {
          stm = new JTable(new String[1][4], ListInfoS);
       }
 
+      stm.getTableHeader().setReorderingAllowed(false);
+      stm.getTableHeader().setResizingAllowed(false);
       setVisible(true);
    }
 }
