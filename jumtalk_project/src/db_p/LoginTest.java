@@ -1664,7 +1664,7 @@ class Login extends JFrame implements ActionListener {
 						BufUserDB.signupSELLERUSER(id, pwChkStr, name, gender, birthYYYYMMDD, phone, email, address,
 								pwhint, pwres, businessname, businessaddress, banknum, coin);
 						MenuDB.makeMENU(id);
-						JOptionPane.showMessageDialog(null, "           회원가입 완료 !\n점톡에 오신것을 환영합니다.\n 점술회원은 가입승인후 로그인할수 있습니다. \n승인시 연락드리겠습니다.");
+						JOptionPane.showMessageDialog(null, "           회원가입 완료 !\n점톡에 오신것을 환영합니다.\n점술회원은 가입승인후 로그인할수 있습니다. \n승인시 연락드리겠습니다.");
 						
 						//쓰레드 종료!!!!!
 						signUpEnd = false;  

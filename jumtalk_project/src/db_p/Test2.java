@@ -18,7 +18,9 @@ public class Test2 extends Thread{
 		public Test2(int kind, String userID) {
 			
 		this.userID = userID;
-		start();
+		if(kind==1) {
+			start();		
+		}
 //		ChatListDB.getCHATLIST(userID);
 			
 		}

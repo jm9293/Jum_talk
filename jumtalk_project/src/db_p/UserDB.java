@@ -33,7 +33,7 @@ class normalUser {
    String gender;
    String loginTime;
    
-   public normalUser(String name, String id, String phone, String gender, String loginTime) {
+   public normalUser( String id,String name, String phone, String gender, String loginTime) {
 		super();
 		this.name = name;
 		this.id = id;
@@ -224,7 +224,7 @@ public class UserDB {
             String profile_text = rs.getString("profile_text");
             String login_time = rs.getString("LOGINTIME");
 
-            res.add(new sellUser(name, id, phone, profile_text,login_time));
+            res.add(new sellUser(id, name, phone, profile_text,login_time));
          }
 
       } catch (Exception e) {
@@ -264,7 +264,7 @@ public class UserDB {
             String gender = rs.getString("gender");
             String login_time = rs.getString("LOGINTIME");
 
-            res.add(new normalUser(name, id, phone, gender,login_time));
+            res.add(new normalUser(id, name, phone, gender,login_time));
          }
 
       } catch (Exception e) {

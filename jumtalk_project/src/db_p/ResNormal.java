@@ -789,13 +789,26 @@ class SelectMenuAct extends JFrame implements ActionListener, WindowListener { /
 
 					SimpleDateFormat sdf = new SimpleDateFormat("HH");
 					SimpleDateFormat sdf2 = new SimpleDateFormat("dd");
+					SimpleDateFormat sdf3 = new SimpleDateFormat("MM");
+					SimpleDateFormat sdf4 = new SimpleDateFormat("yyyy-MM-dd");
 					String a = sdf.format(new Date());
-
+					String b = sdf3.format(new Date());
+					Date nowdate =null;
+					try {
+						 nowdate = sdf4.parse(sdf4.format(new Date()));
+					} catch (ParseException e) {
+						// TODO 자동 생성된 catch 블록
+						e.printStackTrace();
+					}
+					
 					if (schedule[i].equals("false")
-							|| (date.split("-")[2].equals(sdf2.format(new Date())) && (i <= Integer.parseInt(a)))) {
+							|| (date.split("-")[2].equals(sdf2.format(new Date())) && (i <= Integer.parseInt(a)) &&true )) {
 						bb.setEnabled(false);
 						bb.setText("예약불가");
-					} else if (schedule[i].equals(userID)) {
+					} else if (d.before(nowdate)) {
+						bb.setEnabled(false);
+						bb.setText("예약불가");
+					}else if (schedule[i].equals(userID)) {
 						bb.setEnabled(false);
 						bb.setText("나의 예약시간");
 					} else if (schedule[i] != null && !schedule[i].equals("true")) {
