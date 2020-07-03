@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class ScheduleDB {
 
-   static final String host ="localhost";
+   static final String host = IP_NumSet.host;
    
    static String[] getScheduleDB(String userID, String date){
       Connection con = null;
@@ -98,6 +98,15 @@ public class ScheduleDB {
       Connection con = null;
       Statement stmt=null;
       
+      String notset="";
+      if(set.equals("true")) {
+    	notset= "false";
+      }else {
+    	notset= "true";
+      }
+      
+      
+      
       
       try {
          Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -106,7 +115,7 @@ public class ScheduleDB {
          
          stmt = con.createStatement();
          
-         int upNum = stmt.executeUpdate("update schedule set "+time+" = '"+set+"' where id = '"+userID+"' and to_char(sch_date,'yyyy-mm-dd') = '"+date+"' ");
+         int upNum = stmt.executeUpdate("update schedule set "+time+" = '"+set+"' where id = '"+userID+"' and to_char(sch_date,'yyyy-mm-dd') = '"+date+"' and "+time+" = '"+notset+"'");
          if(upNum>0) {
             System.out.println("¼º°ø");
             res = true;

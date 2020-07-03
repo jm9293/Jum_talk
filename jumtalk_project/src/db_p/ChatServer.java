@@ -16,11 +16,11 @@ import java.util.HashMap;
 
 
 
-public class Jumtalk_Server {
+public class ChatServer {
    
 	HashMap<String, ObjectOutputStream> usermap;
    
-   public Jumtalk_Server() {
+   public ChatServer() {
 	  usermap = new HashMap<String, ObjectOutputStream>();
       
       Collections.synchronizedMap(usermap);
@@ -28,11 +28,10 @@ public class Jumtalk_Server {
       try {
          ServerSocket server = new ServerSocket(7777);   
          
-         System.out.println("서버시작");
+         System.out.println("채팅 서버시작");
          
          while(true) {
             Socket client = server.accept();
-            System.out.println("연결성공");
             new MulReceiver(client).start();
          }
          
@@ -57,7 +56,7 @@ public class Jumtalk_Server {
             dos = new ObjectOutputStream(client.getOutputStream());
             dis = new ObjectInputStream(client.getInputStream());
             name = dis.readUTF();
-            
+            System.out.println(name+ " 채팅 서버 입장");
          } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -75,30 +74,31 @@ public class Jumtalk_Server {
             
             usermap.put(name, dos);
             
-            while(dis!=null) {
+            while(dis!=null&&dos!=null) {
             	
+            	LetterClass contant=null;
             try {
-            	Content contant=null;
             	try {
             		
-            		contant = (Content) dis.readObject();
+            		contant = (LetterClass) dis.readObject();
 					
 				} catch (Exception e) {
 					
 				}
             	
-            	sendToClass(contant);
+            	
 				
 			} catch (Exception e) {
-				// TODO: handle exception
+				
 			}
+            sendToClass(contant);
+            
             }
 
          } catch (Exception e) {
            e.printStackTrace();
          }finally {
-            
-            usermap.remove(dos);
+            usermap.remove(name);
             
             
             try {
@@ -114,10 +114,10 @@ public class Jumtalk_Server {
    
    }
 
-   void sendToClass(Content co) {
+   void sendToClass(LetterClass co) throws Exception {
       String to_id = co.to_id;
       String from_id = co.from_id;
-      try {
+     
     	ObjectOutputStream from = usermap.get(from_id);
 		from.writeObject(co);
 		System.out.println(usermap);
@@ -127,13 +127,7 @@ public class Jumtalk_Server {
 		}else {
 			
 		}
-		System.out.println("보냇음");
-	} catch (IOException e) {
-		// TODO 자동 생성된 catch 블록
-		e.printStackTrace();
-	};      
-         
-      
+
    }
    
    
@@ -142,7 +136,7 @@ public class Jumtalk_Server {
    public static void main(String[] args) {
       
       
-      new Jumtalk_Server();
+      new ChatServer();
 
    }
 

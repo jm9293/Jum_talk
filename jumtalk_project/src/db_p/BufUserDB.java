@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class BufUserDB {
 
-   static final String host = IP_Num.host;
+   static final String host = IP_NumSet.host;
 
    private static boolean creativeDBusers(int userkind, String id, String pw, String name, String gender,
          String birthYYYYMMDD, String phone, String email, String address, String cardnumber, String pwhint,
@@ -266,7 +266,7 @@ public class BufUserDB {
 	            String gender = rs.getString("gender");
 	            String login_time = rs.getString("LOGINTIME");
 
-	            res.add(new normalUser(name, id, phone, gender,login_time));
+	            res.add(new normalUser(id, name, phone, gender,login_time));
 	         }
 
 	      } catch (Exception e) {

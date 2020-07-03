@@ -33,13 +33,13 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import db_p.OptionPanel.SendMessageClick;
-import db_p.ResSuperuser.UserListpanel.UserDataframe;
+import db_p.ReservationPanel_Manager.UserListpanel.UserDataframe;
 
-public class ResSuperuser extends JPanel {
+public class ReservationPanel_Manager extends JPanel {
 	String userID;
 	UserDataframe dataframe;
-	Mainframe mainframe;
-	public ResSuperuser(String userID, Mainframe mainframe) {
+	MainFrame mainframe;
+	public ReservationPanel_Manager(String userID, MainFrame mainframe) {
 		this.userID = userID;
 		this.mainframe =mainframe;
 		setLayout(new GridLayout(2, 2, 10, 10));
@@ -60,9 +60,9 @@ public class ResSuperuser extends JPanel {
 	class UserListpanel extends JPanel implements MouseListener{
 		JTable table;
 		String [][] data;
-		ResSuperuser resSuperuser;
+		ReservationPanel_Manager resSuperuser;
 		int userkind;
-		public UserListpanel(ResSuperuser resSuperuser, int userkind) {
+		public UserListpanel(ReservationPanel_Manager resSuperuser, int userkind) {
 			this.userkind = userkind;
 			setLayout(null);
 			JLabel title = null;
@@ -274,6 +274,8 @@ public class ResSuperuser extends JPanel {
 				if (e.getSource().equals(savebtn)) {
 					if(savebtn.getText().equals("저장")) {
 					if(setblack.isSelected()) {
+						System.out.println("여기 들어오니?");
+						System.out.println(userID);
 						UserDB.setUSERKIND(userID, UserDB.getUSERKIND(userID)+3);
 					}else {
 						if(UserDB.getUSERKIND(userID)>2) {

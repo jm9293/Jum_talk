@@ -30,17 +30,17 @@ import javax.swing.UIManager;
 
 
 
-public class Mainframe extends JFrame implements ActionListener, WindowListener{
+public class MainFrame extends JFrame implements ActionListener, WindowListener{
    
 	String userID;
 	JPanel catePanel;
 	JScrollPane catescpamel;
 	int userkind;
 	JButton jb1,jb2,jb3,jb4;
-   public Mainframe(String userID) {
+	ReservationNoti test2;
+   public MainFrame(String userID) {
       
       super("  점톡");
-      
 //      try {
 //         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 //         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -51,7 +51,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
       this.userID = userID;
       
       userkind=UserDB.getUSERKIND(userID);
-     
+      test2 = new ReservationNoti(userkind, userID);
       
       if(UserDB.getUSERKIND(userID)==0) {
       setBounds(600,100,500+15,800);
@@ -134,6 +134,9 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
       
       
       
+      ProfileInOut pfio = ProfileInOut.getprofileInout();
+      pfio.login(userID);
+    		  
       setVisible(true);
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
@@ -141,6 +144,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		JButton jb = (JButton) e.getSource();
 		if(userkind==0) {
 			if(jb.getText().equals("코인")) {
@@ -152,7 +156,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 			}else if(jb.getText().equals("예약")){
 				remove(catePanel);
 				
-				add(catePanel = new ResNormal(userID));
+				add(catePanel = new ReservationPanel_User(userID));
 				catePanel.setBounds(0, 90, 500, 670);
 				catePanel.setVisible(true);
 				revalidate();
@@ -160,8 +164,9 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 			}else if(jb.getText().equals("채팅")){
 				remove(catePanel);
 				add(catePanel = new JPanel());
-				User_Chat_List ucl = new User_Chat_List(userID);
+				ChatlistPanel ucl = new ChatlistPanel(userID);
 				catePanel.add(ucl);
+				catePanel.setLayout(null);
 				catePanel.setBounds(0, 90, 500, 670);
 				revalidate();
 				repaint();
@@ -182,7 +187,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 			}else if(jb.getText().equals("예약")){
 				remove(catePanel);
 				
-				add(catePanel = new ResSeller(userID));
+				add(catePanel = new ReservationPanel_Seller(userID));
 				catePanel.setVisible(true);
 				catePanel.setBounds(0, 90, 500, 670);
 				revalidate();
@@ -190,9 +195,10 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 			}else if(jb.getText().equals("채팅")){
 				remove(catePanel);
 				add(catePanel = new JPanel());
-				User_Chat_List ucl = new User_Chat_List(userID);
+				ChatlistPanel ucl = new ChatlistPanel(userID);
 				catePanel.add(ucl);
 				catePanel.setBounds(0, 90, 500, 670);
+				catePanel.setLayout(null);
 				revalidate();
 				repaint();
 			}else if(jb.getText().equals("설정")){
@@ -213,7 +219,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 			}else if(jb.getText().equals("회원관리")){
 				remove(catePanel);
 				
-				add(catePanel = new ResSuperuser(userID,this));
+				add(catePanel = new ReservationPanel_Manager(userID,this));
 				catePanel.setBounds(0, 90, 500, 670);
 				catePanel.setVisible(true);
 				revalidate();
@@ -237,6 +243,7 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 
 	@Override
 	public void windowClosing(WindowEvent e) {
+		System.out.println("들어오니?");
 		try {
 			ProfileInOut.getprofileInout().ois.close();
 			ProfileInOut.getprofileInout().oos.close();
@@ -244,6 +251,8 @@ public class Mainframe extends JFrame implements ActionListener, WindowListener{
 			// TODO 자동 생성된 catch 블록
 			e1.printStackTrace();
 		}
+		test2.close =true;
+		UserDB.setLOGINCHK(userID, "false");
 		
 	}
 

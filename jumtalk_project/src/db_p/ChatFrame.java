@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 
 
 
-public class User_Chat_Connect extends JFrame implements ActionListener, WindowListener { // 채팅방 입장 누르면 뜨는 프레임(대화창)
+public class ChatFrame extends JFrame implements ActionListener, WindowListener { // 채팅방 입장 누르면 뜨는 프레임(대화창)
 
   
    ChatRecord cr; // 채팅 대화 기록 뜨게 하는 패널클래스
@@ -54,7 +54,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
    String msg; // 메세지
    SingleSender ss; // 싱글센터
    SingleReciever sr; // 싱글리시버
-   String ipadd = IP_Num.host; // ip적힌
+   String ipadd = IP_NumSet.host; // ip적힌
    int portnum = 7777; // 포트넘버
    Dimension size2; // chatrecord(채팅대화 기록 뜨게하는패널 클래스) 사이즈 잡기
    Timer timerTH; // 남은 시간 알려주는 스레드상속 클래스
@@ -67,12 +67,12 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
    JFrame f4;
    String userID;
    String sellID;
-   Content content = null;
+   LetterClass content = null;
    JButton sendB;  //전송버튼
    int kind;   //0 손님 1 점술가 2관리자
    Date chatdate;
-   User_Chat_Connect ucc;
-   User_Chat_List ucl;
+   ChatFrame ucc;
+   ChatlistPanel ucl;
    String chatmenu;
    class ChatRecord extends JScrollPane { // 채팅 대화 기록 뜨는곳
 
@@ -164,7 +164,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
                sleep(1);
 //               Content content = null;
                try {
-                  content = (Content) dis.readObject(); // dis에 있는 내용 읽어서 content에 넣어주기
+                  content = (LetterClass) dis.readObject(); // dis에 있는 내용 읽어서 content에 넣어주기
                   
                }catch (Exception e) {
             // TODO: handle exception
@@ -186,7 +186,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
                      }
                      yy += coment.split("\n").length-1;
                      if(content.from_id.equals(userID)) {
-                        speechbubble.setBounds(515-58 * 8+80, 50 + cnt2, 58 * 8-50, tt*yy);
+                        speechbubble.setBounds((515-58 * 8+80)-50, 50 + cnt2, 58 * 8-50, tt*yy);
                      }else {
                         speechbubble.setBounds(10, 50 + cnt2, 58 * 8, tt*yy);     
                      }
@@ -285,7 +285,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
             // dos에 매개변수로 들어온 소켓의 output
             dos.writeUTF(userID);
             sleep(10);
-            dos.writeObject(new Content(sellID, userID, "님이 입장하셨습니다.", "String"));
+            dos.writeObject(new LetterClass(sellID, userID, "님이 입장하셨습니다.", "String"));
          } catch (Exception e) {
             e.printStackTrace();
          }
@@ -298,7 +298,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
                sleep(1);
                if (go) {
                   String content = msg;
-                  dos.writeObject(new Content(sellID, userID, content, "String"));
+                  dos.writeObject(new LetterClass(sellID, userID, content, "String"));
                   go = false; // 메세지를 보냈으니까 다시 false로 바꿔줌(대기상태)
                }
             }
@@ -346,18 +346,18 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
 
       @Override
       public void run() {
-    	 
+        
          for (int i = mi; i >= 0; i--) {
-        	 if(close) {
-         		return;
-         	}
+            if(close) {
+               return;
+            }
             if(i!=mi) {
                sec = 60;
             }
          for (int j = sec ; j > 0; j--) {
-        	if(close) {
-        		return;
-        	}
+           if(close) {
+              return;
+           }
             try {
                sleep(1000);
             } catch (InterruptedException e) {
@@ -366,13 +366,13 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
             }
             timer.setText("남은시간 "+i+"분 "+j+"초");
          }
-         chatout();
       }
+         chatout();
       }
    }
    
-   public User_Chat_Connect(int kind, String user1, String user2, Date chatdate, User_Chat_List ucl,String chatmenu) {
-	   System.out.println(user1+" , "+user2);
+   public ChatFrame(int kind, String user1, String user2, Date chatdate, ChatlistPanel ucl,String chatmenu) {
+      System.out.println(user1+" , "+user2);
      this.kind = kind;
      this.userID = user1;
      this.sellID = user2;
@@ -487,7 +487,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
    JFrame pro ;
    ProfileInOut pfio = ProfileInOut.getprofileInout();
    void profile() { // 프로필창
-	  if(pro==null) {
+     if(pro==null) {
       pro = new JFrame(); // 프로필 새창
       pro.setBounds(100, 100, 400, 350);
       pro.setLayout(new GridLayout(1,1));
@@ -495,74 +495,84 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
       pro.add(df.jp);
       df = null;
       pro.addWindowListener(new WindowListener() {
-		
-		public void windowOpened(WindowEvent e) {}
-		
-		public void windowIconified(WindowEvent e) {}
-		
-		public void windowDeiconified(WindowEvent e) {}
-		
-		public void windowDeactivated(WindowEvent e) {}
-		
-		
-		public void windowClosing(WindowEvent e) {
-			pro=null;
-		}
+      
+      public void windowOpened(WindowEvent e) {}
+      
+      public void windowIconified(WindowEvent e) {}
+      
+      public void windowDeiconified(WindowEvent e) {}
+      
+      public void windowDeactivated(WindowEvent e) {}
+      
+      
+      public void windowClosing(WindowEvent e) {
+         pro=null;
+      }
 
-		public void windowClosed(WindowEvent e) {}
+      public void windowClosed(WindowEvent e) {}
 
-		public void windowActivated(WindowEvent e) {}
-	});
+      public void windowActivated(WindowEvent e) {}
+   });
       pro.setVisible(true);
-	  }
+     }
    }
 
    void chatout() { // 채팅나가기
 
+	   
+	   try {
+	         dos.writeObject(new LetterClass(sellID, userID, "님이 퇴장하셨습니다. ", "String"));
+	      } catch (IOException e2) {
+	         // TODO Auto-generated catch block
+	         e2.printStackTrace();
+	      }
+	   
+	  timerTH.close =true;
       ss.close = true; // 연결끊어주기
       sr.close = true; // 연결끊어주기
-
-      setVisible(false);
+      ucl.ucc = null;
+     
+      dispose();
       
 
       if(kind==0) {
-    	  
-    	  review = new JFrame("리뷰쓰기");
-    	  review.getContentPane().setBackground(new Color(255, 254, 215));
-    	  review.setBounds(250, 210, 600, 800);
-    	  review.setLayout(null);
-    	  
-    	  JLabel reviewTitle = new JLabel("리뷰쓰기");
-    	  reviewTitle.setBounds(250, 10, 100, 50);
-    	  
-    	  reviewWrite = new JTextArea();   //리뷰쓰는(글씨)곳
-    	  reviewWrite.setLineWrap(true);
-    	  
-    	  JScrollPane reviewWriteJP = new JScrollPane(reviewWrite);
-    	  reviewWriteJP.setBounds(20, 80, 540, 400);
-    	  
-    	  String[] radio = { "1점", "2점", "3점", "4점", "5점" };
-    	  ButtonGroup allgrade = new ButtonGroup();
-    	  score = new JRadioButton[5];
-    	  
-    	  int cnt = 0;
-    	  for (int i = 0; i < score.length; i++) {
-    		  score[i] = new JRadioButton(radio[i]);
-    		  score[i].setBounds(85 + cnt, 570, 50, 30);
-    		  allgrade.add(score[i]);
-    		  review.add(score[i]);
-    		  cnt += 90;
-    	  }
-    	  
-    	  JButton up = new JButton("올리기");
-    	  up.setName("올리기");
-    	  up.setBounds(250, 650, 100, 50);
-    	  up.addActionListener(this);
-    	  
-    	  review.add(up);
-    	  review.add(reviewTitle);
-    	  review.add(reviewWriteJP);
-    	  review.setVisible(true);
+         
+         review = new JFrame("리뷰쓰기");
+         review.getContentPane().setBackground(new Color(255, 254, 215));
+         review.setBounds(250, 210, 600, 800);
+         review.setLayout(null);
+         
+         JLabel reviewTitle = new JLabel("리뷰쓰기");
+         reviewTitle.setBounds(250, 10, 100, 50);
+         
+         reviewWrite = new JTextArea();   //리뷰쓰는(글씨)곳
+         reviewWrite.setLineWrap(true);
+         
+         JScrollPane reviewWriteJP = new JScrollPane(reviewWrite);
+         reviewWriteJP.setBounds(20, 80, 540, 400);
+         
+         String[] radio = { "1점", "2점", "3점", "4점", "5점" };
+         ButtonGroup allgrade = new ButtonGroup();
+         score = new JRadioButton[5];
+         
+         int cnt = 0;
+         for (int i = 0; i < score.length; i++) {
+            score[i] = new JRadioButton(radio[i]);
+            score[i].setBounds(85 + cnt, 570, 50, 30);
+            allgrade.add(score[i]);
+            review.add(score[i]);
+            cnt += 90;
+         }
+         
+         JButton up = new JButton("올리기");
+         up.setName("올리기");
+         up.setBounds(250, 650, 100, 50);
+         up.addActionListener(this);
+         
+         review.add(up);
+         review.add(reviewTitle);
+         review.add(reviewWriteJP);
+         review.setVisible(true);
       }
 
    }
@@ -728,14 +738,14 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
          System.out.println(fd.getFile());
          System.out.println(fd.getFile().toString().substring(fd.getFile().toString().indexOf(".")+1).toLowerCase());
          if(Pattern.matches("[jpg:jpeg:bmp:png:gif]*", fd.getFile().toString().substring(fd.getFile().toString().indexOf(".")+1).toLowerCase())) {
-            dos.writeObject(new Content(sellID, userID, "image", fd.getFile(), data));
+            dos.writeObject(new LetterClass(sellID, userID, "image", fd.getFile(), data));
          }else {
-            dos.writeObject(new Content(sellID, userID, "file", fd.getFile(), data));
+            dos.writeObject(new LetterClass(sellID, userID, "file", fd.getFile(), data));
          }
          
          fis.close();
          
-         f4.setVisible(false);
+         f4.dispose();
          
       } catch (Exception e1) {
          // TODO 자동 생성된 catch 블록
@@ -745,7 +755,7 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
          break;
          
       case "파일첨부거부" : 
-         f4.setVisible(false);
+         f4.dispose();
 
       }
 
@@ -753,48 +763,57 @@ public class User_Chat_Connect extends JFrame implements ActionListener, WindowL
 
 @Override
 public void windowOpened(WindowEvent e) {
-	// TODO Auto-generated method stub
-	
+   // TODO Auto-generated method stub
+   
 }
 
 @Override
 public void windowClosing(WindowEvent e) {
-	ucl.ucc = null;
-	System.out.println(ucl.ucc==null);
-	ss.close = true;
-    sr.close = true;
-    timerTH.close = true;
 	
+	
+	 try {
+         dos.writeObject(new LetterClass(sellID, userID, "님이 퇴장하셨습니다. ", "String"));
+      } catch (IOException e2) {
+         // TODO Auto-generated catch block
+         e2.printStackTrace();
+      }
+	
+	
+   ucl.ucc = null;
+   ss.close = true;
+   sr.close = true;
+   timerTH.close = true;
+   
 }
 
 @Override
 public void windowClosed(WindowEvent e) {
-	// TODO Auto-generated method stub
-	
+   // TODO Auto-generated method stub
+   
 }
 
 @Override
 public void windowIconified(WindowEvent e) {
-	// TODO Auto-generated method stub
-	
+   // TODO Auto-generated method stub
+   
 }
 
 @Override
 public void windowDeiconified(WindowEvent e) {
-	// TODO Auto-generated method stub
-	
+   // TODO Auto-generated method stub
+   
 }
 
 @Override
 public void windowActivated(WindowEvent e) {
-	// TODO Auto-generated method stub
-	
+   // TODO Auto-generated method stub
+   
 }
 
 @Override
 public void windowDeactivated(WindowEvent e) {
-	// TODO Auto-generated method stub
-	
+   // TODO Auto-generated method stub
+   
 }
 
 }

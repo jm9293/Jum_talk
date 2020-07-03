@@ -40,14 +40,14 @@ import javax.swing.JToggleButton;
 
 import db_p.SelectMenuAct.SelectDay;
 
-public class ResSeller extends JPanel { // 나중에 JPanel로 바꿀거고 마지막에 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 이거지워주면됌
+public class ReservationPanel_Seller extends JPanel { // 나중에 JPanel로 바꿀거고 마지막에 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 이거지워주면됌
 
 	String userID;
 	int x = 600;
 	int y = 200; // 좌표 여분 절대값
 	ProfileInOut pfio = ProfileInOut.getprofileInout();
 
-	public ResSeller(String userID) {
+	public ReservationPanel_Seller(String userID) {
 		this.userID = userID;
 
 		setLayout(null);

@@ -49,7 +49,7 @@ class normalUser {
 
 public class UserDB {
 
-   static final String host = IP_Num.host;
+   static final String host = IP_NumSet.host;
 
    private static boolean creativeDBusers(int userkind, String id, String pw, String name, String gender,
          String birthYYYYMMDD, String phone, String email, String address, String cardnumber, String pwhint,
@@ -92,7 +92,7 @@ public class UserDB {
       boolean res = false;
       Connection con = null;
       Statement stmt = null;
-
+      System.out.println("뜰어오니3");
       try {
          Class.forName("oracle.jdbc.driver.OracleDriver");
 
@@ -310,7 +310,7 @@ public class UserDB {
 	            String gender = rs.getString("gender");
 	            String login_time = rs.getString("LOGINTIME");
 
-	            res.add(new normalUser(name, id, phone, gender,login_time));
+	            res.add(new normalUser(id, name, phone, gender,login_time));
 	         }
 
 	      } catch (Exception e) {
@@ -423,8 +423,8 @@ public class UserDB {
       return getDBString("GENDER", userID);
    }
 
-   static String getUSER_IP(String userID) {
-      return getDBString("USER_IP", userID);
+   static String getLOGINCHK(String userID) {
+      return getDBString("LOGINCHK", userID);
    }
 
    static int getCOIN(String userID) {
@@ -444,6 +444,7 @@ public class UserDB {
    }
 
    static boolean setUSERKIND(String userID, int setInt) {
+	   System.out.println("여기들어오니");
       return setDBInt("USERKIND", userID, setInt);
    }
 
@@ -532,8 +533,9 @@ public class UserDB {
 	      return res;
 	   }
 
-   static boolean setUSER_IP(String userID, String setString) {
-      return setDBString("USER_IP", userID, setString);
+   static boolean setLOGINCHK(String userID, String setString) {
+	   System.out.println("들어오니2");
+      return setDBString("LOGINCHK", userID, setString);
    }
 
    static boolean setFORTUNE_NUM(String userID, int setInt) {

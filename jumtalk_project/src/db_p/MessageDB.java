@@ -42,7 +42,7 @@ public class MessageDB {
    
 
    
-   static final String host ="localhost";
+   static final String host =IP_NumSet.host;
                   //받은 메세지함
    static String[][] getTO_MESSAGE(String userID){
       

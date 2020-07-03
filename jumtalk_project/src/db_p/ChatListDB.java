@@ -96,7 +96,7 @@ class Chatlist{
 
 public class ChatListDB {
    
-   static final String host ="localhost";
+   static final String host =IP_NumSet.host;
    
    static ArrayList<Chatlist> getCHATLIST(String userID){ // 채팅리스트들 가져오기
       

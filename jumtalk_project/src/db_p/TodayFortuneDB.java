@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class TodayFortuneDB {
 	
-	static final String host ="localhost";
+	static final String host =IP_NumSet.host;
 	
 	
 	static String getFORTUNEMESSAGE(int number) {

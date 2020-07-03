@@ -145,7 +145,7 @@ public boolean equals(Object obj) {
 
 public class ReservationDB {
    
-   static final String host =IP_Num.host;
+   static final String host =IP_NumSet.host;
    
    static ArrayList<Chatlist2> getRESERVATION(String userID){ // 채팅리스트들 가져오기
       

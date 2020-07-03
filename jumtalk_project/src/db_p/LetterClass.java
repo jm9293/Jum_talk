@@ -2,7 +2,7 @@ package db_p;
 
 import java.io.Serializable;
 
-public class Content implements Serializable{
+public class LetterClass implements Serializable{
 	private static final long serialVersionUID = 1;
 	String to_id;
 	String from_id;
@@ -14,7 +14,7 @@ public class Content implements Serializable{
 	
 	byte[] filebyte;
 
-	public Content(String to_id, String from_id, String coment, String kind) { // 문자용
+	public LetterClass(String to_id, String from_id, String coment, String kind) { // 문자용
 		super();
 		this.to_id = to_id;
 		this.from_id = from_id;
@@ -22,7 +22,7 @@ public class Content implements Serializable{
 		this.kind = kind;
 	}
 
-	public Content(String to_id, String from_id, String kind, String filename, byte[] filebyte) { // 파일용
+	public LetterClass(String to_id, String from_id, String kind, String filename, byte[] filebyte) { // 파일용
 		super();
 		this.to_id = to_id;
 		this.from_id = from_id;

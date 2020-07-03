@@ -273,9 +273,9 @@ class SellerFrame extends JPanel implements ActionListener {
 
    public SellerFrame(String userID) {
       this.userID = userID;
-      nowMyCoin = UserDB.getCOIN(userID);
       setLayout(null);
-      // 점술가 본인이 얻은 코인의 수를 보여주는 패널 + 라벨
+      // 점술가가 얻은 코인의 수를 보여주는 패널 + 라벨
+      nowMyCoin = UserDB.getCOIN(userID);
       JPanel nowHaveCoinPan = new JPanel();
       nowHaveCoinPan.setLayout(null);
       nowHaveCoinPan.setBounds(20, 70, 200, 200);
@@ -294,7 +294,7 @@ class SellerFrame extends JPanel implements ActionListener {
       add(getMoneyPan);
       getMoneyLB = new JLabel();
       getMoneyLB.setBounds(10, 50, 200, 100);
-      getMoneyLB.setText("환전 가능한 코인 갯수 : " + nowMyCoin * 70 + "원");
+      getMoneyLB.setText("환전 가능한 금액 : " + nowMyCoin * 70 + "원");
       getMoneyPan.add(getMoneyLB);
 
       // 환전 요청 버튼
@@ -402,12 +402,7 @@ class panelOne extends JPanel {
       btc.getColumn("코인").setPreferredWidth(60);
       btc.getColumn("충전 시간").setPreferredWidth(140);
 
-     
       add(buyerToCoin);
-
-      if (btc == null) {
-         btc = new JTable(new String[1][4], ListInfo);
-      }
       
       btc.getTableHeader().setReorderingAllowed(false);
       btc.getTableHeader().setResizingAllowed(false);
@@ -434,9 +429,6 @@ class panelTwo extends JPanel {
       sellToMoney.setBounds(15, 320, 340, 200);
 
       add(sellToMoney);
-      if (stm == null) {
-         stm = new JTable(new String[1][4], ListInfoS);
-      }
 
       stm.getTableHeader().setReorderingAllowed(false);
       stm.getTableHeader().setResizingAllowed(false);
@@ -736,6 +728,6 @@ class EditerFrame extends JPanel implements ActionListener{
    }
 }
 
-public class NewJTPayment {
+public class PaymentPanel {
 
 }

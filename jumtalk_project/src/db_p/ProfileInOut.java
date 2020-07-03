@@ -36,18 +36,28 @@ public class ProfileInOut {
          FileInputStream fis = new FileInputStream(filepath);
          byte[] buf = new byte[fis.available()];
          fis.read(buf);
-         oos.writeObject(new Content("","","upload",id+".jpg",buf));
+         oos.writeObject(new LetterClass("","","upload",id+".jpg",buf));
          fis.close();
       } catch (Exception e) {
          // TODO: handle exception
       }
    }
    
+   void login(String userID) {
+	      try {
+	    	 Thread.sleep(1000);
+	         oos.writeObject(new LetterClass("", userID, "", "login"));
+	         System.out.println(userID+" 로그인 성공");
+	      } catch (Exception e) {
+	         // TODO: handle exception
+	      }
+	   }
+   
    byte[] download(String profileid) {
-      Content cc = null ;
+      LetterClass cc = null ;
       try {
-      oos.writeObject(new Content("", "", "download", profileid+".jpg", null));
-       cc = (Content) ois.readObject();
+      oos.writeObject(new LetterClass("", "", "download", profileid+".jpg", null));
+       cc = (LetterClass) ois.readObject();
       } catch (Exception e) {
          // TODO: handle exception
       }

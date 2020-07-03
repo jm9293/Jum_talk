@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class MenuDB {
    
-   static final String host ="localhost";
+   static final String host =IP_NumSet.host;
    
    static boolean makeMENU(String userID) {
       boolean res = false;

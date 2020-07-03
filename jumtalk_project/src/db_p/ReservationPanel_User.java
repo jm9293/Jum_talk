@@ -41,13 +41,13 @@ import javax.swing.JToggleButton;
 
 import db_p.SelectMenuAct2.SelectTime2;
 
-public class ResNormal extends JPanel { // 나중에 JPanel로 바꿀거고 마지막에 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 이거지워주면됌
+public class ReservationPanel_User extends JPanel { // 나중에 JPanel로 바꿀거고 마지막에 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 이거지워주면됌
 
 	String userID;
 	int x = 600;
 	int y = 200; // 좌표 여분 절대값
 	DetailFrame preDetailFrame; // 현재 열린 DetailFrame
-	public ResNormal(String userID) {
+	public ReservationPanel_User(String userID) {
 		this.userID = userID;
 
 		setLayout(null);
@@ -89,8 +89,8 @@ class SellerListPane extends JPanel implements ActionListener {
 	String sellerID;
 	int x;
 	int y;
-	ResNormal rs ; //나를 부른 패널
-	public SellerListPane(String userID, String sellerID, int x, int y,ResNormal rs) { // 로그인한일반유저아이디, 전체점술가아이디중 이 패널의주인
+	ReservationPanel_User rs ; //나를 부른 패널
+	public SellerListPane(String userID, String sellerID, int x, int y,ReservationPanel_User rs) { // 로그인한일반유저아이디, 전체점술가아이디중 이 패널의주인
 		this.userID = userID;
 		this.sellerID = sellerID;
 		this.x = x;

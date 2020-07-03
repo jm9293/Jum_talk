@@ -22,10 +22,10 @@ class ChatInButton extends JButton implements ActionListener {
    String sellerID;
    Date chatdate;
    int kind;
-   User_Chat_List ucl;
-   User_Chat_Connect ucc;
+   ChatlistPanel ucl;
+   ChatFrame ucc;
    String chatmenu;
-   public ChatInButton(int kind,String userID,String sellerID, Date chatdate, User_Chat_List ucl,String chatmenu) {
+   public ChatInButton(int kind,String userID,String sellerID, Date chatdate, ChatlistPanel ucl,String chatmenu) {
 
       this.kind = kind;
       this.userID = userID;
@@ -42,22 +42,22 @@ class ChatInButton extends JButton implements ActionListener {
 
    @Override
    public void actionPerformed(ActionEvent e) {
-	   
-	   
-	   if(ucl.ucc == null) {
-		   
-		   if(kind==0) {
-			   System.out.println("ÀÏ¹Ý");
-			   ucl.ucc = new User_Chat_Connect(kind, userID, sellerID, chatdate, ucl,chatmenu);
+      
+      
+      if(ucl.ucc == null) {
+         
+         if(kind==0) {
+            System.out.println("ÀÏ¹Ý");
+            ucl.ucc = new ChatFrame(kind, userID, sellerID, chatdate, ucl,chatmenu);
 //         new User_Chat_Connect(kind, userID, sellerID,chatdate);
-		   }else {
-			   System.out.println("Á¡¼ú°¡");
-			   ucl.ucc = new User_Chat_Connect(kind, sellerID, userID,chatdate, ucl,chatmenu);
-		   }
-	   } 
-	   
-	   else {System.out.println("¾È¸Ô¾î ¾Èµé¾î¿Í");}
-	   
+         }else {
+            System.out.println("Á¡¼ú°¡");
+            ucl.ucc = new ChatFrame(kind, sellerID, userID,chatdate, ucl,chatmenu);
+         }
+      } 
+      
+      else {System.out.println("¾È¸Ô¾î ¾Èµé¾î¿Í");}
+      
 
    }
 
@@ -65,7 +65,7 @@ class ChatInButton extends JButton implements ActionListener {
 
 }
 
-public class User_Chat_List extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸®½ºÆ® ÆÐ³Î
+public class ChatlistPanel extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸®½ºÆ® ÆÐ³Î
 
    String userID;
    String sellerID;
@@ -76,12 +76,12 @@ public class User_Chat_List extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸
    ArrayList<JButton> jbs;
    ArrayList<Chatlist> cc;
    Chat_List_Timer ch;
-   User_Chat_Connect ucc;
+   ChatFrame ucc;
    
    
 
-   public User_Chat_List(String userID) {
-	   chk =false; // ¸ðµç¾²·¹µå¸¦ Á×ÀÌ±â
+   public ChatlistPanel(String userID) {
+      chk =false; // ¸ðµç¾²·¹µå¸¦ Á×ÀÌ±â
       this.userID = userID;
      
       
@@ -106,7 +106,7 @@ public class User_Chat_List extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸
       Dimension size = new Dimension(); // »çÀÌÁî¸¦ ÁöÁ¤ÇÏ±â À§ÇÑ °´Ã¼
       int a =  (cc.size() * 170);
       if(a==0) {
-    	  a=50;
+         a=50;
       }
       size.setSize(480, a); // »çÀÌÁî ÁöÁ¤
       chat.setPreferredSize(size); // »çÀÌÁî Á¤º¸¸¦ °¡Áö°í ÀÖ´Â °´Ã¼¸¦ ÀÌ¿ëÇØ ÆÐ³ÎÀÇ »çÀÌÁî ÁöÁ¤
@@ -156,11 +156,11 @@ public class User_Chat_List extends JScrollPane  { // Ã¤ÆÃÅÇ ´©¸£¸é ³ª¿À´Â Ã¤ÆÃ¸
       }
       System.out.println(cc.size());
       if(cc.isEmpty()) {
-    	 System.out.println("µé¾î¿À´Ï?");
-    	 JLabel emptypanel = new JLabel("Ã¤ÆÃ¹æÀÌ ¾ø½À´Ï´Ù.",JLabel.CENTER);
-    	 emptypanel.setBounds(0,0,480,50);
-    	 emptypanel.setVisible(true);
-    	 chat.add(emptypanel); 
+        System.out.println("µé¾î¿À´Ï?");
+        JLabel emptypanel = new JLabel("Ã¤ÆÃ¹æÀÌ ¾ø½À´Ï´Ù.",JLabel.CENTER);
+        emptypanel.setBounds(0,0,480,50);
+        emptypanel.setVisible(true);
+        chat.add(emptypanel); 
       }
       chk = true; //³»¾²·¹µå´Â »ì¸®±â
       ch = new Chat_List_Timer();

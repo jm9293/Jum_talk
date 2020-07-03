@@ -14,36 +14,44 @@ import java.net.Socket;
 import java.util.Collections;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
 
 
 
 
 
-public class Jumtalk_Server2 {
+
+public class ProfileServer {
    
-	HashMap<String, ObjectOutputStream> usermap;
-   
-   public Jumtalk_Server2() {
-	  usermap = new HashMap<String, ObjectOutputStream>();
+   public ProfileServer() {
+	
       
-      Collections.synchronizedMap(usermap);
+     
       
       try {
          ServerSocket server = new ServerSocket(8888);   
          
-         System.out.println("서버시작");
+         System.out.println("프로필 사진 인아웃 서버시작");
          
          while(true) {
             Socket client = server.accept();
             System.out.println("연결성공");
-            new MulReceiver(client).start();
+            chkclass chk = new chkclass();
+            MulReceiver mulReceiver =  new MulReceiver(client,chk);
+          
+            mulReceiver.start();
+           
          }
          
-      } catch (IOException e) {
+      } catch (Exception e) {
          // TODO Auto-generated catch block
          e.printStackTrace();
       }
    
+   }
+   
+   class chkclass{
+	   boolean chk = true;
    }
    
    class MulReceiver extends Thread{
@@ -51,9 +59,9 @@ public class Jumtalk_Server2 {
       String name;
       ObjectOutputStream dos;
       ObjectInputStream dis;
-      
-      public MulReceiver(Socket client) {
-         
+      chkclass chk;
+      public MulReceiver(Socket client, chkclass chk) {
+         this.chk = chk;
          try {
             System.out.println(client.getInetAddress().toString());
            
@@ -75,16 +83,13 @@ public class Jumtalk_Server2 {
          
          
          try {
-            
-            usermap.put(name, dos);
-            
-            while(dis!=null) {
-            	
+        	
+            while(dis!=null&&chk.chk) {
             try {
-            	Content contant=null;
+            	LetterClass contant=null;
             	try {
             		
-            		contant = (Content) dis.readObject();
+            		contant = (LetterClass) dis.readObject();
 					System.out.println("받았어");
 				} catch (Exception e) {
 					
@@ -96,6 +101,9 @@ public class Jumtalk_Server2 {
             	}else if(contant.kind.equals("download")){
             		download(contant);
             		System.out.println("다운로드");
+            	}else if(contant.kind.equals("login")) {
+            		name=contant.from_id;
+            		System.out.println(contant.from_id+"로그인");
             	}
             	
             	
@@ -106,24 +114,22 @@ public class Jumtalk_Server2 {
             }
 
          } catch (Exception e) {
-           e.printStackTrace();
+        	UserDB.setLOGINCHK(name, "false");
+           System.out.println(name+ "로그아웃");
          }finally {
-            
-            usermap.remove(dos);
-            
+   
             
             try {
                dis.close();
                dos.close();
             } catch (IOException e) {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
+              
             }
             
          }   
       }
    
-      void upload(Content co) {
+      void upload(LetterClass co) {
     	  try {
     		  FileOutputStream fio = new FileOutputStream("icon\\"+co.filename);
     		  fio.write(co.filebyte);
@@ -133,7 +139,7 @@ public class Jumtalk_Server2 {
     	  }
       }
       
-      void download(Content co) {
+      void download(LetterClass co) {
     	  try {
     		  File file = new File("icon\\"+co.filename);
     		  byte[]  buf;
@@ -150,7 +156,7 @@ public class Jumtalk_Server2 {
     			  fis.close();
     			  System.out.println("있어");
     		  }
-    		  dos.writeObject(new Content("", "", "", "", buf));
+    		  dos.writeObject(new LetterClass("", "", "", "", buf));
     		  
     		  
     	  } catch (Exception e) {
@@ -158,6 +164,74 @@ public class Jumtalk_Server2 {
     	  }
     	  
       }
+      
+      
+      
+      
+      
+   }
+   
+   class LoginReceiver extends Thread{
+	      
+	      String name;
+	      ObjectOutputStream dos;
+	      ObjectInputStream dis;
+	      chkclass chk;
+	      public LoginReceiver(Socket client, chkclass chk) {
+	         this.chk =chk;
+	         try {
+    
+	            dos = new ObjectOutputStream(client.getOutputStream());
+	            dis = new ObjectInputStream(client.getInputStream());
+	            System.out.println("받냐?2");
+	         } catch (IOException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	         }
+	         
+	      }
+	      
+	      
+	      @Override
+	      public void run() {
+	         System.out.println("들어오니?");
+	         
+	         try {
+	        	 while (name!=null) {
+	        		 System.out.println("들어와?");
+	        		 name = dis.readUTF();
+	        		 System.out.println(name + " 로그인");	
+	        	 }
+
+	            while(dis!=null&&dos!=null&&chk.chk) {
+
+	            sleep(1000);
+	           
+	            dos.writeByte(1);
+			
+	            }
+
+	         } catch (Exception e) {
+	        	 System.out.println(name + " 로그아웃");
+	         }finally {
+	            
+	        	
+         
+	            try {
+	               chk.chk =false;
+	               dis.close();
+	               dos.close();
+	            } catch (IOException e) {
+	               // TODO Auto-generated catch block
+	               e.printStackTrace();
+	            }
+	            
+	         }   
+	      }
+	   
+	     
+	      
+	   
    }
 
    
@@ -167,7 +241,7 @@ public class Jumtalk_Server2 {
    public static void main(String[] args) {
       
       
-      new Jumtalk_Server2();
+      new ProfileServer();
 
    }
 
