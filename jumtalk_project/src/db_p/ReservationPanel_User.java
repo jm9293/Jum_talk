@@ -46,7 +46,7 @@ public class ReservationPanel_User extends JPanel { // 나중에 JPanel로 바꿀거고 
 	String userID;
 	int x = 600;
 	int y = 200; // 좌표 여분 절대값
-	DetailFrame preDetailFrame; // 현재 열린 DetailFrame
+
 	public ReservationPanel_User(String userID) {
 		this.userID = userID;
 
@@ -64,7 +64,7 @@ public class ReservationPanel_User extends JPanel { // 나중에 JPanel로 바꿀거고 
 		}
 		jp.setLayout(new GridLayout(row, 1));
 		for (sellUser ss : UserDB.getSELLER()) {
-			jp.add(new SellerListPane(userID, ss.id, x, y,this)); // 로그인한일반유저아이디, 전체점술가아이디
+			jp.add(new SellerListPane(userID, ss.id, x, y)); // 로그인한일반유저아이디, 전체점술가아이디
 		}
 		for (int i = UserDB.getSELLER().size(); i < 5; i++) { // 점술가가 5명보다 적을때도 Grid 모양고정
 			jp.add(new JPanel());
@@ -89,13 +89,14 @@ class SellerListPane extends JPanel implements ActionListener {
 	String sellerID;
 	int x;
 	int y;
-	ReservationPanel_User rs ; //나를 부른 패널
-	public SellerListPane(String userID, String sellerID, int x, int y,ReservationPanel_User rs) { // 로그인한일반유저아이디, 전체점술가아이디중 이 패널의주인
+	
+	DetailFrame preDetailFrame;
+	public SellerListPane(String userID, String sellerID, int x, int y) { // 로그인한일반유저아이디, 전체점술가아이디중 이 패널의주인
 		this.userID = userID;
 		this.sellerID = sellerID;
 		this.x = x;
 		this.y = y;
-		this.rs= rs;
+		
 
 		setLayout(new GridLayout(2, 0));
 
@@ -113,8 +114,8 @@ class SellerListPane extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) { // 상세프로필
-		if(rs.preDetailFrame==null) {
-			rs.preDetailFrame = new DetailFrame(userID, sellerID, x, y, this);
+		if(preDetailFrame==null) {
+			preDetailFrame = new DetailFrame(userID, sellerID, x, y, this);
 		}
 	}
 }
@@ -307,7 +308,7 @@ class DetailFrame extends JFrame implements ActionListener, WindowListener { // 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(sr);
+
 		if (e.getSource().equals(btnReview) && sr == null)
 			if(sr==null) {
 				
@@ -342,7 +343,7 @@ class DetailFrame extends JFrame implements ActionListener, WindowListener { // 
 		// TODO Auto-generated method stub
 		sr = null;
 		sm = null;
-		sl.rs.preDetailFrame = null;
+		sl.preDetailFrame = null;
 	}
 
 	@Override
@@ -951,7 +952,7 @@ class ChkFrame extends JFrame implements ActionListener {
 			if (btnTimeSeller.get(i).isSelected())
 				chkTog = i; // 선택한 시간
 		}
-		System.out.println(Arrays.deepToString(getMenu));
+
 		lbl = new JLabel("[" + selectMon + "]월    [" + selectCalStr + "]일     [" + chkTog + "]시     ["
 				+ getMenu[menuChoice].split(" ")[0] + "]     예약하시겠습니까");
 		lbl.setBounds(30, 30, 350, 30);
@@ -994,21 +995,6 @@ class ChkFrame extends JFrame implements ActionListener {
 				String str = Calendar.getInstance().get(Calendar.YEAR) + "-" + selectMon + "-" + selectCalStr + " "
 						+ chkTog + ":00:00";
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				try {
-					// 채팅리스트 저장
-					ChatListDB.saveCHATLIST(sellerID, userID, sdf.parse(str), getMenu[menuChoice].split(" ")[0]);
-					ReservationDB.saveRESERVATION(sellerID, userID, sdf.parse(str), getMenu[menuChoice].split(" ")[0]);
-				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-				// 유저 코인차감
-				UserDB.setCOIN(userID,
-						(UserDB.getCOIN(userID) - (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))));
-				// 점술가 코인증가
-				UserDB.setCOIN(sellerID,
-						(UserDB.getCOIN(sellerID) + (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))));
 
 				// 예약 DB저장
 				int ss = Integer.parseInt(selectCalStr);
@@ -1023,20 +1009,33 @@ class ChkFrame extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(null, "예약이 완료되었습니다");
 					btnDay.get(aa - 1).doClick();
 					sm.st.repaint();
-					setVisible(false);
+					try {
+						ChatListDB.saveCHATLIST(sellerID, userID, sdf.parse(str), getMenu[menuChoice].split(" ")[0]);
+						ReservationDB.saveRESERVATION(sellerID, userID, sdf.parse(str), getMenu[menuChoice].split(" ")[0]);
+					} catch (ParseException e1) {
+						// TODO 자동 생성된 catch 블록
+						e1.printStackTrace();
+					}
+					// 유저 코인차감
+					UserDB.setCOIN(userID,
+							(UserDB.getCOIN(userID) - (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))));
+					// 점술가 코인증가
+					UserDB.setCOIN(sellerID,
+							(UserDB.getCOIN(sellerID) + (Integer.parseInt(getMenu[menuChoice].split(" ")[1]))));
+					dispose();
 				} else {
 					JOptionPane.showMessageDialog(null, "예약실패");
 					btnDay.get(aa - 1).doClick();
 					sm.st.repaint();
-					setVisible(false);
+					dispose();
 				}
 			}
 
 		} else if (e.getSource().equals(btnChkN)) {
-			setVisible(false);
+			dispose();
 		} else {
 			JOptionPane.showMessageDialog(null, "이미 예약되었습니다. 다시 선택해주세요");
-			setVisible(false);
+			dispose();
 		}
 
 	}

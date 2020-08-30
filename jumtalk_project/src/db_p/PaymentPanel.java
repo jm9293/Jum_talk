@@ -128,6 +128,7 @@ class BuyerFrame extends JPanel implements ActionListener {
          }
          clickResult.setText(texttt);
          
+         
          setVisible(true);
       }
 
@@ -183,12 +184,12 @@ class BuyerFrame extends JPanel implements ActionListener {
          String[] ListInfo = { "충전 금액", "충전한 코인 갯수", "시간" };
          if (data == null) {
             String[][] nodata = new String[1][3];
-            MtoCList = new JTable(nodata, ListInfo);
+            MtoCList = new JTable(new NotEditTable(nodata, ListInfo));
             MtoCPan = new JScrollPane(MtoCList);
             MtoCPan.setBounds(15, 250, 450, 150);
             add(MtoCPan);
          } else {
-            MtoCList = new JTable(data, ListInfo);
+            MtoCList = new JTable(new NotEditTable(data, ListInfo));
             MtoCPan = new JScrollPane(MtoCList);
             MtoCPan.setBounds(15, 250, 450, 150);
             add(MtoCPan);
@@ -255,6 +256,7 @@ class BuyerFrame extends JPanel implements ActionListener {
                   JOptionPane.showMessageDialog(this, "비밀번호가 다릅니다");
                   break;
                }
+               
             }
 
          }
@@ -308,14 +310,14 @@ class SellerFrame extends JPanel implements ActionListener {
       if (data == null) {
          String[][] data1 = new String[1][3];
          String[] ListInfo = { "환전 금액", "환전한 코인 갯수", "시간" };
-         CtoMList = new JTable(data1, ListInfo);
+         CtoMList = new JTable(new NotEditTable(data1, ListInfo));
          CtoMListPan = new JScrollPane(CtoMList);
          CtoMList.setLayout(null);
          CtoMListPan.setBounds(15, 400, 450, 150);
          add(CtoMListPan);
       } else {
          String[] ListInfo = { "환전 금액", "환전한 코인 갯수", "시간" };
-         CtoMList = new JTable(data, ListInfo);
+         CtoMList = new JTable(new NotEditTable(data, ListInfo));
          CtoMListPan = new JScrollPane(CtoMList);
          CtoMList.setLayout(null);
          CtoMListPan.setBounds(15, 400, 450, 150);
@@ -520,7 +522,7 @@ class Calenderpane extends JPanel implements ActionListener {
          cal.set(Calendar.YEAR, (int) boxY.getSelectedItem());
          cal.set(Calendar.DATE, 1);
          cal.set(Calendar.MONTH, a - 1);
-         System.out.println(a);
+     
          Vector dd = new Vector();
          dd.add("전체");
 
@@ -547,7 +549,7 @@ class Calenderpane extends JPanel implements ActionListener {
             boxD.setEnabled(false);
          }
       } else if (e.getSource().equals(conf)) {
-         System.out.println(boxY.getSelectedItem() + "-" + boxM.getSelectedItem() + "-" + boxD.getSelectedItem());
+        
          ef.remove(ef.kk);
          ef.remove(ef.tt);
          ef.add(ef.kk = new panelOne(

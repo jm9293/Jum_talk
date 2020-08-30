@@ -15,7 +15,7 @@ public class ProfileInOut {
    ObjectOutputStream oos;
    private ProfileInOut() {
       try {
-         Socket socket = new Socket("192.168.0.218", 8888);
+         Socket socket = new Socket(IP_NumSet.host, 8888);
          ois = new ObjectInputStream(socket.getInputStream());
          oos = new ObjectOutputStream(socket.getOutputStream());
          
@@ -36,7 +36,7 @@ public class ProfileInOut {
          FileInputStream fis = new FileInputStream(filepath);
          byte[] buf = new byte[fis.available()];
          fis.read(buf);
-         oos.writeObject(new LetterClass("","","upload",id+".jpg",buf));
+         oos.writeObject(new LetterClass(id,"","upload",id+".jpg",buf));
          fis.close();
       } catch (Exception e) {
          // TODO: handle exception
@@ -53,10 +53,20 @@ public class ProfileInOut {
 	      }
 	   }
    
+   void logOut(String userID) {
+	      try {
+	         oos.writeObject(new LetterClass("", userID, "", "logout"));
+	         System.out.println(userID+" ·Î±×¾Æ¿ô");
+	      } catch (Exception e) {
+	         // TODO: handle exception
+	      }
+	   }
+   
+   
    byte[] download(String profileid) {
       LetterClass cc = null ;
       try {
-      oos.writeObject(new LetterClass("", "", "download", profileid+".jpg", null));
+      oos.writeObject(new LetterClass(profileid, "", "download", profileid+".jpg", null));
        cc = (LetterClass) ois.readObject();
       } catch (Exception e) {
          // TODO: handle exception

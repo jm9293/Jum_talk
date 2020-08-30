@@ -72,7 +72,7 @@ public class UserDB {
                      + "', TO_DATE('" + birthYYYYMMDD + "', 'YYYYMMDD'), '" + phone + "', '" + email + "', "
                      + "'" + address + "', '" + cardnumber + "', '" + pwhint + "', '" + pwres + "', '"
                      + businessname + "', '" + businessaddress + "', '" + banknum + "', '" + coin + "')");
-         System.out.println("성공");
+         
          res = true;
       } catch (Exception e) {
          e.printStackTrace();
@@ -92,7 +92,7 @@ public class UserDB {
       boolean res = false;
       Connection con = null;
       Statement stmt = null;
-      System.out.println("뜰어오니3");
+    
       try {
          Class.forName("oracle.jdbc.driver.OracleDriver");
 
@@ -424,7 +424,12 @@ public class UserDB {
    }
 
    static String getLOGINCHK(String userID) {
-      return getDBString("LOGINCHK", userID);
+	  String res = getDBString("LOGINCHK", userID);
+	  if(res==null) {
+		  res = "";
+	  }
+	  
+      return res;
    }
 
    static int getCOIN(String userID) {
@@ -444,7 +449,7 @@ public class UserDB {
    }
 
    static boolean setUSERKIND(String userID, int setInt) {
-	   System.out.println("여기들어오니");
+
       return setDBInt("USERKIND", userID, setInt);
    }
 
@@ -534,7 +539,6 @@ public class UserDB {
 	   }
 
    static boolean setLOGINCHK(String userID, String setString) {
-	   System.out.println("들어오니2");
       return setDBString("LOGINCHK", userID, setString);
    }
 
@@ -674,7 +678,7 @@ public class UserDB {
 	         stmt = con.createStatement();
 	         
 	         stmt.executeUpdate("delete from  userdata where ID = '"+userID+"'");
-	         System.out.println("성공");
+
 	         res = true;
 	      } catch (Exception e) {
 	         e.printStackTrace();
@@ -692,7 +696,7 @@ public class UserDB {
    }
 
    public static void main(String[] args) {
-
+	   setFORTUNE_TIME("ppppppp", "1990-01-01");
    }
 
 }

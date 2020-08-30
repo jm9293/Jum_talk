@@ -195,7 +195,7 @@ public class ReservationDB {
    
    static boolean saveRESERVATION(String sell_id, String user_id, Date chattime, String chatmenu) { // 채팅리스트 만들기 
       boolean res = false;
-      System.out.println("들어오니?");
+    
       Connection con = null;
       Statement stmt=null;
       SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -208,7 +208,7 @@ public class ReservationDB {
          stmt = con.createStatement();
          
          stmt.executeUpdate("INSERT INTO RESERVATIONLIST (SELL_ID, USER_ID, CHATTIME, CHATMENU) VALUES ('"+sell_id+"', '"+user_id+"', TO_DATE('"+sdf1.format(chattime)+"', 'YYYY-MM-DD HH24:MI:SS'),'"+chatmenu+"')");
-         System.out.println("성공22");
+       
          res = true;
       } catch (Exception e) {
          e.printStackTrace();

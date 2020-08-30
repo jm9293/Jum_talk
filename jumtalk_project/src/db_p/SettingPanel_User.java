@@ -88,6 +88,8 @@ class SellerReviseInfor2 extends JFrame implements ActionListener, WindowListene
    String userID;
    ProfileInOut pfio = ProfileInOut.getprofileInout();
    SellerSignUpChk sellerSignUpChk;
+   
+   
 
    boolean[] regularChk = new boolean[9];
    boolean signUpEnd = true;
@@ -281,7 +283,15 @@ class SellerReviseInfor2 extends JFrame implements ActionListener, WindowListene
       pwhint.setSelectedItem(UserDB.getPWHINT(userID));
       workNameText.setText(UserDB.getBUSINESSNAME(userID));
       workAddressText.setText(UserDB.getBUSINESSADDRESS(userID));
-
+      
+      fieldArr.add(nowPwText);
+      fieldArr.add(phoneNumText_1);
+      fieldArr.add(phoneNumText_2);
+      fieldArr.add(emailText);
+      fieldArr.add(addressText);
+      fieldArr.add(cardNumText);
+      fieldArr.add(hintAnswerText);
+      
       add(reviseGo); // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡ ¼öÁ¤¿Ï·á ¹öÆ° Ãß°¡
 
       add(nowPw);
@@ -327,6 +337,7 @@ class SellerReviseInfor2 extends JFrame implements ActionListener, WindowListene
    public void actionPerformed(ActionEvent e) {
 
       int cnt = 0;
+      int fieldChk = 0;
 
       for (boolean rgc : regularChk) {
          if (rgc == true) {
@@ -334,6 +345,12 @@ class SellerReviseInfor2 extends JFrame implements ActionListener, WindowListene
          }
 
       }
+      
+      for (JTextField tf : fieldArr) {
+      if(!(tf.getText().equals(""))) {
+         fieldChk++;
+      }
+   }
 
       if (e.getSource().equals(reviseGo)) { // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡¼­ ¿Ï·á ¹öÆ° Å¬¸¯
          // ¼öÁ¤¿Ï·á ÆË¾÷ ¶ç¿îÈÄ ÇÁ·¹ÀÓ »ç¶óÁö±â
@@ -351,7 +368,10 @@ class SellerReviseInfor2 extends JFrame implements ActionListener, WindowListene
          } else if (cnt != 9) {
             System.out.println(cnt);
             JOptionPane.showMessageDialog(null, "¿Ã¹Ù¸¥ Çü½ÄÀÌ ¾Æ´Õ´Ï´Ù");
-         } else {
+         } else if (fieldChk != 7) {
+            JOptionPane.showMessageDialog(null, "ºó Ä­À» ÀÔ·ÂÇØ ÁÖ¼¼¿ä");
+         }
+         else {
             JOptionPane.showMessageDialog(null, "¼öÁ¤¿Ï·á");
             signUpEnd = false;
             System.out.println(signUpEnd);
@@ -692,6 +712,8 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
    public void actionPerformed(ActionEvent e) {
       if (e.getSource().equals(optButton.get(0))) {
          // ·Î±×ÀÎ ÆÐ³Î·Î ¹Ù²ñ
+         UserDB.setLOGINCHK(userID, "false");  
+        ProfileInOut.getprofileInout().logOut(userID);
          JOptionPane.showMessageDialog(null, "·Î±×¾Æ¿ô ¿Ï·á");
          System.exit(0);
       } else if (e.getSource().equals(optButton.get(1))) {
@@ -940,6 +962,18 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
          hintAnswerText.setText(UserDB.getPWRES(userID));
 
          pwhint.setSelectedItem(UserDB.getPWHINT(userID));
+         
+         
+         fieldArr.add(nowPwField);
+         fieldArr.add(phoneNumText_1);
+         fieldArr.add(phoneNumText_2);
+         fieldArr.add(emailText);
+         fieldArr.add(addressText);
+         fieldArr.add(cardNumText_1);
+         fieldArr.add(cardNumText_2);
+         fieldArr.add(cardNumText_3);
+         fieldArr.add(cardNumText_4);
+         fieldArr.add(hintAnswerText);
 
          add(reviseGo); // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡ ¼öÁ¤¿Ï·á ¹öÆ° Ãß°¡
 
@@ -988,6 +1022,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
       public void actionPerformed(ActionEvent e) {
 
          int cnt = 0;
+         int fieldChk = 0;
 
          for (boolean rgc : regularChk) {
             if (rgc == true) {
@@ -995,6 +1030,12 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
             }
 
          }
+         
+         for (JTextField tf : fieldArr) {
+         if(!(tf.getText().equals(""))) {
+            fieldChk ++;
+         }
+      }
 
          if (e.getSource().equals(reviseGo)) { // °³ÀÎÁ¤º¸ ¼öÁ¤ ÇÁ·¹ÀÓ¿¡¼­ ¿Ï·á ¹öÆ° Å¬¸¯
             // ¼öÁ¤¿Ï·á ÆË¾÷ ¶ç¿îÈÄ ÇÁ·¹ÀÓ »ç¶óÁö±â
@@ -1010,7 +1051,10 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
                JOptionPane.showMessageDialog(null, "ºñ¹Ð¹øÈ£¸¦ ´Ù½Ã ÀÔ·ÂÇØÁÖ¼¼¿ä");
             } else if (cnt != 10) {
                JOptionPane.showMessageDialog(null, "¿Ã¹Ù¸¥ Çü½ÄÀÌ ¾Æ´Õ´Ï´Ù");
-            } else {
+            } else if (fieldChk != 10) {
+               JOptionPane.showMessageDialog(null, "ºó Ä­À» ÀÔ·ÂÇØ ÁÖ¼¼¿ä");
+            }
+            else {
                JOptionPane.showMessageDialog(null, "¼öÁ¤¿Ï·á");
                signUpEnd = false;
         
@@ -1315,7 +1359,7 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
       JTable sendList;
       JScrollPane scroll;
-      JButton delete;
+//      JButton delete;
 
       boolean chk = true;
       String[][] arr2;
@@ -1337,15 +1381,15 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
          sendList = new JTable(new NotEditTable(arr2, arr));
          scroll = new JScrollPane(sendList);
-         delete = new JButton("»èÁ¦");
+//         delete = new JButton("»èÁ¦");
 
          scroll.setBounds(0, 150, 500, 500);
-         delete.setBounds(390, 660, 100, 50);
+//         delete.setBounds(390, 660, 100, 50);
 
          sendList.addMouseListener(this);
-         delete.addActionListener(this);
+//         delete.addActionListener(this);
          addWindowListener(this);
-         add(delete);
+//         add(delete);
          add(scroll);
 
          setVisible(true);
@@ -1354,13 +1398,12 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
       @Override
       public void actionPerformed(ActionEvent e) {
 
-         if (e.getSource().equals(delete)) {
-            MessageDB.deleteSendMESSAGE(userID);
-            JOptionPane.showMessageDialog(null, "»èÁ¦¿Ï·á");
-//         setVisible(false);
-            messagePanel.sendMessage = null;
-            dispose();
-         }
+//         if (e.getSource().equals(delete)) {
+//            MessageDB.deleteSendMESSAGE(userID);
+//            JOptionPane.showMessageDialog(null, "»èÁ¦¿Ï·á");
+//            messagePanel.sendMessage = null;
+//            dispose();
+//         }
 
       }
 
@@ -1599,7 +1642,6 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
 
          MessageDB.deleteGiveMESSAGE(userID);
          JOptionPane.showMessageDialog(null, "»èÁ¦¿Ï·á");
-//         setVisible(false);
          messagePanel.giveMessage = null;
          dispose();
 
@@ -1815,14 +1857,20 @@ class OptionPanel extends JPanel implements ActionListener { // °í°´, ¼öÁ¤¹öÆ° ¹
       public void actionPerformed(ActionEvent e) {
          String title = (String) noticeBox.getSelectedItem();
          Notice ntc = null;
+        
          for (Notice ntc1 : notices) {
+           
             if (ntc1.title.equals(title)) {
                ntc = ntc1;
                break;
             }
          }
          if (noticeFrame == null) {
+            if(noticeBox.getSelectedItem().equals("°øÁö»çÇ×¾øÀ½")) {
+               JOptionPane.showMessageDialog(null, "°øÁö»çÇ×ÀÌ ¾ø½À´Ï´Ù");
+            }else {
             noticeFrame = new NoticeFrame(ntc, this);
+            }
          }
       }
    }

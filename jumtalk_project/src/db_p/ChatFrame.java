@@ -176,7 +176,7 @@ public class ChatFrame extends JFrame implements ActionListener, WindowListener 
                  
                   if(content.kind.equals("String")) {
                     String coment = content.from_id+" : "+content.coment;
-                     System.out.println(coment.length());
+
                      speechbubble = new JLabel();// 말풍선라벨
                      speechbubble.setVisible(false);
                      
@@ -339,9 +339,9 @@ public class ChatFrame extends JFrame implements ActionListener, WindowListener 
          SimpleDateFormat sdf = new SimpleDateFormat("m-s");
          String str = sdf.format(d1);
          mi = Integer.parseInt(str.split("-")[0]);
-         System.out.println(mi);
+        
          sec = Integer.parseInt(str.split("-")[1]);
-         System.out.println(sec);
+
       }
 
       @Override
@@ -372,7 +372,7 @@ public class ChatFrame extends JFrame implements ActionListener, WindowListener 
    }
    
    public ChatFrame(int kind, String user1, String user2, Date chatdate, ChatlistPanel ucl,String chatmenu) {
-      System.out.println(user1+" , "+user2);
+    
      this.kind = kind;
      this.userID = user1;
      this.sellID = user2;
@@ -381,7 +381,7 @@ public class ChatFrame extends JFrame implements ActionListener, WindowListener 
      this.chatmenu =chatmenu;
       setBounds(700, 300, 515, 800);
       setLayout(null);
-      System.out.println(sellID);
+    
 
       connect();
       
@@ -660,25 +660,25 @@ public class ChatFrame extends JFrame implements ActionListener, WindowListener 
    void uploadReview() {   //리뷰다쓰고 올리기버튼 누를때
 
       String finalreview = userID+" : " + reviewWrite.getText(); // 리뷰내용 담는곳
-      System.out.println(finalreview);
+
       int finalscore=0; // 평점점수
       
 
       if (score[0].isSelected()) {
          finalscore = 1;
-         System.out.println(finalscore);
+     
       } else if (score[1].isSelected()) {
          finalscore = 2;
-         System.out.println(finalscore);
+    
       } else if (score[2].isSelected()) {
          finalscore = 3;
-         System.out.println(finalscore);
+ 
       } else if (score[3].isSelected()) {
          finalscore = 4;
-         System.out.println(finalscore);
+ 
       } else if (score[4].isSelected()) {
          finalscore = 5;
-         System.out.println(finalscore);
+
       }
 
       ReviewDB.saveREVIEW(sellID, finalreview, finalscore);
@@ -730,13 +730,12 @@ public class ChatFrame extends JFrame implements ActionListener, WindowListener 
       case "파일첨부수락" :
         FileInputStream fis;
       try {
-         System.out.println(fd.getDirectory()+fd.getFile());
+
          fis = new FileInputStream(fd.getDirectory()+fd.getFile());
          byte [] data = new byte [fis.available()];
          
          fis.read(data);
-         System.out.println(fd.getFile());
-         System.out.println(fd.getFile().toString().substring(fd.getFile().toString().indexOf(".")+1).toLowerCase());
+      
          if(Pattern.matches("[jpg:jpeg:bmp:png:gif]*", fd.getFile().toString().substring(fd.getFile().toString().indexOf(".")+1).toLowerCase())) {
             dos.writeObject(new LetterClass(sellID, userID, "image", fd.getFile(), data));
          }else {

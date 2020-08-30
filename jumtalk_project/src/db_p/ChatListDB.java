@@ -159,7 +159,7 @@ public class ChatListDB {
          stmt = con.createStatement();
          
          stmt.executeUpdate("INSERT INTO CHATLIST (SELL_ID, USER_ID, CHATTIME, CHATMENU) VALUES ('"+sell_id+"', '"+user_id+"', TO_DATE('"+sdf1.format(chattime)+"', 'YYYY-MM-DD HH24:MI:SS'),'"+chatmenu+"')");
-         System.out.println("¼º°ø");
+   
          res = true;
       } catch (Exception e) {
          e.printStackTrace();

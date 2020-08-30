@@ -27,9 +27,6 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 
-
-
-
 public class MainFrame extends JFrame implements ActionListener, WindowListener{
    
 	String userID;
@@ -41,17 +38,12 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
    public MainFrame(String userID) {
       
       super("  Á¡Åå");
-//      try {
-//         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-//         JFrame.setDefaultLookAndFeelDecorated(true);
-//      } catch (Exception e) {
-//         // TODO Auto-generated catch block
-//         e.printStackTrace();
-//      } 
+
       this.userID = userID;
       
       userkind=UserDB.getUSERKIND(userID);
       test2 = new ReservationNoti(userkind, userID);
+      addWindowListener(this);
       
       if(UserDB.getUSERKIND(userID)==0) {
       setBounds(600,100,500+15,800);
@@ -73,7 +65,6 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
       jb2.addActionListener(this);
       jb3.addActionListener(this);
       jb4.addActionListener(this);
-      addWindowListener(this);
       add(cate);
       catePanel = new JPanel(); // Ã¹¹øÂ° ÅÇ
       catePanel.setBounds(0, 90, 500, 670);
@@ -243,7 +234,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		System.out.println("µé¾î¿À´Ï?");
+		ProfileInOut.getprofileInout().logOut(userID);
 		try {
 			ProfileInOut.getprofileInout().ois.close();
 			ProfileInOut.getprofileInout().oos.close();

@@ -51,8 +51,6 @@ public class ChatServer {
       public MulReceiver(Socket client) {
          
          try {
-            System.out.println(client.getInetAddress().toString());
-            System.out.println(name);
             dos = new ObjectOutputStream(client.getOutputStream());
             dis = new ObjectInputStream(client.getInputStream());
             name = dis.readUTF();
@@ -96,8 +94,9 @@ public class ChatServer {
             }
 
          } catch (Exception e) {
-           e.printStackTrace();
+           
          }finally {
+        	System.out.println(name + "채팅서버 로그아웃");
             usermap.remove(name);
             
             
@@ -105,8 +104,7 @@ public class ChatServer {
                dis.close();
                dos.close();
             } catch (IOException e) {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
+            
             }
             
          }   

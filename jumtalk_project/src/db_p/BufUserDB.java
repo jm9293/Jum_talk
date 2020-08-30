@@ -33,7 +33,7 @@ public class BufUserDB {
                      + "', TO_DATE('" + birthYYYYMMDD + "', 'YYYYMMDD'), '" + phone + "', '" + email + "', "
                      + "'" + address + "', '" + cardnumber + "', '" + pwhint + "', '" + pwres + "', '"
                      + businessname + "', '" + businessaddress + "', '" + banknum + "', '" + coin + "', systimestamp)");
-         System.out.println("성공");
+        
          res = true;
       } catch (Exception e) {
          e.printStackTrace();
@@ -628,7 +628,7 @@ public class BufUserDB {
 	         stmt = con.createStatement();
 	         
 	         stmt.executeUpdate("delete from  bufuserdata where ID = '"+userID+"'");
-	         System.out.println("성공");
+	         
 	         res = true;
 	      } catch (Exception e) {
 	         e.printStackTrace();

@@ -47,16 +47,16 @@ class ChatInButton extends JButton implements ActionListener {
       if(ucl.ucc == null) {
          
          if(kind==0) {
-            System.out.println("일반");
+      
             ucl.ucc = new ChatFrame(kind, userID, sellerID, chatdate, ucl,chatmenu);
 //         new User_Chat_Connect(kind, userID, sellerID,chatdate);
          }else {
-            System.out.println("점술가");
+  
             ucl.ucc = new ChatFrame(kind, sellerID, userID,chatdate, ucl,chatmenu);
          }
       } 
       
-      else {System.out.println("안먹어 안들어와");}
+      else {}
       
 
    }
@@ -154,9 +154,9 @@ public class ChatlistPanel extends JScrollPane  { // 채팅탭 누르면 나오는 채팅리
          test.add(chb); // 라벨에 버튼 넣기
          chat.add(test); // 다만든 라벨을 패널에 넣기
       }
-      System.out.println(cc.size());
+  
       if(cc.isEmpty()) {
-        System.out.println("들어오니?");
+ 
         JLabel emptypanel = new JLabel("채팅방이 없습니다.",JLabel.CENTER);
         emptypanel.setBounds(0,0,480,50);
         emptypanel.setVisible(true);

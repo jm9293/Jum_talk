@@ -43,7 +43,7 @@ public class ScheduleDB {
          }
          
          
-         System.out.println("己傍");
+
       } catch (Exception e) {
          e.printStackTrace();
       } finally {
@@ -74,7 +74,7 @@ public class ScheduleDB {
          
          int upNum = stmt.executeUpdate("update schedule set "+time+" = '"+set+"' where id = '"+userID+"' and to_char(sch_date,'yyyy-mm-dd') = '"+date+"' and "+time+"= 'true'");
          if(upNum>0) {
-         System.out.println("己傍");
+
          res = true;
          }
       } catch (Exception e) {
@@ -117,7 +117,7 @@ public class ScheduleDB {
          
          int upNum = stmt.executeUpdate("update schedule set "+time+" = '"+set+"' where id = '"+userID+"' and to_char(sch_date,'yyyy-mm-dd') = '"+date+"' and "+time+" = '"+notset+"'");
          if(upNum>0) {
-            System.out.println("己傍");
+
             res = true;
          }
       } catch (Exception e) {
@@ -153,7 +153,7 @@ public class ScheduleDB {
          stmt = con.createStatement();
          
          stmt.executeUpdate("INSERT INTO SCHEDULE VALUES ('"+userID+"', TO_DATE('"+date+"', 'YYYY-MM-DD'), 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false', 'false')");
-         System.out.println("己傍");
+
          res = true;
       } catch (Exception e) {
          e.printStackTrace();
@@ -172,7 +172,7 @@ public class ScheduleDB {
    
    
    public static void main(String[] args) {
-      System.out.println(Arrays.toString(getScheduleDB("admin", "2020-06-21")));
+
       makeSchedule("admin", "2020-06-22");
       setSchedule("admin", "2020-06-21", "time3", "true");
    }

@@ -48,8 +48,7 @@ public class TodayFortuneDB {
 	}
 
 	public static void main(String[] args) {
-		//사용예시
-		System.out.println(getFORTUNEMESSAGE((int)(Math.random()*10+1)));
+	
 
 	}
 

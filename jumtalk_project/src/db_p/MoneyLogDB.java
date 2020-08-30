@@ -46,7 +46,7 @@ static final String host =IP_NumSet.host;
          for (int i = 0; i < retarr.length; i++) {
             retarr[i] = resarr.get(i);
          }
-         System.out.println("성공");
+         
       } catch (Exception e) {
          e.printStackTrace();
       } finally {
@@ -113,7 +113,7 @@ static String [][] getSTATSMONEYLOG(int kind , String date, int statkind) {
          }
       }
    }
-   System.out.println(firstyear+"년 "+firstMonth+"월 "+firstdate+"일 ~"+lastyear+"년 "+lastMonth+" 월"+lastdate+"일");
+
    
    
    ArrayList<String []> resarr = new ArrayList<String[]>();
@@ -124,9 +124,7 @@ static String [][] getSTATSMONEYLOG(int kind , String date, int statkind) {
       
       stmt = con.createStatement();
       
-      System.out.println("SELECT id,sum(money) as money,sum(coinnum) as coinnum, '"+outdate+"' as time "
-               + "from(SELECT * FROM moneylog WHERE time >= TO_TIMESTAMP('"+firstyear+"-"+firstMonth+"-"+firstdate+" 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and "
-               + "time <= TO_TIMESTAMP('"+lastyear+"-"+lastMonth+"-"+lastdate+" 23:59:59', 'YYYY-MM-DD HH24:MI:SS') and kind = "+kind+") GROUP by id ORDER  by coinnum desc");
+     
       if(statkind == 0) {
          rs = stmt.executeQuery("SELECT id,sum(money) as money,sum(coinnum) as coinnum, '"+outdate+"' as time "
                + "from(SELECT * FROM moneylog WHERE time >= TO_TIMESTAMP('"+firstyear+"-"+firstMonth+"-"+firstdate+" 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and "
@@ -153,7 +151,7 @@ static String [][] getSTATSMONEYLOG(int kind , String date, int statkind) {
       for (int i = 0; i < retarr.length; i++) {
          retarr[i] = resarr.get(i);
       }
-      System.out.println("성공");
+   
    } catch (Exception e) {
       e.printStackTrace();
    } finally {
@@ -213,7 +211,7 @@ static String [][] getMONEYLOG(int kind) {
          for (int i = 0; i < retarr.length; i++) {
             retarr[i] = resarr.get(i);
          }
-         System.out.println("성공");
+   
       } catch (Exception e) {
          e.printStackTrace();
       } finally {
@@ -246,7 +244,7 @@ static String [][] getMONEYLOG(int kind) {
          stmt = con.createStatement();
          
          stmt.executeUpdate("INSERT INTO MONEYLOG (ID, MONEY, COINNUM, TIME, KIND) VALUES ('"+userID+"', '"+money+"', '"+coinnum+"', sysdate, '"+kind+"')");
-         System.out.println("성공");
+      
          res = true;
       } catch (Exception e) {
          e.printStackTrace();

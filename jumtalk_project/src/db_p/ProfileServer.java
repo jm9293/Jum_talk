@@ -17,10 +17,6 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 
-
-
-
-
 public class ProfileServer {
    
    public ProfileServer() {
@@ -36,8 +32,8 @@ public class ProfileServer {
          while(true) {
             Socket client = server.accept();
             System.out.println("연결성공");
-            chkclass chk = new chkclass();
-            MulReceiver mulReceiver =  new MulReceiver(client,chk);
+  
+            MulReceiver mulReceiver =  new MulReceiver(client);
           
             mulReceiver.start();
            
@@ -50,20 +46,17 @@ public class ProfileServer {
    
    }
    
-   class chkclass{
-	   boolean chk = true;
-   }
+
    
    class MulReceiver extends Thread{
       
       String name;
       ObjectOutputStream dos;
       ObjectInputStream dis;
-      chkclass chk;
-      public MulReceiver(Socket client, chkclass chk) {
-         this.chk = chk;
+      
+      public MulReceiver(Socket client) {
+        
          try {
-            System.out.println(client.getInetAddress().toString());
            
             dos = new ObjectOutputStream(client.getOutputStream());
             dis = new ObjectInputStream(client.getInputStream());
@@ -84,26 +77,31 @@ public class ProfileServer {
          
          try {
         	
-            while(dis!=null&&chk.chk) {
+            while(dis!=null) {
             try {
             	LetterClass contant=null;
             	try {
             		
             		contant = (LetterClass) dis.readObject();
-					System.out.println("받았어");
+					System.out.println("클라이언트로부터 요청 수신");
 				} catch (Exception e) {
 					
 				}
             	
             	if(contant.kind.equals("upload")) {
+            		System.out.println(name +" : "+ contant.to_id+" 프로필 사진 업로드 요청");
             		upload(contant);
-            		System.out.println("올린다");
+            		System.out.println(name +" : "+ contant.to_id+" 프로필 사진 업로드 완료");
             	}else if(contant.kind.equals("download")){
+            		System.out.println(name +" : "+ contant.to_id+" 프로필 다운로드  요청");
             		download(contant);
-            		System.out.println("다운로드");
+            		System.out.println(name +" : "+ contant.to_id+" 프로필 다운로드 완료");
             	}else if(contant.kind.equals("login")) {
             		name=contant.from_id;
-            		System.out.println(contant.from_id+"로그인");
+            		System.out.println(contant.from_id+" : 로그인");
+            	}else if(contant.kind.equals("logout")) {
+            		
+            		break;
             	}
             	
             	
@@ -114,12 +112,12 @@ public class ProfileServer {
             }
 
          } catch (Exception e) {
-        	UserDB.setLOGINCHK(name, "false");
-           System.out.println(name+ "로그아웃");
          }finally {
    
             
             try {
+            	UserDB.setLOGINCHK(name, "false");
+            	System.out.println(name+ " : 로그아웃");
                dis.close();
                dos.close();
             } catch (IOException e) {
@@ -132,6 +130,7 @@ public class ProfileServer {
       void upload(LetterClass co) {
     	  try {
     		  FileOutputStream fio = new FileOutputStream("icon\\"+co.filename);
+    		  System.out.println(co.filename+" 저장 완료");
     		  fio.write(co.filebyte);
     		  fio.close();
     	  } catch (Exception e) {
@@ -145,16 +144,17 @@ public class ProfileServer {
     		  byte[]  buf;
     		  if(!file.exists()) {
     			  FileInputStream fis = new FileInputStream("icon\\smile.png");
+    			  System.out.println("저장되어 있는 사진이 없어 smile.png 전송");
     			  buf = new byte[fis.available()];
     			  fis.read(buf);
     			  fis.close();
-    			  System.out.println("없어");
     		  }else {
     			  FileInputStream fis = new FileInputStream(file);
+    			  System.out.println("저장되어 있는 사진이 있어서 "+co.filename+" 전송");
     			  buf = new byte[fis.available()];
     			  fis.read(buf);
     			  fis.close();
-    			  System.out.println("있어");
+    			  
     		  }
     		  dos.writeObject(new LetterClass("", "", "", "", buf));
     		  
@@ -171,72 +171,7 @@ public class ProfileServer {
       
    }
    
-   class LoginReceiver extends Thread{
-	      
-	      String name;
-	      ObjectOutputStream dos;
-	      ObjectInputStream dis;
-	      chkclass chk;
-	      public LoginReceiver(Socket client, chkclass chk) {
-	         this.chk =chk;
-	         try {
-    
-	            dos = new ObjectOutputStream(client.getOutputStream());
-	            dis = new ObjectInputStream(client.getInputStream());
-	            System.out.println("받냐?2");
-	         } catch (IOException e) {
-	            // TODO Auto-generated catch block
-	            e.printStackTrace();
-	         }
-	         
-	      }
-	      
-	      
-	      @Override
-	      public void run() {
-	         System.out.println("들어오니?");
-	         
-	         try {
-	        	 while (name!=null) {
-	        		 System.out.println("들어와?");
-	        		 name = dis.readUTF();
-	        		 System.out.println(name + " 로그인");	
-	        	 }
 
-	            while(dis!=null&&dos!=null&&chk.chk) {
-
-	            sleep(1000);
-	           
-	            dos.writeByte(1);
-			
-	            }
-
-	         } catch (Exception e) {
-	        	 System.out.println(name + " 로그아웃");
-	         }finally {
-	            
-	        	
-         
-	            try {
-	               chk.chk =false;
-	               dis.close();
-	               dos.close();
-	            } catch (IOException e) {
-	               // TODO Auto-generated catch block
-	               e.printStackTrace();
-	            }
-	            
-	         }   
-	      }
-	   
-	     
-	      
-	   
-   }
-
-   
-   
-   
 
    public static void main(String[] args) {
       

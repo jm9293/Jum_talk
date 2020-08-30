@@ -94,7 +94,7 @@ class Login extends JFrame implements ActionListener {
       setLayout(null);
       ImageIcon title = new ImageIcon("icon\\title.jpg");
       Image ii = title.getImage();
-      ii = ii.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+      ii = ii.getScaledInstance(400, 400, Image.SCALE_SMOOTH);
       title = new ImageIcon(ii);
       
       JLabel titlelb = new JLabel(title);
@@ -189,14 +189,19 @@ class Login extends JFrame implements ActionListener {
 
             // ´Ù ¾Æ´Ï¸é ·Î±×ÀÎ ¼º°ø!
          }else if (UserDB.getLOGINCHK(idtxt.getText()).equals("true")) {
-        	JOptionPane.showMessageDialog(null, "°°Àº¾ÆÀÌµð·Î ·Î±×ÀÎÁßÀÔ´Ï´Ù.");
+           JOptionPane.showMessageDialog(null, "°°Àº¾ÆÀÌµð·Î ·Î±×ÀÎÁßÀÔ´Ï´Ù.");
 
-        		// ´Ù ¾Æ´Ï¸é ·Î±×ÀÎ ¼º°ø!
-         } else {
-        	JOptionPane.showMessageDialog(null, "            ·Î±×ÀÎ ¼º°ø! \nÁ¡Åå¿¡ ¿À½Å °ÍÀ» È¯¿µÇÕ´Ï´Ù ¢¾");
-        	dispose();
-        	UserDB.setLOGINCHK(idtxt.getText(), "true");
-        	new MainFrame(idtxt.getText());
+              // ´Ù ¾Æ´Ï¸é ·Î±×ÀÎ ¼º°ø!
+         }else if (UserDB.getUSERKIND(idtxt.getText())>2) {
+             JOptionPane.showMessageDialog(null, "ºí·¢¸®½ºÆ®·Î ÁöÁ¤µÇ¾î ·Î±×ÀÎ ÇÒ¼ö ¾ø½À´Ï´Ù.\n ÀÚ¼¼ÇÑ ³»¿ëÀº °í°´¼¾ÅÍ·Î ¿¬¶ôÁÖ½Ã¸é ¾È³»µå¸®°Ú½À´Ï´Ù.");
+
+             // ´Ù ¾Æ´Ï¸é ·Î±×ÀÎ ¼º°ø!
+        } else {
+           JOptionPane.showMessageDialog(null, "            ·Î±×ÀÎ ¼º°ø! \nÁ¡Åå¿¡ ¿À½Å °ÍÀ» È¯¿µÇÕ´Ï´Ù ¢¾");
+           dispose();
+           UserDB.setLOGINCHK(idtxt.getText(), "true");
+           
+           new MainFrame(idtxt.getText());
 
         }
       }
@@ -501,7 +506,7 @@ class Login extends JFrame implements ActionListener {
             
             } else {
             
-               JOptionPane.showMessageDialog(null, "È¸¿ø´ÔÀÇ ¾ÆÀÌµð´Â   "+resPW+"   ÀÔ´Ï´Ù.", "¾ÆÀÌµð Ã£±â",  JOptionPane.INFORMATION_MESSAGE);
+               JOptionPane.showMessageDialog(null, "È¸¿ø´ÔÀÇ ºñ¹Ð¹øÈ£´Â   "+resPW+"   ÀÔ´Ï´Ù.", "ºñ¹Ð¹øÈ£ Ã£±â",  JOptionPane.INFORMATION_MESSAGE);
                lg.pwSearchFrame = null;
                dispose();
 //            passWordFind = new PassWordFind(this);
@@ -716,7 +721,7 @@ class Login extends JFrame implements ActionListener {
       String cardRegular = "^[0-9]{4,6}$"; // ¼ýÀÚ
       String addressRegular = "^[-a-zA-Z°¡-ÆR0-9]*$"; // ÁÖ¼Ò
       String businessName_R = "^[a-zA-Z°¡-ÆR0-9]*$";  //»ç¾÷Àå¸í 
-      String businessAddress_R = "^[0-9-]*$"; //°èÁÂ¹øÈ£
+      String bankNumber_R = "^[0-9-]*$"; //°èÁÂ¹øÈ£
       String sRegular = "\\S*"; // °ø¹é
 
       SignUpChk signUpChk;
@@ -784,7 +789,7 @@ class Login extends JFrame implements ActionListener {
          add(pw_t);
          
          //ºñ¹Ð¹øÈ£ ¼³¸í ¶óº§
-           pwForm_L = new JLabel("*°ø¹é¾øÀÌ 5~9ÀÚ ÀÌ³»ÀÇ ¿µ¹® ´ë¼Ò¹®ÀÚ/¼ýÀÚ/Æ¯¼ö¹®ÀÚ ¹Ýµå½Ã Æ÷ÇÔ ");
+           pwForm_L = new JLabel("*°ø¹é¾øÀÌ 5~20ÀÚ ÀÌ³»ÀÇ ¿µ¹® ´ë¼Ò¹®ÀÚ/¼ýÀÚ/Æ¯¼ö¹®ÀÚ ¹Ýµå½Ã Æ÷ÇÔ ");
            pwForm_L.setBounds(360,155,600,35);
            add(pwForm_L);
          
@@ -1173,10 +1178,9 @@ class Login extends JFrame implements ActionListener {
          }
 
          //ÀÏ¹ÝÈ¸¿ø È¸¿ø°¡ÀÔÃ¢ ---> »ç¾÷ÀÚ¸í, °èÁÂ¹øÈ£ ºÎºÐ setText ÇØÁÜ
-         business_1.setText("\t        Á¡¼úÈ¸¿ø¸¸ ÀÔ·Â ÇØ ÁÖ¼¼¿ä.");
-         business_2.setText("\t        Á¡¼úÈ¸¿ø¸¸ ÀÔ·Â ÇØ ÁÖ¼¼¿ä.");
-         bankNumber_T.setText("                  Á¡¼úÈ¸¿ø¸¸ ÀÔ·Â ÇØ ÁÖ¼¼¿ä.");
-
+         business_1.setText("\t      Á¡¼úÈ¸¿ø¸¸ ÀÔ·Â ÇØ ÁÖ¼¼¿ä.");
+         business_2.setText("\t      Á¡¼úÈ¸¿ø¸¸ ÀÔ·Â ÇØ ÁÖ¼¼¿ä.");
+         bankNumber_T.setText("          Á¡¼úÈ¸¿ø¸¸ ÀÔ·Â ÇØ ÁÖ¼¼¿ä.");
          
          
 //         cardNumber_T1.setText("ÀÏ¹Ý");
@@ -1390,8 +1394,8 @@ class Login extends JFrame implements ActionListener {
                   idChkBl = false;
 
                   // ¾ÆÀÌµð À¯È¿¼º °Ë»ç --> °ø¹éÀÏ¶§ XX
-               } else if (!(Pattern.matches(idRegular, id_t.getText()))
-                     || !(Pattern.matches(sRegular, id_t.getText()))) {
+               } else if (!(Pattern.matches(idRegular, id_t.getText().trim()))
+                     || !(Pattern.matches(sRegular, id_t.getText().trim()))) {
                   JOptionPane.showMessageDialog(null, "¾ÆÀÌµð´Â °ø¹é¾øÀÌ 5~9ÀÚ ÀÌ³»·Î ¿µ¹®/¼ýÀÚ¸¸ »ç¿ë°¡´ÉÇÕ´Ï´Ù.");
                   id_t.setText("");
 
@@ -1506,8 +1510,8 @@ class Login extends JFrame implements ActionListener {
                   System.out.println(textFieldList.size());
                   UserDB.signupNOMALUSER(id, pwChkStr, name, gender, birthYYYYMMDD, phone, email, address, card,
                         pwhint, pwres, coin);
-                  MenuDB.makeMENU(id);
-                  JOptionPane.showMessageDialog(null, "          È¸¿ø°¡ÀÔ ¿Ï·á! \nÁ¡Åå¿¡ ¿À½Å°ÍÀ» È¯¿µÇÕ´Ï´Ù.");
+                  UserDB.setFORTUNE_TIME(id, "1990-01-01");
+                  JOptionPane.showMessageDialog(null, "          È¸¿ø°¡ÀÔ ¿Ï·á! \nÁ¡Åå¿¡ ¿À½Å°ÍÀ» È¯¿µÇÕ´Ï´Ù ¢¾");
                   
                   lg.SignUp = null;
                   signUpEnd = false;
@@ -1571,10 +1575,11 @@ class Login extends JFrame implements ActionListener {
                   // ´Ù ¿À·ù°¡ ¾Æ´Ò°æ¿ì °¡ÀÔÁ¶°Ç¿¡ ÃæÁ·µÇ¾î °¡ÀÔ¿Ï·á Ã¢À» ¶ç¿ò.
                } else {
                   System.out.println(textFieldList.size());
-                  UserDB.signupSELLERUSER(id, pwChkStr, name, gender, birthYYYYMMDD, phone, email, address,
+                  BufUserDB.signupSELLERUSER(id, pwChkStr, name, gender, birthYYYYMMDD, phone, email, address,
                         pwhint, pwres, businessname, businessaddress, banknum, coin);
                   MenuDB.makeMENU(id);
-                  JOptionPane.showMessageDialog(null, "           È¸¿ø°¡ÀÔ ¿Ï·á !\nÁ¡Åå¿¡ ¿À½Å°ÍÀ» È¯¿µÇÕ´Ï´Ù.");
+                  
+                  JOptionPane.showMessageDialog(null, "           È¸¿ø°¡ÀÔ ¿Ï·á !\nÁ¡¼ú°¡ È¸¿ø°¡ÀÔÀº ÀÚÃ¼ °ËÁõÈÄ °¡ÀÔ ½ÂÀÎµË´Ï´Ù.\n °ËÅäÈÄ ¿¬¶ôµå¸®°Ú½À´Ï´Ù. ");
                   
                   //¾²·¹µå Á¾·á!!!!!
                   signUpEnd = false;  
@@ -1771,7 +1776,7 @@ class Login extends JFrame implements ActionListener {
                   business_2.setForeground(Color.black);
                
                   //°èÁÂ¹øÈ£
-               }if ((!(Pattern.matches(businessAddress_R, bankNumber_T.getText().trim().replaceAll(" ", ""))))
+               }if ((!(Pattern.matches(bankNumber_R, bankNumber_T.getText().trim().replaceAll(" ", ""))))
                   && !bankNumber_T.getText().equals("")&& sellerUserKind.isSelected()) {
                   regularChk_S[9] = false;
                   bankNumber_T.setForeground(Color.red);

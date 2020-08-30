@@ -83,6 +83,7 @@ class JumTalkOptionManager extends JPanel {
       @Override
       public void actionPerformed(ActionEvent e) {
          if (e.getSource().equals(opt1_Manager)) {
+            UserDB.setLOGINCHK(userID, "false");
             JOptionPane.showMessageDialog(null, "로그아웃 완료");
             System.exit(0);
          }
@@ -556,6 +557,7 @@ class JumTalkOptionManager extends JPanel {
          contentLabel.setBounds(150, 160, 100, 30);
 
          complete.addActionListener(this);
+         noticeReviseText.setLineWrap(true);
 
          add(titleReviseText);
          add(noticeReviseText);
@@ -667,6 +669,10 @@ class JumTalkOptionManager extends JPanel {
          for (Notice notice : noticeArr) {
             noticeTitleVt.add(notice.title);
          }
+         
+         if(noticeTitleVt.isEmpty()) {
+            noticeTitleVt.add("공지사항없음");
+         }
          noticeBox = new JComboBox<String>(noticeTitleVt);
          noticeChk.addActionListener(this);
          noticeDel.addActionListener(this);
@@ -686,6 +692,8 @@ class JumTalkOptionManager extends JPanel {
             Notice ntc = null;
             noticeTitleVt = new Vector<String>();
             noticeArr = NoticeDB.getNOTICE();
+            
+            
             for (Notice notice : noticeArr) {
                noticeTitleVt.add(notice.title);
             }
@@ -696,8 +704,10 @@ class JumTalkOptionManager extends JPanel {
 
                }
             }
-
-            if (noticeTitleVt.size() != 0) {
+            
+            if(noticeBox.getSelectedItem().equals("공지사항없음")){
+                JOptionPane.showMessageDialog(null, "삭제 할 공지가 없습니다");
+            }else if (noticeTitleVt.size() != 0) {
                noticeTitleVt.remove(noticeBox.getSelectedIndex());
                NoticeDB.deleteNOTICE(ntc.title, ntc.content);
                JOptionPane.showMessageDialog(null, "삭제완료");
@@ -706,6 +716,9 @@ class JumTalkOptionManager extends JPanel {
                for (Notice notice : noticeArr) {
                   noticeTitleVt.add(notice.title);
                }
+               if(noticeTitleVt.isEmpty()) {
+                  noticeTitleVt.add("공지사항없음");
+               }
                remove(noticeBox);
                add(noticeBox = new JComboBox<String>(noticeTitleVt));
                noticeBox.setBounds(75, 70, 350, 50);
@@ -713,8 +726,6 @@ class JumTalkOptionManager extends JPanel {
                revalidate();
                repaint();
 
-            } else {
-               JOptionPane.showMessageDialog(null, "수정 할 공지가 없습니다");
             }
 
          } else if (e.getSource().equals(noticeChk)) {
@@ -725,6 +736,10 @@ class JumTalkOptionManager extends JPanel {
             for (Notice notice : noticeArr) {
                noticeTitleVt.add(notice.title);
             }
+            if(noticeTitleVt.isEmpty()) {
+            	noticeTitleVt.add("공지사항없음");
+            }
+            if(!noticeBox.getSelectedItem().equals("공지사항없음")) {
             for (Notice notice : noticeArr) {
                if (notice.title.equals(noticeTitleVt.get(noticeBox.getSelectedIndex()))) {
                   ntc = notice;
@@ -741,7 +756,9 @@ class JumTalkOptionManager extends JPanel {
 
                }
             }
-
+            }else {
+               JOptionPane.showMessageDialog(null, "수정할 공지가 없습니다");
+            }
          }
 
       }
@@ -790,8 +807,9 @@ class JumTalkOptionManager extends JPanel {
    }
 
    class SendMessageManager extends JFrame implements ActionListener, MouseListener, WindowListener {
-      MessagePanelManager messagePanelManager;
+      
 
+      JButton delete;
       JTable sendList;
       JScrollPane scroll;
 
@@ -803,11 +821,11 @@ class JumTalkOptionManager extends JPanel {
       String messageStr;
       String[][] arr2;
       String[] arr;
-      MessagePanelManager messagePanelManager2;
+      MessagePanelManager messagePanelManager;
       boolean chk = true;
 
       public SendMessageManager(MessagePanelManager messagePanelManager2) {
-         this.messagePanelManager2 = messagePanelManager2;
+         this.messagePanelManager = messagePanelManager2;
          setTitle("보낸메세지함");
          setBounds(600, 100, 515, 800);
          setLayout(null);
@@ -821,7 +839,7 @@ class JumTalkOptionManager extends JPanel {
          }
 
          arr = new String[] { "받은사람", "내용", "시간" };
-
+         delete = new JButton("삭제");
          sendList = new JTable(new NotEditTable(arr2, arr));
          scroll = new JScrollPane(sendList);
          search = new JButton("찾기");
@@ -830,16 +848,18 @@ class JumTalkOptionManager extends JPanel {
          idSearchLabel = new JLabel("받은사람 : ");
 
          scroll.setBounds(0, 150, 500, 500);
-
+         delete.setBounds(390, 660, 100, 50);
          search.setBounds(360, 90, 100, 50);
          allMessage.setBounds(250, 90, 100, 50);
          searchText.setBounds(130, 30, 330, 50);
          idSearchLabel.setBounds(50, 30, 100, 50);
-
+         
+         delete.addActionListener(this);
          search.addActionListener(this);
          sendList.addMouseListener(this);
          allMessage.addActionListener(this);
-
+         
+         add(delete);
          add(scroll);
          add(idSearchLabel);
          add(searchText);
@@ -851,8 +871,13 @@ class JumTalkOptionManager extends JPanel {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-
-         if (e.getSource().equals(search)) {
+         
+         if (e.getSource().equals(delete)) {
+              MessageDB.deleteSendMESSAGE("admin");
+              JOptionPane.showMessageDialog(null, "삭제완료");
+              messagePanelManager.preFrame = null;
+              dispose();
+           }else if (e.getSource().equals(search)) {
             if (UserDB.getID(searchText.getText()).equals("")) {
                JOptionPane.showMessageDialog(null, "없는 아이디입니다");
             } else {
@@ -942,7 +967,7 @@ class JumTalkOptionManager extends JPanel {
 
       @Override
       public void windowClosing(WindowEvent e) {
-         messagePanelManager2.preFrame = null;
+         messagePanelManager.preFrame = null;
 
       }
 

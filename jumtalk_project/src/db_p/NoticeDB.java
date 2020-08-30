@@ -100,7 +100,7 @@ public class NoticeDB {
          stmt = con.createStatement();
          
          stmt.executeUpdate("INSERT INTO NOTICE (TITLE, CONTENT, MAKETIME, WRITER) VALUES ('"+title+"', '"+content+"', sysdate, '"+writer+"')");
-         System.out.println("성공");
+       
          res = true;
       } catch (Exception e) {
          e.printStackTrace();
@@ -136,7 +136,7 @@ public class NoticeDB {
                + "SET TITLE = '"+newtitle+"'"
                + ",CONTENT = '"+content+"'"
                + ",MODIFI_TIME = SYSDATE WHERE TITLE = '"+title+"'");
-         System.out.println("성공");
+    
          res = true;
       } catch (Exception e) {
          e.printStackTrace();
@@ -169,7 +169,7 @@ public class NoticeDB {
          stmt = con.createStatement();
          
          stmt.executeUpdate("delete from  NOTICE where title = '"+title+"' and content = '"+content+"'");
-         System.out.println("성공");
+  
          res = true;
       } catch (Exception e) {
          e.printStackTrace();

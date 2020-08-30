@@ -55,7 +55,7 @@ class Review{
 
 public class ReviewDB {
 	
-	static final String host ="localhost";
+	static final String host =IP_NumSet.host;
 	
 	static ArrayList<Review> getREVIEW(String sellerID){ // 리뷰들 가져오기
 		
@@ -116,7 +116,7 @@ public class ReviewDB {
 			stmt = con.createStatement();
 			
 			stmt.executeUpdate("INSERT INTO REVIEW (ID, COMENT, MAKETIME, POINT) VALUES ('"+id+"', '"+coment+"', sysdate, "+point+")");
-			System.out.println("성공");
+
 			res = true;
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -101,7 +101,7 @@ public class MenuDB {
          }
          
          
-         System.out.println("¼º°ø");
+        
       } catch (Exception e) {
          e.printStackTrace();
       } finally {

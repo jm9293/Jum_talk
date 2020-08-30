@@ -1,6 +1,7 @@
 package db_p;
 
 import java.awt.Color;
+
 import java.awt.Dimension;
 
 
@@ -84,7 +85,7 @@ public class ReservationPanel_Manager extends JPanel {
 			title.setBounds(5, 0, 200, 30);
 			this.resSuperuser =resSuperuser;
 			add(title);
-			System.out.println(getHeight()+", "+getWidth());
+			
 			String [] colum = {"ID","최근로그인시간"};
 			ArrayList<normalUser> datalist;
 			if(userkind<3) {
@@ -274,8 +275,6 @@ public class ReservationPanel_Manager extends JPanel {
 				if (e.getSource().equals(savebtn)) {
 					if(savebtn.getText().equals("저장")) {
 					if(setblack.isSelected()) {
-						System.out.println("여기 들어오니?");
-						System.out.println(userID);
 						UserDB.setUSERKIND(userID, UserDB.getUSERKIND(userID)+3);
 					}else {
 						if(UserDB.getUSERKIND(userID)>2) {
@@ -284,7 +283,7 @@ public class ReservationPanel_Manager extends JPanel {
 					}
 					JOptionPane.showMessageDialog(null, "회원정보 저장완료");
 					userListpanel.resSuperuser.dataframe =null;
-					System.out.println(userListpanel.resSuperuser.mainframe.jb1);
+					
 					userListpanel.resSuperuser.mainframe.jb1.doClick();
 					dispose();
 					}else {

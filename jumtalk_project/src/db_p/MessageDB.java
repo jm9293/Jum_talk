@@ -268,7 +268,7 @@ static String[][] getFROM_MESSAGE(String userID, String to_userID){
          
          stmt.executeUpdate("INSERT INTO TO_MESSAGE (TO_ID, FROM_ID, CONTENT, MAKETIME) VALUES ('"+to_id+"', '"+from_id+"', '"+contant+"', systimestamp)");
          stmt.executeUpdate("INSERT INTO FROM_MESSAGE (TO_ID, FROM_ID, CONTENT, MAKETIME) VALUES ('"+to_id+"', '"+from_id+"', '"+contant+"', systimestamp)");
-         System.out.println("성공");
+        
          res = true;
       } catch (Exception e) {
          e.printStackTrace();
@@ -302,7 +302,7 @@ static String[][] getFROM_MESSAGE(String userID, String to_userID){
             stmt = con.createStatement();
             
             stmt.executeUpdate("delete from from_message where from_id = '"+userID+"'");
-            System.out.println("성공");
+         
             res = true;
          } catch (Exception e) {
             e.printStackTrace();
@@ -336,7 +336,7 @@ static String[][] getFROM_MESSAGE(String userID, String to_userID){
             stmt = con.createStatement();
             
             stmt.executeUpdate("delete from to_message where to_id = '"+userID+"'");
-            System.out.println("성공");
+           
             res = true;
          } catch (Exception e) {
             e.printStackTrace();

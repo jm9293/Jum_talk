@@ -583,7 +583,7 @@ class SelectMenuAct2 extends JFrame implements ActionListener, WindowListener { 
 				
 			} else {
 				schedule = ScheduleDB.getScheduleDB(userID, date);
-				System.out.println("exist");
+				
 			}
 
 			btnTimeSeller = new ArrayList<JToggleButton>();
@@ -625,11 +625,11 @@ class SelectMenuAct2 extends JFrame implements ActionListener, WindowListener { 
 		public void actionPerformed(ActionEvent e) {
 			JToggleButton b = (JToggleButton) e.getSource();
 			if(b.getText().contains("예약가능")) {
-				System.out.println("버튼바뀌나");
+				
 				b.setText(b.getText().split(":")[0]+":"+" 예약불가");
 			}
 			else {
-				System.out.println("가능으로 바뀜?");
+			
 				b.setText(b.getText().split(":")[0]+":"+" 예약가능");
 			}
 				
@@ -656,10 +656,10 @@ class SelectMenuAct2 extends JFrame implements ActionListener, WindowListener { 
 				if (!jT.isEnabled()) {
 					
 				} else if (jT.getText().contains("예약가능")) { 
-					System.out.println("가능 들어옴");
+					
 					ScheduleDB.setSellerSchedule(userID, date, "time" + btnTimeSeller.indexOf(jT), "true");
 				} else if(jT.getText().contains("예약불가")){
-					System.out.println("불가능 들어옴");
+					
 					ScheduleDB.setSellerSchedule(userID, date, "time" + btnTimeSeller.indexOf(jT), "false");
 				}
 			}
